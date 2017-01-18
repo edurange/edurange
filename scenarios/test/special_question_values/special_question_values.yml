@@ -15,15 +15,16 @@ Clouds:
     - Name: Instance_1
       OS: ubuntu
       IP_Address: 10.0.0.16
-      IP_Address_Dynamic: 
+      IP_Address_Dynamic:
       Internet_Accessible: false
       Roles: []
     - Name: Instance_2
       OS: ubuntu
       IP_Address: 10.0.0.17
-      IP_Address_Dynamic: 
+      IP_Address_Dynamic:
       Internet_Accessible: false
       Roles: []
+Subnets: 
 Subnets: 
 Instances: 
 Roles: 
@@ -32,7 +33,7 @@ Scoring:
   Type: String
   Options: []
   Values:
-  - Value: $Instance_1$
+  - Value: "$Instance_1$"
     Points: '1'
-  - Value: $Instance_2$
+  - Value: "$Instance_2$"
     Points: '1'

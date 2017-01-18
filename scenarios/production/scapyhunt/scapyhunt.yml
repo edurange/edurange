@@ -1,90 +1,91 @@
----
 Name: ScapyHunt
-Description: A series of Network Security puzzles and challenges designed to educate
-  users on packet manipulation and common network attacks.
-Instructions: Instructions can be found here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
-  Github here https://github.com/JamesSullivan1/scapyHunt.
+Description: A series of Network Security puzzles and challenges designed to educate users on packet manipulation and common network attacks.
+Instructions: Instructions can be found here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt. Github here https://github.com/JamesSullivan1/scapyHunt.
+
 Roles:
-- Name: Player
-  Packages:
-  - git
-  - tshark
-  - nmap
-  - python
-  - python-scapy
-  - dsniff
-  Recipes:
-  - scapyhunt
+  - Name: Player
+    Packages:
+      - git
+      - tshark
+      - nmap
+      - python
+      - python-scapy
+      - dsniff
+    Recipes:
+      - scapyhunt
+
 Groups:
-- Name: Instructor
-  Access:
-  - Instance: Team1_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Team2_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Team3_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: 4pjiggDk
-  Instructions: This is the instructors group which has full sudo privileges on all
-    Instances.
-- Name: Team1
-  Access:
-  - Instance: Team1_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: team1
-    Password: 8TnsTq7a
-  Instructions: SSH into the Instance Team1_instance using it's public IP address
-    then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
-- Name: Team2
-  Access:
-  - Instance: Team2_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: team2
-    Password: 1AxFFTFS
-  Instructions: SSH into the Instance Team1_instance using it's public IP address
-    then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
-- Name: Team3
-  Access:
-  - Instance: Team3_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: team3
-    Password: BMsRRhm7
-  Instructions: SSH into the Instance Team1_instance using it's public IP address
-    then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
+  - Name: Instructor
+    Access:
+      Administrator:
+        IP_Visible:
+        - Team1_Instance
+        - Team2_Instance
+        - Team3_Instance
+    Users:
+      - Login: instructor
+        Password: 4pjiggDk
+    Instructions: This is the instructors group which has full sudo privileges on all Instances.
+
+  - Name: Team1
+    Access:
+      User:
+      Administrator:
+        IP_Visible:
+        - Team1_Instance
+    Users:
+      - Login: team1
+        Password: 8TnsTq7a
+    Instructions: SSH into the Instance Team1_instance using it's public IP address then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
+
+  - Name: Team2
+    Access:
+      User:
+      Administrator:
+        IP_Visible:
+        - Team2_Instance
+    Users:
+      - Login: team2
+        Password: 1AxFFTFS
+    Instructions: SSH into the Instance Team1_instance using it's public IP address then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
+
+  - Name: Team3
+    Access:
+      User:
+      Administrator:
+        IP_Visible:
+        - Team3_Instance
+    Users:
+      - Login: team3
+        Password: BMsRRhm7
+    Instructions: SSH into the Instance Team1_instance using it's public IP address then follow the instructions here https://github.com/JamesSullivan1/scapyHunt/blob/master/HowToPlay.txt.
+
 Clouds:
-- Name: Cloud_1
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: Player_Subnet
-    CIDR_Block: 10.0.130.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: Team1_Instance
-      OS: ubuntu
-      IP_Address: 10.0.130.5
-      Internet_Accessible: true
-      Roles:
-      - Player
-    - Name: Team2_Instance
-      OS: ubuntu
-      IP_Address: 10.0.130.6
-      Internet_Accessible: true
-      Roles:
-      - Player
-    - Name: Team3_Instance
-      OS: ubuntu
-      IP_Address: 10.0.130.7
-      Internet_Accessible: true
-      Roles:
-      - Player
+  - Name: Cloud_1
+    CIDR_Block: 10.0.0.0/16
+    Subnets:
+      - Name: Player_Subnet
+        CIDR_Block: 10.0.130.0/24
+        Internet_Accessible: true
+        Instances:
+          - Name: Team1_Instance
+            OS: ubuntu
+            IP_Address: 10.0.130.5
+            Internet_Accessible: true
+            Roles:
+              - Player
+
+          - Name: Team2_Instance
+            OS: ubuntu
+            IP_Address: 10.0.130.6
+            Internet_Accessible: true
+            Roles:
+              - Player
+
+          - Name: Team3_Instance
+            OS: ubuntu
+            IP_Address: 10.0.130.7
+            Internet_Accessible: true
+            Roles:
+              - Player
+

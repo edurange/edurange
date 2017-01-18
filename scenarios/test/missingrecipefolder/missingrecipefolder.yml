@@ -1,18 +1,18 @@
 ---
 Name: missingrecipefolder
-Description: 
+Description:
 Instructions: 
 InstructionsStudent: ''
 Groups:
 - Name: Team_1
   Instructions: ''
   Access:
-  - Instance: Instance_1
-    Administrator: true
-    IP_Visible: true
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+      IP_Visible:
+      - Instance_1
+    User:
+      IP_Visible:
+      - NAT_Instance
   Users:
   - Login: instructor
     Password: jiJlskOlls89

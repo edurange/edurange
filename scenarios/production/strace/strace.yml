@@ -1,46 +1,50 @@
----
 Name: Strace
-Description: This game uses strace to examine executable files.
+Description: "This game uses strace to examine executable files."
 Instructions: Players will first ssh into the NAT using it's Public IP Address.
-Roles:
-- Name: NAT
-  Packages:
-  - git
-  - gdb
-  - build-essential
-  Recipes:
-  - sshd_password_login
-  - strace
-Groups:
-- Name: Instructor
-  Access:
-  - Instance: NAT_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: Clzv1aeCs1Yz
-  Description: Describe this Player
-- Name: Students
-  Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: student
-    Password: sWfwkNGblfv
-  Description: Describe this Player
-Clouds:
-- Name: Cloud_1
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: NAT_Subnet
-    CIDR_Block: 10.0.129.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: NAT_Instance
-      OS: ubuntu
-      IP_Address: 10.0.129.5
-      Internet_Accessible: true
-      Roles:
-      - NAT
+
+Roles: 
+  - Name: NAT
+    Packages:
+      - git
+      - gdb
+      - build-essential
+    Recipes:
+      - sshd_password_login
+      - strace
+
+Groups: 
+  - Name: Instructor
+    Access:
+      Administrator:
+        IP_Visible:
+        - NAT_Instance
+    Users:
+      - Login: instructor
+        Password: Clzv1aeCs1Yz
+    Description: Describe this Player
+
+  - Name: Students
+    Access:
+      User:
+        IP_Visible:
+        - NAT_Instance
+    Users:
+      - Login: student
+        Password: sWfwkNGblfv
+    Description: Describe this Player
+
+Clouds: 
+  - Name: Cloud_1
+    CIDR_Block: 10.0.0.0/16
+    Subnets: 
+      - Name: NAT_Subnet
+        CIDR_Block: 10.0.129.0/24
+        Internet_Accessible: true
+        Instances: 
+          - Name: NAT_Instance
+            OS: ubuntu
+            IP_Address: 10.0.129.5
+            Internet_Accessible: true
+            Roles: 
+              - NAT
+

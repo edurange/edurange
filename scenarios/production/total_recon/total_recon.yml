@@ -1,43 +1,28 @@
 ---
 Name: Total_Recon
-Description: Total Recon is a progressive, story-based game designed to teach nmap
-  network reconnaissance.
+Description: 'Total Recon is a progressive, story-based game designed to teach nmap network reconnaissance.'
 Instructions: ''
 InstructionsStudent: ''
 Groups:
 - Name: Instructor
-  Instructions: 
+  Instructions:
   Access:
-  - Instance: Rekall
-    Administrator: true
-    IP_Visible: true
-  - Instance: Subway
-    Administrator: true
-    IP_Visible: true
-  - Instance: Earth_Aerospace_Port
-    Administrator: true
-    IP_Visible: true
-  - Instance: Mars_Aerospace_Port
-    Administrator: true
-    IP_Visible: true
-  - Instance: Home
-    Administrator: true
-    IP_Visible: true
-  - Instance: Venusville
-    Administrator: true
-    IP_Visible: true
-  - Instance: Last_Resort
-    Administrator: true
-    IP_Visible: true
-  - Instance: Resistance_Base
-    Administrator: true
-    IP_Visible: true
-  - Instance: Control_Room
-    Administrator: true
-    IP_Visible: true
-  - Instance: Nat
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+      IP_Visible:
+      - Rekall
+      - Subway
+      - Earth_Aerospace_Port
+      - Mars_Aerospace_Port
+      - Home
+      - Venusville
+      - Last_Resort
+      - Resistance_Base
+      - Control_Room
+      IP_Hidden:
+    User:
+      IP_Visible:
+      - Nat
+      IP_Hidden:
   Users:
   - Login: instructor
     Password: vLCu3Crf
@@ -47,33 +32,19 @@ Groups:
 - Name: Student
   Instructions: ''
   Access:
-  - Instance: Home
-    Administrator: false
-    IP_Visible: true
-  - Instance: Rekall
-    Administrator: false
-    IP_Visible: false
-  - Instance: Subway
-    Administrator: false
-    IP_Visible: false
-  - Instance: Earth_Aerospace_Port
-    Administrator: false
-    IP_Visible: false
-  - Instance: Mars_Aerospace_Port
-    Administrator: false
-    IP_Visible: false
-  - Instance: Venusville
-    Administrator: false
-    IP_Visible: false
-  - Instance: Last_Resort
-    Administrator: false
-    IP_Visible: false
-  - Instance: Resistance_Base
-    Administrator: false
-    IP_Visible: false
-  - Instance: Control_Room
-    Administrator: false
-    IP_Visible: false
+    Administrator:
+    User:
+      IP_Visible:
+      - Home
+      IP_Hidden:
+      - Rekall
+      - Subway
+      - Earth_Aerospace_Port
+      - Mars_Aerospace_Port
+      - Venusville
+      - Last_Resort
+      - Resistance_Base
+      - Control_Room
   Users:
   - Login: test1
     Password: password

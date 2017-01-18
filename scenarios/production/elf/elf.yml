@@ -1,56 +1,52 @@
----
 Name: Elf
-Description: This scenario uses an ELF binary format infection technique (written
-  by Nick Stephens https://github.com/NickStephens/elfit) to insert malicious instructinos
-  into several common binary commands. Students can use tools like readelf, objdump,
-  strace, and gdb to determine how each binary is infected.
-Instructions: Have the students login to the Player_Instance. All files on Player_instance
-  in /usr/special/bin are infected with a unique infection that the students should
-  identify.
+Description: This scenario uses an ELF binary format infection technique (written by Nick Stephens https://github.com/NickStephens/elfit) to insert malicious instructinos into several common binary commands. Students can use tools like readelf, objdump, strace, and gdb to determine how each binary is infected.
+
+Instructions: Have the students login to the Player_Instance. All files on Player_instance in /usr/special/bin are infected with a unique infection that the students should identify.
+
 Roles:
-- Name: NAT
-  Packages:
-  - gdb
-  - nasm
-  - git
-  - emacs
-  - build-essential
-  Recipes:
-  - sshd_password_login
-  - elf
+  - Name: NAT
+    Packages:
+      - gdb
+      - nasm
+      - git
+      - emacs
+      - build-essential
+    Recipes:
+      - sshd_password_login
+      - elf
+
 Groups:
-- Name: Instructor
-  Access:
-  - Instance: Player_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: vLCu3Crf
-  Instructions: This is the instructors group which has full sudo privileges on the
-    instance Player_Instance.
-- Name: Students
-  Access:
-  - Instance: Player_Instance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: student
-    Password: sWfwkNGblfv
-  Instructions: SSH into the instance 'Player_Instance' using it's Public IP address.
-    All binary files in /usr/special/bin are infected with malicous code. Use tools
-    like readelf, objdump, strace, and gdb to determine how each binary is infected.
+  - Name: Instructor
+    Access:
+      Administrator:
+        IP_Visible:
+        - Player_Instance
+    Users:
+      - Login: instructor
+        Password: vLCu3Crf
+    Instructions: This is the instructors group which has full sudo privileges on the instance Player_Instance.
+
+  - Name: Students
+    Access:
+      User:
+        IP_Visible:
+        - Player_Instance
+    Users:
+      - Login: student
+        Password: sWfwkNGblfv
+    Instructions: SSH into the instance 'Player_Instance' using it's Public IP address. All binary files in /usr/special/bin are infected with malicous code. Use tools like readelf, objdump, strace, and gdb to determine how each binary is infected.
+
 Clouds:
-- Name: Cloud_1
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: Player_Subnet
-    CIDR_Block: 10.0.129.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: Player_Instance
-      OS: ubuntu
-      IP_Address: 10.0.129.5
-      Internet_Accessible: true
-      Roles:
-      - NAT
+  - Name: Cloud_1
+    CIDR_Block: 10.0.0.0/16
+    Subnets:
+      - Name: Player_Subnet
+        CIDR_Block: 10.0.129.0/24
+        Internet_Accessible: true
+        Instances:
+          - Name: Player_Instance
+            OS: ubuntu
+            IP_Address: 10.0.129.5
+            Internet_Accessible: true
+            Roles :
+              - NAT

@@ -56,18 +56,17 @@ end
 group :development, :test do
   # gem 'pry-stack_explorer'
   gem 'awesome_print'
+  # gem 'factory_girl_rails'
   gem 'pry-rails'
-  gem 'pry-byebug'
   # gem 'pry-rescue'
-  gem 'rspec-rails'
+  # gem 'rspec-rails', '>= 3.0.0.beta2'
   gem 'daemons'
-  gem 'faker'
-  gem 'factory_girl_rails', '~> 4.0'
 end
 group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'selenium-webdriver'
+  # gem 'faker'
   # gem 'launchy'
   # gem 'plymouth'
   # gem 'pry'

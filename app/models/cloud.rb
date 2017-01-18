@@ -84,7 +84,7 @@ class Cloud < ActiveRecord::Base
       if not mask
         errors.add(:cidr_block, "Need a subnet mask")
         return
-      elsif not (/^\d*\d$/).match(mask)
+      elsif not /^\d*\d$/.match(mask)
         errors.add(:cidr_block, "Subnet mask is invalid!")
         return
       elsif not (mask.to_i >= 16 and mask.to_i <= 28)
@@ -100,6 +100,7 @@ class Cloud < ActiveRecord::Base
     # Check that each subnet of cloud is within cloud CIDR
     self.subnets.each do |subnet|
       ord = NetAddr::CIDR.create(self.cidr_block).cmp(subnet.cidr_block)
+      puts subnet.cidr_block + " " + ord.to_s
       if ord != 1 and ord != 0
         self.errors.add(:cidr_block, "CIDR block does not encompass #{subnet.name}")
         return

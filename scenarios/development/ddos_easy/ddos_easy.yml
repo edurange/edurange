@@ -1,100 +1,100 @@
----
 Name: DDOS_easy
 Description: A denail of service prevention scenario.
-Instructions: Players should first login to NATInstance then into PlayerInstance.
-  If they attempt and get a web page from the WebServerInstance by running 'wget 10.0.128.10'
-  it will stall. Players should log into the WebServerInstance and attempt to solve
-  the problem.
+Instructions: Players should first login to NATInstance then into PlayerInstance. If they attempt and get a web page from the WebServerInstance by running 'wget 10.0.128.10' it will stall. Players should log into the WebServerInstance and attempt to solve the problem.
+
 Roles:
-- Name: RoleSSH
-  Packages: 
-  Recipes:
-  - sshd_password_login
-- Name: RolePlayer
-  Packages: 
-  Recipes: 
-- Name: RoleWebServer
-  Packages:
-  - apache2
-  Recipes: 
-- Name: RoleAttacker
-  Packages:
-  - git
-  - perl
-  - libwww-mechanize-shell-perl
-  Recipes:
-  - slowloris
+  - Name: RoleSSH
+    Packages:
+    Recipes:
+      - sshd_password_login
+
+  - Name: RolePlayer
+    Packages:
+    Recipes:
+
+  - Name: RoleWebServer
+    Packages:
+      - apache2
+    Recipes:
+
+  - Name: RoleAttacker
+    Packages:
+      - git
+      - perl
+      - libwww-mechanize-shell-perl
+    Recipes:
+      - slowloris
+
 Groups:
-- Name: GroupAdministrators
-  Access:
-  - Instance: PlayerInstance
-    Administrator: true
-    IP_Visible: true
-  - Instance: WebServerInstance
-    Administrator: true
-    IP_Visible: true
-  - Instance: AttackerInstance
-    Administrator: true
-    IP_Visible: true
-  - Instance: NATInstance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: vLCu3Crf
-- Name: GroupPlayers
-  Access:
-  - Instance: PlayerInstance
-    Administrator: true
-    IP_Visible: true
-  - Instance: WebServerInstance
-    Administrator: true
-    IP_Visible: true
-  - Instance: NATInstance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: player
-    Password: vLCu3Crf
+  - Name: GroupAdministrators
+    Access:
+      Administrator:
+        IP_Visible:
+          - PlayerInstance
+          - WebServerInstance
+          - AttackerInstance
+      User:
+        IP_Visible:
+          - NATInstance
+    Users:
+      - Login: instructor
+        Password: vLCu3Crf
+
+  - Name: GroupPlayers
+    Access:
+      Administrator:
+        IP_Visible:
+          - PlayerInstance
+          - WebServerInstance
+      User:
+        IP_Visible:
+          - NATInstance
+    Users:
+      - Login: player
+        Password: vLCu3Crf
+
 Clouds:
-- Name: Cloud1
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: NATSubnet
-    Cloud: Cloud1
-    CIDR_Block: 10.0.129.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: NATInstance
-      OS: nat
-      IP_Address: 10.0.129.5
-      Internet_Accessible: true
-      Roles:
-      - RoleSSH
-  - Name: PlayerSubnet
-    CIDR_Block: 10.0.128.0/24
-    Instances:
-    - Name: PlayerInstance
-      Subnet: PlayerSubnet
-      OS: ubuntu
-      IP_Address: 10.0.128.8
-      Internet_Accessible: false
-      Roles:
-      - RoleSSH
-      - RolePlayer
-    - Name: WebServerInstance
-      Subnet: PlayerSubnet
-      OS: ubuntu
-      IP_Address: 10.0.128.10
-      Internet_Accessible: false
-      Roles:
-      - RoleSSH
-      - RoleWebServer
-    - Name: AttackerInstance
-      Subnet: PlayerSubnet
-      OS: ubuntu
-      IP_Address: 10.0.128.12
-      Internet_Accessible: false
-      Roles:
-      - RoleSSH
-      - RoleAttacker
+  - Name: Cloud1
+    CIDR_Block: 10.0.0.0/16
+    Subnets:
+      - Name: NATSubnet
+        Cloud: Cloud1
+        CIDR_Block: 10.0.129.0/24
+        Internet_Accessible: true
+        Instances:
+          - Name: NATInstance
+            OS: nat
+            IP_Address: 10.0.129.5
+            Internet_Accessible: true
+            Roles:
+              - RoleSSH
+
+      - Name: PlayerSubnet
+        CIDR_Block: 10.0.128.0/24
+        Instances:
+          - Name: PlayerInstance
+            Subnet: PlayerSubnet
+            OS: ubuntu
+            IP_Address: 10.0.128.8
+            Internet_Accessible: false
+            Roles:
+              - RoleSSH
+              - RolePlayer
+
+          - Name: WebServerInstance
+            Subnet: PlayerSubnet
+            OS: ubuntu
+            IP_Address: 10.0.128.10
+            Internet_Accessible: false
+            Roles:
+              - RoleSSH
+              - RoleWebServer
+
+          - Name: AttackerInstance
+            Subnet: PlayerSubnet
+            OS: ubuntu
+            IP_Address: 10.0.128.12
+            Internet_Accessible: false
+            Roles:
+              - RoleSSH
+              - RoleAttacker

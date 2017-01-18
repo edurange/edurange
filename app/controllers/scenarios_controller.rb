@@ -116,11 +116,8 @@ class ScenariosController < ApplicationController
   # POST /scenarios
   # POST /scenarios.json
   def create
-    # Curious where ScenarioLoader lives? lib/scenario_loader.rb
-    @scenario = ScenarioLoader.new(user: @user,
-                                   name: scenario_params[:name],
-                                   location: scenario_params[:location])
-                              .fire!
+    @scenario = @user.scenarios.new(scenario_params)
+    @scenario.save
 
     respond_to do |format|
       if @scenario.errors.any?

@@ -2,7 +2,23 @@
 Name: Boot_Test_2
 Description: A test scenario for booting
 Instructions: 
-InstructionsStudent: 
+InstructionsStudent:
+# Groups:
+# - Name: Team_1
+#   Instructions: ''
+#   Access:
+#     Administrator:
+#       IP_Visible: 
+#       - Instance2
+#     User:
+#       IP_Visible:
+#       - Instance1
+#   Users:
+#   - Login: instructor
+#     Password: jiJlskOlls89
+#     Id: 
+#     UserId: 
+#     StudentGroupId: 
 Clouds:
 - Name: Cloud1
   CIDR_Block: 10.0.0.0/16
@@ -16,7 +32,7 @@ Clouds:
       IP_Address: 10.0.129.5
       IP_Address_Dynamic: 
       Internet_Accessible: true
-      Roles: 
+      Roles:
   - Name: Subnet2
     CIDR_Block: 10.0.130.0/24
     Internet_Accessible: false
@@ -26,53 +42,53 @@ Clouds:
       IP_Address: 10.0.130.6
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance3
       OS: ubuntu
       IP_Address: 10.0.130.7
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance4
       OS: ubuntu
       IP_Address: 10.0.130.8
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance5
       OS: ubuntu
       IP_Address: 10.0.130.9
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance6
       OS: ubuntu
       IP_Address: 10.0.130.10
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance7
       OS: ubuntu
       IP_Address: 10.0.130.11
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance8
       OS: ubuntu
       IP_Address: 10.0.130.12
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance9
       OS: ubuntu
       IP_Address: 10.0.130.13
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
+      Roles:
     - Name: Instance10
       OS: ubuntu
       IP_Address: 10.0.130.14
       IP_Address_Dynamic: 
       Internet_Accessible: false
-      Roles: 
-Roles: 
+      Roles:
+Roles:

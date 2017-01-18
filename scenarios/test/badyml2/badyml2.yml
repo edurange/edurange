@@ -1,50 +1,55 @@
----
 Name: badyml2
 Description: A test scenario
 Instructions: none
-Roles:
-- Name: NAT
-  Packages:
-  - git
-  - gdb
-  Recipes:
-  - sshd_password_login
-- Name: NAT
-  Packages:
-  - git
-  - gdb
-  Recipes:
-  - sshd_password_login
-Groups:
-- Name: Instructor
-  Access:
-  - Instance: NAT_Instance
-    Administrator: true
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: Clzv1aeCs1Yz
-  Description: Describe this Player
-- Name: Students
-  Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: student
-    Password: sWfwkNGblfv
-  Description: Describe this Player
-Clouds:
-- Name: Cloud_1
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: NAT_Subnet
-    CIDR_Block: 10.0.129.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: NAT_Instance
-      OS: ubuntu
-      IP_Address: 10.0.129.5
-      Internet_Accessible: true
-      Roles:
-      - NAT
+
+Roles: 
+  - Name: NAT
+    Packages:
+      - git
+      - gdb
+    Recipes:
+      - sshd_password_login
+  # Duplicate Role Name!
+  - Name: NAT
+    Packages:
+      - git
+      - gdb
+    Recipes:
+      - sshd_password_login
+
+Groups: 
+  - Name: Instructor
+    Access:
+      Administrator:
+        IP_Visible:
+        - NAT_Instance
+    Users:
+      - Login: instructor
+        Password: Clzv1aeCs1Yz
+    Description: Describe this Player
+
+  - Name: Students
+    Access:
+      User:
+        IP_Visible:
+        - NAT_Instance
+    Users:
+      - Login: student
+        Password: sWfwkNGblfv
+    Description: Describe this Player
+
+Clouds: 
+  - Name: Cloud_1
+    CIDR_Block: 10.0.0.0/16
+    Subnets: 
+      - Name: NAT_Subnet
+        CIDR_Block: 10.0.129.0/24
+        Internet_Accessible: true
+        Instances: 
+          - Name: NAT_Instance
+            OS: ubuntu
+            IP_Address: 10.0.129.5
+            Internet_Accessible: true
+            Roles: 
+              - NAT
+

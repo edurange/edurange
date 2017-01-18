@@ -2,8 +2,7 @@
 
 FactoryGirl.define do
   factory :scenario do
-    association :user, factory: :instructor
-    name "Test1"
-    location :test
+    game_type "MyString"
+    name "MyString"
   end
 end

@@ -1,16 +1,16 @@
 ---
 Name: TreasureHunt
-Description: To become familiar with the command line interface and utilities of linux.
-  Goal is to find the passwords of non-player users.
+Description: To become familiar with the command line interface and utilities of linux. Goal is to find the passwords of non-player users.
 Instructions: 
 InstructionsStudent: 
 Groups:
 - Name: Instructor
   Instructions: 
   Access:
-  - Instance: TreasureHunt
-    Administrator: true
-    IP_Visible: true
+    Administrator:
+      IP_Visible:
+      - TreasureHunt
+    User:
   Users:
   - Login: instructor
     Password: P3stOMen
@@ -20,9 +20,10 @@ Groups:
 - Name: Students
   Instructions: 
   Access:
-  - Instance: TreasureHunt
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - TreasureHunt
   Users: 
 Clouds:
 - Name: Cloud

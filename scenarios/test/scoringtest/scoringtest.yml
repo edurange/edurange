@@ -1,53 +1,63 @@
----
 Name: ScoringTest
 Description: test scoring
 Instructions: 
+
 Roles: 
+
 Groups: 
+
 Clouds: 
+
 Subnets: 
+
 Instances: 
+
 Scoring:
-- Text: question 1
-  Type: String
-  Options:
-  - ignore case
-  Values:
-  - Value: Foo
-    Points: 1
-- Text: question 2
-  Type: String
-  Options:
-  - exact
-  Values:
-  - Value: Foo
-    Points: 1
-- Text: question 3
-  Type: Number
-  Options:
-  - decimal
-  - hex
-  Values:
-  - Value: Foo
-    Points: 1
-- Text: question 4
-  Type: Essay
-  Options: 
-  Values:
-  - Value: default
-    Points: 10
-- Text: question 5
-  Type: String
-  Options:
-  - ignore case
-  Values:
-  - Value: Foo
-    Points: 1
-  - Value: Bar
-    Points: 1
-- Text: Event 1
-  Type: Event
-  Options: 
-  Values:
-  - Value: event1
-    Points: 1
+  - Text: question 1
+    Type: String
+    Options:
+      - ignore case
+    Values: 
+      - Value: Foo
+        Points: 1
+
+  - Text: question 2
+    Type: String
+    Options:
+      - exact
+    Values: 
+      - Value: Foo
+        Points: 1
+
+  - Text: question 3
+    Type: Number
+    Options:
+      - decimal
+      - hex
+    Values: 
+      - Value: Foo
+        Points: 1
+
+  - Text: question 4
+    Type: Essay
+    Options:
+    Values:
+      - Value: default
+        Points: 10
+
+  - Text: question 5
+    Type: String
+    Options:
+      - ignore case
+    Values: 
+      - Value: Foo
+        Points: 1
+      - Value: Bar
+        Points: 1
+
+  - Text: Event 1
+    Type: Event
+    Options:
+    Values:
+      - Value: event1
+        Points: 1

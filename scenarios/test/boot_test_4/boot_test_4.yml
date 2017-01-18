@@ -2,8 +2,8 @@
 Name: Boot_Test_4
 Description: A test scenario for booting
 Instructions: 
-InstructionsStudent: 
-Groups: 
+InstructionsStudent:
+Groups:
 Clouds:
 - Name: Cloud1
   CIDR_Block: 10.0.0.0/16
@@ -17,5 +17,5 @@ Clouds:
       IP_Address: 10.0.129.5
       IP_Address_Dynamic: 
       Internet_Accessible: true
-      Roles: 
-Roles: 
+      Roles:
+Roles:

@@ -7,57 +7,27 @@ Groups:
 - Name: Instructor
   Instructions: 
   Access:
-  - Instance: Instance1
-    Administrator: true
-    IP_Visible: true
-  - Instance: Instance2
-    Administrator: true
-    IP_Visible: true
-  - Instance: Instance3
-    Administrator: true
-    IP_Visible: true
-  - Instance: Instance4
-    Administrator: true
-    IP_Visible: true
-  - Instance: Instance5
-    Administrator: true
-    IP_Visible: true
-  - Instance: Instance6
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_1_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_2_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_3_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_4_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_5_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_6_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_7_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_8_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_9_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_10_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+      IP_Visible:
+      - Instance1
+      - Instance2
+      - Instance3
+      - Instance4
+      - Instance5
+      - Instance6
+      - Battlespace_1_Instance
+      - Battlespace_2_Instance
+      - Battlespace_3_Instance
+      - Battlespace_4_Instance
+      - Battlespace_5_Instance
+      - Battlespace_6_Instance
+      - Battlespace_7_Instance
+      - Battlespace_8_Instance
+      - Battlespace_9_Instance
+      - Battlespace_10_Instance
+    User:
+      IP_Visible:
+      - NAT_Instance
   Users:
   - Login: instructor
     Password: vLCu3Crf
@@ -67,12 +37,11 @@ Groups:
 - Name: Group1
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance1
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance1
   Users:
   - Login: student1
     Password: X8k71BeU6
@@ -82,52 +51,47 @@ Groups:
 - Name: Group2
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance2
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance2
   Users: 
 - Name: Group3
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance3
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance3
   Users: 
 - Name: Group4
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance4
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance4
   Users: 
 - Name: Group5
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance5
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance5
   Users: 
 - Name: Group6
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  - Instance: Instance6
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
+      - Instance6
   Users: 
 Clouds:
 - Name: Cloud_1

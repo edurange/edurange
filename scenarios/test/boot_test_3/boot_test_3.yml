@@ -2,8 +2,23 @@
 Name: Boot_Test_3
 Description: A test scenario for booting
 Instructions: 
-InstructionsStudent: 
-Groups: 
+InstructionsStudent:
+Groups:
+# - Name: Team_1
+#   Instructions: ''
+#   Access:
+#     Administrator:
+#       IP_Visible:      
+#       - Instance2
+#     User:
+#       IP_Visible:
+#       - Instance1
+#   Users:
+#   - Login: instructor
+#     Password: jiJlskOlls89
+#     Id: 
+#     UserId: 
+#     StudentGroupId: 
 Clouds:
 - Name: Cloud1
   CIDR_Block: 10.0.0.0/16
@@ -17,5 +32,15 @@ Clouds:
       IP_Address: 10.0.129.5
       IP_Address_Dynamic: 
       Internet_Accessible: true
-      Roles: 
-Roles: 
+      Roles:
+  # - Name: Subnet2
+  #   CIDR_Block: 10.0.130.0/24
+  #   Internet_Accessible: false
+  #   Instances:
+  #   - Name: Instance2
+  #     OS: ubuntu
+  #     IP_Address: 10.0.130.5
+  #     IP_Address_Dynamic: 
+  #     Internet_Accessible: false
+  #     Roles:
+Roles:

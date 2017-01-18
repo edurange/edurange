@@ -1,42 +1,26 @@
 ---
 Name: SSH_Inception
-Description: Ssh Inception teaches students the basics of ssh, a secure a program
-  for logging into a remote machine.
-Instructions: Instruct students to connect to the first machine, and further login
-  instructions will appear onscreen once connected. They can also be found in /etc/motd
-InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
-  there.
+Description: Ssh Inception teaches students the basics of ssh, a secure a program for logging into a remote machine. 
+Instructions: Instruct students to connect to the first machine, and further login instructions will appear onscreen once connected.
+                They can also be found in /etc/motd
+InstructionsStudent: Login to the NAT_Instance. Further instructions will be found there.
 Groups:
 - Name: Instructor
   Instructions: 
   Access:
-  - Instance: anon_ftp
-    Administrator: true
-    IP_Visible: true
-  - Instance: starting_line
-    Administrator: true
-    IP_Visible: true
-  - Instance: first_stop
-    Administrator: true
-    IP_Visible: true
-  - Instance: second_stop
-    Administrator: true
-    IP_Visible: true
-  - Instance: third_stop
-    Administrator: true
-    IP_Visible: true
-  - Instance: fourth_stop
-    Administrator: true
-    IP_Visible: true
-  - Instance: satan_palace
-    Administrator: true
-    IP_Visible: true
-  - Instance: fifth_stop
-    Administrator: true
-    IP_Visible: true
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+      IP_Visible:
+      - anon_ftp
+      - starting_line
+      - first_stop
+      - second_stop
+      - third_stop
+      - fourth_stop
+      - satan_palace
+      - fifth_stop
+    User:
+      IP_Visible:
+      - NAT_Instance
   Users:
   - Login: instructor
     Password: vLCu3Crf
@@ -46,9 +30,10 @@ Groups:
 - Name: Students
   Instructions: 
   Access:
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - NAT_Instance
   Users:
   - Login: student
     Password: f26679f
@@ -58,9 +43,10 @@ Groups:
 - Name: Starting_Line
   Instructions: ''
   Access:
-  - Instance: starting_line
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - starting_line
   Users:
   - Login: inceptor
     Password: readyplayerone
@@ -70,9 +56,10 @@ Groups:
 - Name: First_Stop
   Instructions: ''
   Access:
-  - Instance: first_stop
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - first_stop
   Users:
   - Login: mal
     Password: inception
@@ -82,9 +69,10 @@ Groups:
 - Name: Second_Stop
   Instructions: ''
   Access:
-  - Instance: second_stop
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - second_stop
   Users:
   - Login: christopher
     Password: dicaprio
@@ -94,9 +82,10 @@ Groups:
 - Name: Third_Stop
   Instructions: ''
   Access:
-  - Instance: third_stop
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - third_stop
   Users:
   - Login: cobb
     Password: pizza_wins_now
@@ -106,9 +95,10 @@ Groups:
 - Name: Fourth_Stop
   Instructions: ''
   Access:
-  - Instance: fourth_stop
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - fourth_stop
   Users:
   - Login: toodeep
     Password: subconcious_security
@@ -118,9 +108,10 @@ Groups:
 - Name: Fifth_Stop
   Instructions: ''
   Access:
-  - Instance: fifth_stop
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - fifth_stop
   Users:
   - Login: neo
     Password: red_pill
@@ -130,9 +121,10 @@ Groups:
 - Name: Satans_Palace
   Instructions: ''
   Access:
-  - Instance: satan_palace
-    Administrator: false
-    IP_Visible: true
+    Administrator:
+    User:
+      IP_Visible:
+      - satan_palace
   Users:
   - Login: satan
     Password: hell_is_the_deepest_level

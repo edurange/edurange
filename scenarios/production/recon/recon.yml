@@ -1,81 +1,69 @@
----
 Name: Recon
-Description: This game is a basic nmap exercise that teaches students about TCP/IP.
-Instructions: 
+Description: "This game is a basic nmap exercise that teaches students about TCP/IP."
+Instructions:
+
 Roles:
-- Name: NAT
-  Recipes:
-  - shellinabox
-  - sshd_password_login
-- Name: dns_server
-  Packages:
-  - bind9
-- Name: web_server
-  Packages:
-  - apache2
-- Name: disable_ping
-  Recipes:
-  - disable_ping
-- Name: ssh_port_2345
-  Recipes:
-  - ssh_port_2345
-- Name: attacker
-  Packages:
-  - nmap
-  - tshark
-  Recipes:
-  - sshd_password_login
-  - wheelie
+  - Name: NAT
+    Recipes:
+      - shellinabox
+      - sshd_password_login
+
+  - Name: dns_server
+    Packages:
+      - bind9
+
+  - Name: web_server
+    Packages:
+      - apache2
+
+  - Name: disable_ping
+    Recipes:
+      - disable_ping
+
+  - Name: ssh_port_2345
+    Recipes:
+      - ssh_port_2345
+
+  - Name: attacker
+    Packages:
+      - nmap
+      - tshark
+    Recipes:
+      - sshd_password_login
+      - wheelie
+
 Groups:
-- Name: Instructor
-  Access:
-  - Instance: Team_1_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_1_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_2_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_3_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_4_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_5_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_6_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_7_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_8_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_9_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: Battlespace_10_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: instructor
-    Password: vLCu3Crf
-- Name: Team_1
-  Access:
-  - Instance: Team_1_Instance
-    Administrator: true
-    IP_Visible: true
-  - Instance: NAT_Instance
-    Administrator: false
-    IP_Visible: true
+  - Name: Instructor
+    Access:
+      Administrator:
+        IP_Visible:
+        - Team_1_Instance
+        - Battlespace_1_Instance
+        - Battlespace_2_Instance
+        - Battlespace_3_Instance
+        - Battlespace_4_Instance
+        - Battlespace_5_Instance
+        - Battlespace_6_Instance
+        - Battlespace_7_Instance
+        - Battlespace_8_Instance
+        - Battlespace_9_Instance
+        - Battlespace_10_Instance
+      User:
+        IP_Visible:
+        - NAT_Instance
+    Users:
+      - Login: instructor
+        Password: vLCu3Crf
+
+  - Name: Team_1
+    Access:
+      Administrator:
+        IP_Visible:
+        - Team_1_Instance
+      User:
+        IP_Visible:
+        - NAT_Instance
+
 Clouds:
 - Name: Cloud_1
   CIDR_Block: 10.0.0.0/16
@@ -88,10 +76,11 @@ Clouds:
     - Name: NAT_Instance
       Subnet: NAT_Subnet
       OS: nat
-      IP_Address: 10.0.129.5
+      IP_Address: &nat_ip 10.0.129.5
       Internet_Accessible: true
       Roles:
-      - NAT
+        - NAT
+
   - Name: Player_Subnet
     Cloud: Cloud_1
     CIDR_Block: 10.0.128.0/24
@@ -99,9 +88,10 @@ Clouds:
     - Name: Team_1_Instance
       Subnet: Player_Subnet
       OS: ubuntu
-      IP_Address: 10.0.128.4
+      IP_Address: &team_1_ip 10.0.128.4
       Roles:
-      - attacker
+        - attacker
+
   - Name: Battlespace_Subnet
     Cloud: Cloud_1
     CIDR_Block: 10.0.0.0/17
@@ -109,72 +99,82 @@ Clouds:
     - Name: Battlespace_1_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.0-32.4-255
       Roles:
-      - web_server
+        - web_server
+
     - Name: Battlespace_2_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.0-32.4-255
       Roles:
-      - dns_server
+        - dns_server
+
     - Name: Battlespace_3_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.33-64.4-255
       Roles:
-      - dns_server
+        - dns_server
+
     - Name: Battlespace_4_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.33-64.4-255
       Roles:
-      - dns_server
-      - web_server
+        - dns_server
+        - web_server
+
     - Name: Battlespace_5_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.33-64.4-255
       Roles:
-      - web_server
+        - web_server
+
     - Name: Battlespace_6_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.65-100.4-255
       Roles:
-      - web_server
+        - web_server
+
     - Name: Battlespace_7_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.65-100.4-255
       Roles:
-      - web_server
+        - web_server
+
     - Name: Battlespace_8_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.64-127.4-255
       Roles:
-      - web_server
+        - web_server
+
     - Name: Battlespace_9_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.90-127.4-255
       Roles:
-      - disable_ping
+        - disable_ping
+
     - Name: Battlespace_10_Instance
       Subnet: Battlespace_Subnet
       OS: ubuntu
-      IP_Address: 
+      IP_Address:
       IP_Address_Dynamic: 10.0.120-127.4-255
       Roles:
-      - disable_ping
-      - ssh_port_2345
+        - disable_ping
+        - ssh_port_2345
+
