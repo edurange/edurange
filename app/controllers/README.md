@@ -37,5 +37,40 @@ Updated 4/27/18
    - Add a user to a student group
    - Remove a user from a student group
    - Set a student group(Needs more description)
-  
    
+ - management_controller.rb: For managing the database
+   - Clean cleans the database
+   - Purge purges the database
+   
+ - registration_controller.rb: Controller for registering new users (I will come back to this one)
+ 
+ - scenarios_controller.rb: Controller for handling scenarios (This file is 991 lines long so I will get back to it later)
+   - Sets up the scenario, cloud, subnet, instance, group, and role abilities
+   - 
+  
+- schedules_controller.rb: Controller for scheduling scenarios for student groups
+  - Sets up the show edit update and destroy actions and authenticates if user is an admin or an instructor
+  - Index shows all the schedules
+  - Show is empty
+  - New creates a new schedule
+  - Edit is empty
+  - Create allows the user to create a new schedule with the given parameters and saves it to the database
+  - Update allows the user to update a schedule's information
+  - Destroy destroys schedule
+  - Private
+    - set_schedule
+    - set_user
+    - schedule_params
+    
+- scoring_controller.rb: Handles scoring but the code is currently insecure right now and need to be fixed so it is all commented ot
+
+
+- statistics_controller.rb: (Very long)
+
+- student_controller.rb: 
+
+- student_group_controller.rb: All functionality show be moved to the instructor controller and is thus commented out
+
+- tutorials_controller.rb: 
+
+- user_controller.rb: 
