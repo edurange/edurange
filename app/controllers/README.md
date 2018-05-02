@@ -1,7 +1,9 @@
 # Controller Files
 ---                                                                                                                
 
-Updated 4/27/18                                                                                                    
+Updated 5/2/18
+
+These may not be complete and may need more testing.
 
 ### This file contains a basic description of all the files in this directory:  
  - admin_controller.rb: Controller for all admin level users. Has the following functions:
@@ -44,10 +46,29 @@ Updated 4/27/18
    
  - registration_controller.rb: Controller for registering new users (I will come back to this one)
  
- - scenarios_controller.rb: Controller for handling scenarios (This file is 991 lines long so I will get back to it later)
+ - scenarios_controller.rb: Controller for handling scenarios(A lot of the functionality is handled by javascript)
    - Sets up the scenario, cloud, subnet, instance, group, and role abilities
+   - Index shows all the scenarios to admin users and only a usres scenarios to other users
+   - Show does nothing
+   - New sets uo a new scenarios
+   - Edit just has a global variable templates
+   - Create creates a new scenario
+   - Update updates a scenario
+   - Create custom allows one to create a custom scenario
+   - Obliterate custom I believe gets rid of a custom scenario
+   - Destroyme destroys a scenario
+   - Save saves a scenario
+   - Save as save the scenario to a new file
+   - Clone makes a copy of the scenario
+   - clone new makes a copy from a specific scenario
+   - clone set sets a clone
+   - Status gets the status of the students for the scenario
+   - ############## Resource Modification ##############
+   - instructions and instructions student get and modify
    - 
   
+   
+   
 - schedules_controller.rb: Controller for scheduling scenarios for student groups
   - Sets up the show edit update and destroy actions and authenticates if user is an admin or an instructor
   - Index shows all the schedules
@@ -65,12 +86,37 @@ Updated 4/27/18
 - scoring_controller.rb: Handles scoring but the code is currently insecure right now and need to be fixed so it is all commented ot
 
 
-- statistics_controller.rb: (Very long)
+- statistics_controller.rb: Controller for handling statistics 
+ - Index shows all statistics for Admin users and statistics specific to specific users for others\
+ - Show displays all the statistics
+ - Destroyme destroys a given statistic and displays an error if unsuccessful
+ - Download all downloads all the statistics
+ - Download instance user bash history for a specific instance and user
+ - Download instance exit statuses for a given instance
+ - Download instance script logs for a given instance
+ - Generate analytics (This one is a little complicated so this may not be correct) generates stats with the command frequency, bash history, yml data, and time stamps. This is all sends a javascript response that I believe is displayed and stored in a json file.
+ - Instance users gets all the users of an instane and stores them in json as well as diplays them
+ - Set statistic sets a statistic if the user owns it
 
 - student_controller.rb: 
+  - Authenticates student, sets the user, and sets the scenario, answer, and question for the student level so they don't have access to instructor and admin level abilities.
+  - Index displays the student's scenarios
+  - Handles student answers for scenarios(string, number, essay)
+  - Private
+    - set the current user(get the specific student user from the database)
+    - Set the scenarios for the current user
+    - Set the questions and answers for the scenario for the student
 
-- student_group_controller.rb: All functionality show be moved to the instructor controller and is thus commented out
+- student_group_controller.rb: All functionality has be moved to the instructor controller and is thus commented out
 
 - tutorials_controller.rb: 
+  - Index and making_scenarios do nothing
+  - Send to the user student or faculty manuals with instructor_manual and student_manual respectively
 
 - user_controller.rb: 
+  - Index authorizes all users
+  - Show shows all the current user's info if the user is an adminor the current user otherwise there is an alert and access is denied
+  - Update updates a users attributes after finding and authorizing that user
+  - Destroy destroys a user unless that user is the current user
+  - Private
+     - Uses secure params
