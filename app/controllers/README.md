@@ -87,16 +87,16 @@ These may not be complete and may need more testing.
 
 
 - statistics_controller.rb: Controller for handling statistics 
- - Index shows all statistics for Admin users and statistics specific to specific users for others\
- - Show displays all the statistics
- - Destroyme destroys a given statistic and displays an error if unsuccessful
- - Download all downloads all the statistics
- - Download instance user bash history for a specific instance and user
- - Download instance exit statuses for a given instance
- - Download instance script logs for a given instance
- - Generate analytics (This one is a little complicated so this may not be correct) generates stats with the command frequency, bash history, yml data, and time stamps. This is all sends a javascript response that I believe is displayed and stored in a json file.
- - Instance users gets all the users of an instane and stores them in json as well as diplays them
- - Set statistic sets a statistic if the user owns it
+  - Index shows all statistics for Admin users and statistics specific to specific users for others\
+  - Show displays all the statistics
+  - Destroyme destroys a given statistic and displays an error if unsuccessful
+  - Download all downloads all the statistics
+  - Download instance user bash history for a specific instance and user
+  - Download instance exit statuses for a given instance
+  - Download instance script logs for a given instance
+  - Generate analytics (This one is a little complicated so this may not be correct) generates stats with the command frequency, bash history, yml data, and time stamps. This is all sends a javascript response that I believe is displayed and stored in a json file.
+  - Instance users gets all the users of an instane and stores them in json as well as diplays them
+  - Set statistic sets a statistic if the user owns it
 
 - student_controller.rb: 
   - Authenticates student, sets the user, and sets the scenario, answer, and question for the student level so they don't have access to instructor and admin level abilities.
