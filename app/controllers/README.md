@@ -46,11 +46,11 @@ These may not be complete and may need more testing.
    
  - registration_controller.rb: Controller for registering new users (I will come back to this one)
  
- - scenarios_controller.rb: Controller for handling scenarios(A lot of the functionality is handled by javascript)
+ - scenarios_controller.rb: Controller for handling scenarios(A lot of the functionality is handled by javascript functions)
    - Sets up the scenario, cloud, subnet, instance, group, and role abilities
    - Index shows all the scenarios to admin users and only a usres scenarios to other users
    - Show does nothing
-   - New sets uo a new scenarios
+   - New sets up a new scenarios
    - Edit just has a global variable templates
    - Create creates a new scenario
    - Update updates a scenario
@@ -65,7 +65,7 @@ These may not be complete and may need more testing.
    - Status gets the status of the students for the scenario
    - ############## Resource Modification ##############
    - instructions and instructions student get and modify
-   - 
+   - NOT DONE
   
    
    
