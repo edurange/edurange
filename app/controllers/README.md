@@ -1,13 +1,13 @@
 # Controller Files
 ---                                                                                                                
 
-Updated 5/2/18
+Updated 5/7/18
 
 These may not be complete and may need more testing.
 
 ### This file contains a basic description of all the files in this directory:  
  - admin_controller.rb: Controller for all admin level users. Has the following functions:
-   - Index has two variables, instructors and students, as well as some AWS stuff(For david to decypher)
+   - Index has two variables, instructors and students, as well as some AWS stuff(Makred for refactoring)
    - Create a new instructor
    - Reset a user's password
    - Delete a user
@@ -16,13 +16,13 @@ These may not be complete and may need more testing.
    - Demote an instructor to a student
    - Create a new student group
    - Remove a student group
-   - Add a user to a studnet group
+   - Add a user to a stubnet group
    - Remove a user from a student group	
  
  - application_controller.rb: Base controller for all other controllers. 
-   - Has helper method nat_instance (Don't know what this does yet)
+   - Has helper method nat_instance (Marked for refactoring)
    - Private 
-     - Nat instance (Don't know what this does yet)
+     - Nat instance (Marked for refactoring)
      - User not authorized alert method and reirect to referrer root path
      - Authenticate Admin when logging in
      - Authenticate Instructor when logging in
@@ -47,27 +47,8 @@ These may not be complete and may need more testing.
  - registration_controller.rb: Controller for registering new users (I will come back to this one)
  
  - scenarios_controller.rb: Controller for handling scenarios(A lot of the functionality is handled by javascript functions)
-   - Sets up the scenario, cloud, subnet, instance, group, and role abilities
-   - Index shows all the scenarios to admin users and only a usres scenarios to other users
-   - Show does nothing
-   - New sets up a new scenarios
-   - Edit just has a global variable templates
-   - Create creates a new scenario
-   - Update updates a scenario
-   - Create custom allows one to create a custom scenario
-   - Obliterate custom I believe gets rid of a custom scenario
-   - Destroyme destroys a scenario
-   - Save saves a scenario
-   - Save as save the scenario to a new file
-   - Clone makes a copy of the scenario
-   - clone new makes a copy from a specific scenario
-   - clone set sets a clone
-   - Status gets the status of the students for the scenario
-   - ############## Resource Modification ##############
-   - instructions and instructions student get and modify
-   - NOT DONE
-  
-   
+   - *This file is only partially commented as most of the function names are self explanetory and/or call javascript fuctions*
+    
    
 - schedules_controller.rb: Controller for scheduling scenarios for student groups
   - Sets up the show edit update and destroy actions and authenticates if user is an admin or an instructor
