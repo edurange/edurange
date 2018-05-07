@@ -6,7 +6,7 @@ class AdminController < ApplicationController
     @instructors = User.where role: 3
     @students = User.where role: 4
     
-    # If someone knows what this AWS stuff does and can add a few comments to it that would be great
+    # Mark for refactoring
     begin
       @aws_vpc_cnt = AWS::EC2.new.vpcs.count
       @aws_instance_cnt = AWS::EC2.new.instances.count
