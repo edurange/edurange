@@ -5,7 +5,8 @@ class AdminController < ApplicationController
   def index
     @instructors = User.where role: 3
     @students = User.where role: 4
-
+    
+    # Mark for refactoring
     begin
       @aws_vpc_cnt = AWS::EC2.new.vpcs.count
       @aws_instance_cnt = AWS::EC2.new.instances.count
@@ -14,7 +15,9 @@ class AdminController < ApplicationController
       @aws_instance_cnt = nil
     end
   end
-
+  
+  
+  # Creates a new instuctor.
   def instructor_create
     name = params[:name] == '' ? nil : params[:name]
     @user = User.new(email: params[:email], name: name, organization: params[:organization])
@@ -32,6 +35,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Reset a user's password
   def reset_password
     @user = User.find(params[:id])
     password = SecureRandom.hex[0..15]
@@ -47,6 +51,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Delete a user
   def user_delete
     @users = [*User.find(params[:id])]
 
@@ -59,6 +64,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Promote a student to an instructor 
   def student_to_instructor
     if @user = User.find(params[:id])
       if not @user.is_student?
@@ -73,6 +79,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Add all students to a group
   def student_add_to_all
     @users = User.find(params[:id])
     @users = [@users] unless @users.respond_to? "each"
@@ -92,6 +99,8 @@ class AdminController < ApplicationController
     end
   end
 
+
+  # Demote an instructor to a student
   def instructor_to_student
     if @user = User.find(params[:id])
       if not @user.is_instructor?
@@ -102,10 +111,12 @@ class AdminController < ApplicationController
     end
 
     respond_to do |format|
+
       format.js { render 'admin/js/instructor_to_student.js.erb', :layout => false }
     end
   end
 
+  # Create a new student group
   def student_group_create
     @user = User.find(current_user.id)
     @student_group = @user.student_groups.new(name: params[:name])
@@ -116,6 +127,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Remove a student group
   def student_group_destroy
     @student_group.destroy
     respond_to do |format|
@@ -123,6 +135,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Add a user to a student group
   def student_group_user_add
     users = [*StudentGroupUser.find(params[:student_group_user_id])].collect{ |sgu| sgu.user }
     @student_group = @user.student_groups.find_by_name(params[:student_group_name])
@@ -136,6 +149,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Remove a user from a student group
   def student_group_user_remove
     @student_group_users = [*StudentGroupUser.find(params[:student_group_user_id])]
 

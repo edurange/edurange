@@ -6,6 +6,7 @@ class Answer < ActiveRecord::Base
   validate :validate_comment
   validate :validate_essay_points_earned
 
+  # ensure that text is not blank in an answer
   def validate_text
     if self.question.type_of == "Essay" and self.text_essay == ""
       errors.add(:text_essay, 'must not be blank')
@@ -19,6 +20,7 @@ class Answer < ActiveRecord::Base
     true
   end
 
+  # if comment is nil return true else return true if comment is not blank
   def validate_comment
     return true if self.comment == nil
     self.comment = self.comment.strip
@@ -29,6 +31,7 @@ class Answer < ActiveRecord::Base
     true
   end
 
+  # return true if essay points earned is nil else ensure that points earned is an integer type greater than 0 and question points
   def validate_essay_points_earned
     return true if self.essay_points_earned == nil
     self.essay_points_earned = self.essay_points_earned.strip
