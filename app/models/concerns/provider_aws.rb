@@ -14,6 +14,7 @@ module ProviderAws
     log "AWS: creating VPC"
     vpc = aws_call('aws_vpc_create')
     log "AWS: created VPC '#{vpc.id}'"
+    # driver_id is just an id for whichever object we're interested in..?
     self.update_attribute(:driver_id, vpc.id)
 
     # wait for VPC to become available
@@ -158,6 +159,7 @@ module ProviderAws
   def aws_subnet_unboot
     raise RuntimeError, 'not driver id set' if self.driver_id == nil
 
+    # get Subnet object
     log "AWS: getting Subnet '#{self.driver_id}'"
     begin
       subnet = aws_call('aws_subnet_get', subnet_id: self.driver_id, errs: { AWS::EC2::Errors::InvalidSubnetID::NotFound => 120 })
@@ -167,6 +169,7 @@ module ProviderAws
       return
     end
 
+    # get route table association
     log "AWS: getting Subnet '#{self.driver_id}' RouteTableAssociation"
     begin
       route_table_association = aws_call('aws_subnet_route_table_association_get', subnet: subnet)
@@ -176,11 +179,13 @@ module ProviderAws
       return
     end
 
+    # ensure that we got the main route table association and if so; delete it
     if not route_table_association.main?
       log "AWS: deleting RouteTableAssociation '#{route_table_association.id}'"
       aws_call('aws_obj_delete', obj: route_table_association)
     end
 
+    # delete subnet
     log "AWS: deleting Subnet '#{self.driver_id}'"
     aws_call('aws_obj_delete', obj: subnet, errs: {AWS::EC2::Errors::DependencyViolation => 60} )
     self.update_attribute(:driver_id, nil)
@@ -191,8 +196,10 @@ module ProviderAws
   def aws_instance_boot
     raise 'AWS: driver id already set' if self.driver_id != nil
 
+    # create S3 bucket for storing info related to our instance
     aws_instance_S3_files_create
 
+    # call create instance and update driver_id to instance id
     log "AWS: creating Instance"
     instance = aws_call(
       'aws_instance_create',
@@ -201,14 +208,19 @@ module ProviderAws
     self.update_attribute(:driver_id, instance.id)
     log "AWS: created Instance '#{instance.id}'"
 
+    # wait till its booted
     aws_instance_wait_till_status_equals(instance, :running, 60*10)
 
+    # update instance tags
     aws_obj_tags_default(instance)
 
+    # give the instance an elastic ip if we'd like it to be internet accesible
     aws_instance_elastic_ip_create(instance) if self.internet_accessible
 
+    # disable source/destination check so we can route traffic thru NAT
     aws_call('aws_instance_network_interface_first_source_dest_check_disable', instance: instance)
 
+    # add route to nat
     aws_instance_create_route_to_nat(instance) if self.os == 'nat'
   end
 
@@ -217,12 +229,15 @@ module ProviderAws
       raise 'AWS: no driver id' if not aws_instance_S3_files_delete
     end
 
+    # get instance object
     log "AWS: getting Instance '#{self.driver_id}'"
     instance = aws_call('aws_instance_get', instance_id: self.driver_id)
 
+    # check if we got instance object
     log "AWS: checking if Instance '#{instance.id}' exists"
     if aws_call('aws_obj_exists?', obj: instance)
 
+      # if we got an instance object; check if it has an elastic ip and delete elastic ip if so
       log "AWS: looking for Instance '#{self.driver_id}' ElasticIP" if self.internet_accessible
       if elastic_ip = aws_call('aws_instance_elastic_ip_get', instance: instance)
         log "AWS: disassociating ElasticIP '#{elastic_ip.public_ip}'"
@@ -234,23 +249,28 @@ module ProviderAws
         self.update_attribute(:ip_address_public, nil)
       end
 
+      # set the delete volumes on terminating instance option
       aws_instance_volumes_delete_on_termination_set(instance)
 
+      # delete instance
       log "AWS: deleting Instance '#{instance.id}'"
       aws_call('aws_obj_delete', obj: instance)
       self.update_attribute(:driver_id, nil)
 
+      # wait till its deleted
       aws_instance_wait_till_status_equals(instance, :terminated, 360)
     else
       log "AWS: Instance '#{self.driver_id}' does not exist abandoning driver id"
     end
 
+    # save our instance related documents and delete the S3 bucket
     aws_instance_S3_files_save
     self.scenario.statistic.data_process
 
     aws_instance_S3_files_delete
   end
 
+  # helper fn to wait a predetermined amount of time or until an aws resource's status is the one desired
   def aws_instance_wait_till_status_equals(obj, status, time)
     log "AWS: waiting for #{obj.class.to_s.split("::").last} '#{obj.id}' status to change to ':#{status}'"
     begin
@@ -266,14 +286,18 @@ module ProviderAws
     end
   end
 
+  # get an aws elastic ip (public ip resource capable of doing NAT)
   def aws_instance_elastic_ip_create(instance)
     log "AWS: creating ElasticIP for Instance '#{instance.id}'"
+    # get elastic ip object
     elastic_ip = aws_call('aws_elastic_ip_create')
     log "AWS: created ElasticIP '#{elastic_ip.public_ip}'"
 
+    # this is interesting, perhaps elastic ips dont have statuses like other resources, or else why not use our helper fn?
     log "AWS: waiting for ElasticIP '#{elastic_ip.public_ip}' to exist"
     Timeout.timeout(360) { sleep 1 while not aws_call('aws_obj_exists?', obj: elastic_ip) }
 
+    # give our NAT vm its elastic IP!
     log "AWS: associating ElastipIP '#{elastic_ip.public_ip}' with Instance '#{instance.id}'"
     aws_call(
       'aws_instance_elastic_ip_associate',
@@ -282,9 +306,11 @@ module ProviderAws
       errs: { AWS::EC2::Errors::InvalidAllocationID::NotFound => 60 }
     )
   
+    # update ip_address_public attribute
     self.update_attribute(:ip_address_public, elastic_ip.public_ip)
   end
 
+  # turn on delete volume on termination for a given instance
   def aws_instance_volumes_delete_on_termination_set(instance)
     log "AWS: setting Instance '#{self.driver_id}' volumes deleteOnTermination"
     aws_call('aws_instance_block_devices_get', instance: instance).each do |block_device|
@@ -292,6 +318,7 @@ module ProviderAws
     end
   end
 
+  # get a given instance to route its traffic through our NAT vm
   def aws_instance_create_route_to_nat(instance)
     log "AWS: creating Route for Subnet '#{self.subnet.driver_id}' to NAT Instance '#{self.driver_id}'"
     self.scenario.subnets.select { |s| s.driver_id and !s.internet_accessible }.each do |subnet|
@@ -299,6 +326,7 @@ module ProviderAws
     end
   end
 
+  # collect instance related data from S3 and save it on the local filesystem
   def aws_instance_S3_files_save
     time = Time.now.strftime("%y_%m_%d")
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
@@ -321,6 +349,7 @@ module ProviderAws
     end
   end
 
+  # same method as above but without logging
   def aws_instance_S3_files_save_no_log
     time = Time.now.strftime("%y_%m_%d")
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
@@ -340,6 +369,7 @@ module ProviderAws
     end
   end
 
+  # create aws s3 files for instance; exit statuses, script logs, and bash history
   def aws_instance_S3_files_create
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
     if not aws_call('aws_obj_exists?', obj: bucket)
@@ -360,6 +390,7 @@ module ProviderAws
     aws_call('aws_S3_object_write', obj: obj, data: self.generate_cookbook)
   end
 
+  # helper fn to create an aws s3 object
   def aws_instance_S3_object_create(bucket, name, attribute, url_method)
     name = aws_S3_object_name(name)
     log "AWS: creating S3 Object '#{name}'"
@@ -372,6 +403,7 @@ module ProviderAws
     obj
   end
 
+  # get the url to a given aws s3 bucket
   def aws_S3_bucket_url_get(opts)
     if opts[:method] == :write
       opts[:obj].url_for(opts[:method], expires: 30.days, content_type: 'text/plain')
@@ -380,6 +412,7 @@ module ProviderAws
     end
   end
 
+  # delete all s3 instance files
   def aws_instance_S3_files_delete
     log "AWS: looking for instance S3 files to delete"
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
@@ -393,6 +426,7 @@ module ProviderAws
     ret
   end
 
+  # deletes an instance's s3 object
   def aws_instance_S3_object_delete(bucket, name, attribute)
     obj = aws_call('aws_S3_obj_get', bucket: bucket, name: name)
     if aws_call('aws_obj_exists?', obj: obj)
@@ -405,10 +439,12 @@ module ProviderAws
     true
   end
 
+  # build the string which is our S3 object name
   def aws_S3_object_name(suffix)
     "#{Rails.configuration.x.aws['iam_user_name']}_#{self.scenario.user.name}_#{self.scenario.name}_#{self.scenario.id.to_s}_#{self.name}_#{self.id.to_s}_#{self.uuid[0..5]}_#{suffix}"
   end
 
+  # try to get aws S3 object, if it exists then return the data stored in the object
   def aws_S3_object_get_and_read(bucket, name)
     log "AWS: getting S3Object 'name'"
     object = aws_call('aws_S3_object_get', bucket: bucket, name: name)
@@ -421,6 +457,7 @@ module ProviderAws
     return ""
   end
 
+  # same as above but with no log
   def aws_S3_object_get_and_read_no_log(bucket, name)
     object = aws_call('aws_S3_object_get', bucket: bucket, name: name)
     if aws_call('aws_obj_exists?', obj: object)
@@ -434,6 +471,7 @@ module ProviderAws
 
   # Helper Functions
 
+  # generic fn to call one of the helper fns below
   def aws_call(func_name, opts = {})
     return self.send(func_name, opts)
   rescue => e
@@ -452,6 +490,7 @@ module ProviderAws
     raise e
   end
 
+  # sleep until aws_obj_state is :available for a given object
   def aws_obj_wait_till_available(obj)
     log "AWS: waiting for #{obj.class.to_s.split("::").last} '#{obj.id}' status to change to ':available'"
     begin
@@ -470,6 +509,7 @@ module ProviderAws
     end
   end
 
+  # tag an aws object with default values
   def aws_obj_tags_default(obj)
     log "AWS: creating default tags for #{obj.class.to_s.split("::").last} '#{obj.id}'"
     aws_call('aws_obj_tag', obj: obj, tag: "Name", value: "#{Rails.configuration.x.aws['iam_user_name']}-#{self.scenario.user.name}-#{self.scenario.name}-#{self.scenario.id.to_s}")
@@ -480,51 +520,63 @@ module ProviderAws
 
   # AWS
 
+  # delete aws object
   def aws_obj_delete(opts)
     opts[:obj].delete
   end
 
+  # check if aws object exists
   def aws_obj_exists?(opts)
     opts[:obj].exists?
   end
 
+  # return aws object state
   def aws_obj_state(opts)
     opts[:obj].state
   end
 
+  # get aws object tag
   def aws_obj_tag(opts)
     opts[:obj].tag(opts[:tag], value: opts[:value])
   end
 
   # AWS::VPC
+
+  # create vpc
   def aws_vpc_create(opts)
     AWS::EC2.new.vpcs.create(self.cidr_block)
   end
 
+  # get vpc object
   def aws_vpc_get(opts)
     AWS::EC2.new.vpcs[opts[:vpc_id]]
   end
 
+  # get internet gateway
   def aws_vpc_internet_gateway_get(opts)
     opts[:vpc].internet_gateway
   end
 
+  # get default network acl
   def aws_vcp_network_acls_get(opts)
     opts[:vpc].network_acls.select{ |acl| !acl.default}
   end
 
+  # create route table
   def aws_vpc_route_table_create(opts)
     AWS::EC2::RouteTableCollection.new.create(vpc_id: self.cloud.driver_id)
   end
 
+  # get main route table
   def aws_vpc_route_tables_get(opts)
     opts[:vpc].route_tables.select{ |rt| !rt.main? }
   end
 
+  # get first security group
   def aws_vpc_security_group_get(opts)
     opts[:vpc].security_groups.first
   end
-
+  # get default security group
   def aws_vpc_security_groups_get(opts)
     opts[:vpc].security_groups.select{ |sg| !sg.name == "default"}
   end
@@ -538,10 +590,12 @@ module ProviderAws
     AWS::EC2.new.subnets[opts[:subnet_id]]
   end
 
+  # helper function to set up internet accessibility for spinning a scenario up prior to shutting off internet connectivity
   def aws_subnet_route_table_route_to_nat_create(opts)
     AWS::EC2.new.subnets[opts[:subnet_id]].route_table.create_route("0.0.0.0/0", { instance: opts[:instance_id] } )
   end
 
+  # get the route tables the given subnet is associated with
   def aws_subnet_route_table_association_get(opts)
     opts[:subnet].route_table_association
   end
@@ -552,6 +606,7 @@ module ProviderAws
     opts[:instance].block_devices
   end
 
+  # set the instance option to delete block devices on termination of instance
   def aws_instance_block_device_ebs_delete_on_termination_set(opts)
     AWS::EC2.new.client.modify_instance_attribute(
       instance_id: opts[:instance].id,
@@ -560,6 +615,7 @@ module ProviderAws
     )
   end
 
+  # create an instance with the region and key pair set in rails config
   def aws_instance_create(opts)
     AWS::EC2::InstanceCollection.new.create(
       image_id: Rails.configuration.x.aws[Rails.configuration.x.aws['region']]["ami_#{self.os}"], 
@@ -571,26 +627,32 @@ module ProviderAws
     )
   end
 
+  # disassociate elastic ip with instance
   def aws_instance_elastic_ip_disassociate(opts)
     opts[:instance].disassociate_elastic_ip
   end
 
+  # get elastic ip address
   def aws_instance_elastic_ip_get(opts)
     opts[:instance].elastic_ip
   end
 
+  # sassociate elastic ip with instance
   def aws_instance_elastic_ip_associate(opts)
     opts[:instance].associate_elastic_ip(opts[:elastic_ip])
   end
 
+  # get aws VM instance
   def aws_instance_get(opts)
     AWS::EC2.new.instances[opts[:instance_id]]
   end
 
+  # disable network iface source and dest check, this is a setting which must be disabled in order to set up a NAT VM
   def aws_instance_network_interface_first_source_dest_check_disable(opts)
     opts[:instance].network_interfaces.first.source_dest_check = false
   end
 
+  # get aws instance status
   def aws_instance_status(opts)
     opts[:instance].status
   end
@@ -616,10 +678,12 @@ module ProviderAws
   def aws_S3_obj_write(opts)
   end
 
+  # get bucket for given name
   def aws_S3_bucket_get(opts)
     AWS::S3.new.buckets[opts[:name]]
   end
 
+  # create S3 bucket
   def aws_S3_bucket_create(opts)
     AWS::S3.new.buckets.create(opts[:name])
   end
@@ -634,6 +698,7 @@ module ProviderAws
 
   # AWS::ElasticIP
 
+  # create elastic IP
   def aws_elastic_ip_create(opts)
     AWS::EC2::ElasticIpCollection.new.create(vpc: true)
   end
@@ -658,6 +723,7 @@ module ProviderAws
 
   # AWS::InternetGateway
 
+  # create internet gateway
   def aws_internet_gateway_create(opts)
     opts[:vpc].internet_gateway = AWS::EC2.new.internet_gateways.create
   end
@@ -668,22 +734,27 @@ module ProviderAws
 
   # AWS::SecurityGroup
 
+  # disable security group outbound traffic
   def aws_security_group_disable_outbound(opts)
     opts[:security_group].revoke_egress('0.0.0.0/0')
   end
 
+  # open up security group inbound traffic
   def aws_security_group_enable_inbound(opts)
     opts[:security_group].authorize_ingress(:tcp, 20..8080)
   end
 
+  # open up security group outbound port 443
   def aws_security_group_enable_outbound_port_443(opts)
     opts[:security_group].authorize_egress('0.0.0.0/0', protocol: :tcp, ports: 443)
   end
 
+  # open up security group outbound port 80
   def aws_security_group_enable_outbound_port_80(opts)
     opts[:security_group].authorize_egress('0.0.0.0/0', protocol: :tcp, ports: 80)
   end
 
+  # open up security group outbound traffic to subnet 10.0.0.0/16
   def aws_security_group_enable_outbound_to_subnets(opts)
     opts[:security_group].authorize_egress('10.0.0.0/16')
   end
