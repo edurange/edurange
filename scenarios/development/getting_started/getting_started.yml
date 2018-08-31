@@ -5,6 +5,7 @@ Instructions: Use the pdf/Google CodeLabs documentation to help with step-throug
 Roles:
   - Name: Getting_Started
     Packages:
+      - git
       - cowsay
       - fortune
       - vim
