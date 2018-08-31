@@ -14,7 +14,7 @@ Groups:
 - Name: Instructor
   Instructions:
   Access:
-  - Instance: GettingStarted
+  - Instance: GettingStarted_Inst
     Administrator: true
     IP_Visible: true
   Users:
@@ -35,7 +35,7 @@ Clouds:
     CIDR_Block: 10.0.0.0/16
     Internet_Accessible: true
     Instances:
-    - Name: Getting_Started
+    - Name: GettingStarted_Inst
       OS: ubuntu
       IP_Address: 10.0.0.4
       IP_Address_Dynamic:
