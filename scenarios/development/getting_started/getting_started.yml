@@ -23,7 +23,7 @@ Groups:
 - Name: Students
   Instructions:
   Access:
-  - Instance: GettingStarted
+  - Instance: GettingStarted_Inst
     Administrator: false
     IP_Visible: true
   Users:
