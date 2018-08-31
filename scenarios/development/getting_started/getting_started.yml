@@ -3,7 +3,7 @@ Name: Getting_Started
 Description: Getting Started teaches the basics of using the terminal on Linux (but also can extend to Mac)
 Instructions: Use the pdf/Google CodeLabs documentation to help with step-through
 Roles:
-  - Name: User
+  - Name: Getting_Started
     Packages:
       - cowsay
       - fortune
