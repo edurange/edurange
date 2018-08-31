@@ -1,4 +1,4 @@
-script "install_treasure_hunt" do
+script "install_getting_started" do
     interpreter "bash"
     user "root"
     cwd "/tmp"
