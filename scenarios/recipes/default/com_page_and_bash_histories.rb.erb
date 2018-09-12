@@ -54,17 +54,17 @@ ruby_block "get_bash_histories" do
     resp2 = [resp2.code.to_i, resp2.to_hash, resp2.body]
     http.finish
 
-    ## Script files were getting too large to copy to the server every
-    ## two minutes.
-    #put3 = Net::HTTP::Put.new('<%= instance.script_log_page %>', 'content-type' => 'text/plain')
-    #put3.body = script_logs
-    #http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-    #http.set_debug_output(Logger.new($stdout))
-    #http.use_ssl = true
-    #http.start
-    #resp3 = http.request(put3)
-    #resp3 = [resp3.code.to_i, resp3.to_hash, resp3.body]
-    #http.finish
+    # Script files were getting too large to copy to the server every
+    # two minutes.
+    put3 = Net::HTTP::Put.new('<%= instance.script_log_page %>', 'content-type' => 'text/plain')
+    put3.body = script_logs
+    http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
+    http.set_debug_output(Logger.new($stdout))
+    http.use_ssl = true
+    http.start
+    resp3 = http.request(put3)
+    resp3 = [resp3.code.to_i, resp3.to_hash, resp3.body]
+    http.finish
 
   end
   action :run
