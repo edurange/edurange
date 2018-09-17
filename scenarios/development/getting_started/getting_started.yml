@@ -1,0 +1,45 @@
+---
+Name: Getting_Started
+Description: Getting Started teaches the basics of using the terminal on Linux (but also can extend to Mac)
+Instructions: Use the pdf/Google CodeLabs documentation to help with step-through
+Roles:
+  - Name: Getting_Started
+    Packages:
+      - git
+      - cowsay
+      - fortune
+      - vim
+    Recipes:
+      - install
+Groups:
+- Name: Instructor
+  Instructions:
+  Access:
+  - Instance: GettingStarted_Inst
+    Administrator: true
+    IP_Visible: true
+  Users:
+  - Login: instructor
+    Password: si11yb1LLY
+- Name: Students
+  Instructions:
+  Access:
+  - Instance: GettingStarted_Inst
+    Administrator: false
+    IP_Visible: true
+  Users:
+Clouds:
+- Name: Cloud
+  CIDR_Block: 10.0.0.0/16
+  Subnets:
+  - Name: Subnet
+    CIDR_Block: 10.0.0.0/16
+    Internet_Accessible: true
+    Instances:
+    - Name: GettingStarted_Inst
+      OS: ubuntu
+      IP_Address: 10.0.0.4
+      IP_Address_Dynamic:
+      Internet_Accessible: true
+      Roles:
+      - Getting_Started
