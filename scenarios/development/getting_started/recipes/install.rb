@@ -8,5 +8,7 @@ script "install_getting_started" do
     cd /tmp/scenario-getting-started
     ./install
     rm -r /tmp/scenario-getting-started
+    touch /tmp/.installed
     EOH
+    not_if "test -e /tmp/.installed" 
 end
