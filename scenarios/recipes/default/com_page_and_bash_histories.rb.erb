@@ -1,90 +1,17 @@
-ruby_block "get_bash_histories" do
-  block do
-    put = Net::HTTP::Put.new('<%= instance.bash_history_page %>', 'content-type' => 'text/plain')
-
-    bash_histories = Time.new.inspect + "\n"
-    exit_statuses = Time.new.inspect + "\n"
-    script_logs = Time.new.inspect + "\n"
-    users = Dir.glob('/home/*').select { |f| File.directory? f }
-    users.each do |user|
-      hist_file = "#{user}/.bash_history"
-      username = user[6..user.length]
-      bash_histories += "## #{username}\n"
-      if File.exists?(hist_file)
-        bash_histories += File.open(hist_file, "r").read + "\n"
-      end
-      exit_file = "#{user}/.exit_status"
-      username = user[6..user.length]
-      exit_statuses += "## #{username}\n"
-      if File.exists?(exit_file)
-        exit_statuses += File.open(exit_file, "r").read + "\n"
-      end      
-      script_file = "#{user}/.script.log"
-      username = user[6..user.length]
-      script_logs += "## #{username}\n"
-      if File.exists?(script_file)
-        script_logs += File.open(script_file, "r").read + "\n"
-      end
-    end
-    hist_file = "root/.bash_history"
-    username = "root"
-    bash_histories += "## #{username}\n"
-    if File.exists?(hist_file)
-      bash_histories += File.open(hist_file, "r").read + "\n"
-    end
-
-    put.body = bash_histories
-
-    # send the PUT request
-    http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-    http.set_debug_output(Logger.new($stdout))
-    http.use_ssl = true
-    http.start
-    resp = http.request(put)
-    resp = [resp.code.to_i, resp.to_hash, resp.body]
-    http.finish
-
-    put2 = Net::HTTP::Put.new('<%= instance.exit_status_page %>', 'content-type' => 'text/plain')
-    put2.body = exit_statuses
-    http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-    http.set_debug_output(Logger.new($stdout))
-    http.use_ssl = true
-    http.start
-    resp2 = http.request(put2)
-    resp2 = [resp2.code.to_i, resp2.to_hash, resp2.body]
-    http.finish
-
-    ## Script files were getting too large to copy to the server every
-    ## two minutes.
-    #put3 = Net::HTTP::Put.new('<%= instance.script_log_page %>', 'content-type' => 'text/plain')
-    #put3.body = script_logs
-    #http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-    #http.set_debug_output(Logger.new($stdout))
-    #http.use_ssl = true
-    #http.start
-    #resp3 = http.request(put3)
-    #resp3 = [resp3.code.to_i, resp3.to_hash, resp3.body]
-    #http.finish
-
-  end
-  action :run
-end
-
 ruby_block "finish" do
   block do
 
-    put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
-    put.body = "finished"
-
-    # send the PUT request
-    http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-    http.set_debug_output(Logger.new($stdout))
-    http.use_ssl = true
-    http.start
-    resp = http.request(put)
-    resp = [resp.code.to_i, resp.to_hash, resp.body]
-    http.finish
-
+      put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
+      put.body = "finished"
+      # send the PUT request
+      http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
+      http.set_debug_output(Logger.new($stdout))
+      http.use_ssl = true
+      http.start
+      resp = http.request(put)
+      resp = [resp.code.to_i, resp.to_hash, resp.body]
+      http.finish
+   
   end
   action :run
 end
