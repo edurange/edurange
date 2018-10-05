@@ -566,7 +566,7 @@ module ProviderAws
       private_ip_address: self.ip_address,
       key_name: Rails.configuration.x.aws['ec2_key_pair_name'],
       user_data: self.generate_init,
-      instance_type: "t2.micro",
+      instance_type: "t2.small",
       subnet: self.subnet.driver_id
     )
   end
