@@ -1,2 +1,2 @@
 #!/bin/bash
-bin/delayed_job --pool=scenariodestroy,tasks:1 --pool=scenariocom,tasks:1 --pool=emails,tasks:1 --pool=scenario,tasks:1 --pool=cloud,tasks:1 --pool=subnet,tasks:2 --pool=instance,tasks:2 stop
+bin/delayed_job --pool=scenariodestroy,tasks:1 --pool=scenariocom,tasks:1 --pool=emails,tasks:1 --pool=scenario,tasks:3 --pool=cloud,tasks:3 --pool=subnet,tasks:4 --pool=instance,tasks:13 stop
