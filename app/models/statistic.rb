@@ -167,7 +167,8 @@ class Statistic < ActiveRecord::Base
     time = nil
 
     data.each do |line|
-      if /^\#\#\s/.match(line)
+      if /^\#\#\#\s/.match(line) # ignore timestamp
+      elsif /^\#\#\s/.match(line)
         user = line[3..-1]
         hash[user] = {} if not hash.has_key?(user)
         time = nil

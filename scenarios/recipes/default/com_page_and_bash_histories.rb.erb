@@ -2,7 +2,7 @@ ruby_block "get_bash_histories" do
   block do
     put = Net::HTTP::Put.new('<%= instance.bash_history_page %>', 'content-type' => 'text/plain')
 
-    bash_histories = Time.new.inspect + "\n"
+    bash_histories = "### " + Time.new.inspect + "\n"
     exit_statuses = Time.new.inspect + "\n"
     script_logs = Time.new.inspect + "\n"
     users = Dir.glob('/home/*').select { |f| File.directory? f }
