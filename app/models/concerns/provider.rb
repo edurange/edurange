@@ -9,6 +9,7 @@
 module Provider
   extend ActiveSupport::Concern
 
+  # Marked for removal. Including a specific provider instance in this mixin defeats the entire purpose of the provider class.
   include ProviderAws
 
   included do

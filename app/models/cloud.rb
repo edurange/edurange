@@ -17,6 +17,7 @@ class Cloud < ActiveRecord::Base
   after_destroy :update_scenario_modified
   before_destroy :validate_stopped, prepend: true
 
+  # validates that the scenario which this cloud corresponds to is stopped prior to enabling modification of the scenario
   def validate_stopped
     if not self.stopped?
       errors.add(:running, "can not modify while scenario is not stopped")
@@ -28,6 +29,7 @@ class Cloud < ActiveRecord::Base
     true
   end
 
+  # checks the number of subnets this cloud contains is 0 prior to destroying the cloud
   def independent_destroy
     if self.subnets.size > 0
       errors.add(:dependents, "must not have any subnets")

@@ -1,0 +1,1 @@
+delayed\_job is a ruby gem used to execute tasks as a background process in Rails environment, increasing page rendering speed.
