@@ -23,10 +23,12 @@ class Group < ActiveRecord::Base
     end
   end
 
+  # return instances which the group has administrative access to
   def administrative_access_to
     instances = self.instance_groups.select {|instance_group| instance_group.administrator }.map {|instance_group| instance_group.instance}
   end
 
+  # return true if the instances which this group has access to have stopped
   def instances_stopped
     self.instance_groups.each do |instance_group|
       if not instance_group.instance.stopped?
@@ -47,6 +49,7 @@ class Group < ActiveRecord::Base
     true
   end
 
+  # initialize the groups variables
   def create_variable_hashes
     self.update_attribute(:variables, { 
       instance: {}, 
@@ -57,10 +60,12 @@ class Group < ActiveRecord::Base
     })
   end
 
+  # return instances which the group has user level access to
   def user_access_to
     instances = self.instance_groups.select {|instance_group| !instance_group.administrator }.map {|instance_group| instance_group.instance}
   end
 
+  # add a group of students to the group and return list of added players
   def student_group_add(student_group_name)
     if not self.instances_stopped?
       return []
@@ -96,6 +101,7 @@ class Group < ActiveRecord::Base
     players
   end
 
+  # remove a group of students from the group and return list of removed students
   def student_group_remove(student_group_name)
     if not self.instances_stopped?
       return []
@@ -117,6 +123,7 @@ class Group < ActiveRecord::Base
     players
   end
 
+  # return player object for player with matching student id
   def find_player_by_student_id(student_id)
     self.players.each do |player|
       if player.user
@@ -126,11 +133,13 @@ class Group < ActiveRecord::Base
     nil
   end
 
+  # update scenario instructions
   def update_instructions(instructions)
     self.update_attribute(:instructions, instructions)
     self.update_scenario_modified
   end
 
+  # add an instance to the list of instances that the group has administrative access to
   def admin_access_add(instance)
     instance_group = self.instance_groups.new(instance_id: instance.id, administrator: true)
     if not instance_group.save
@@ -139,6 +148,7 @@ class Group < ActiveRecord::Base
     return instance_group
   end
 
+  # add an instance to the list of instances that the group has user level access to
   def user_access_add(instance)
     instance_group = self.instance_groups.new(instance_id: instance.id, administrator: false)
     if not instance_group.save
@@ -147,13 +157,14 @@ class Group < ActiveRecord::Base
     return instance_group
   end
 
+  # add variable to an instance
   def variable_instance_add(name, type, val)
     if self.variables[:instance].has_key? name
-      errors.add(:variables, "alread has Instance variable '#{name}'")
+      errors.add(:variables, "already has Instance variable '#{name}'")
     end
 
     if not type
-      errors.add(:variables, "must specity Instance variable type")
+      errors.add(:variables, "must specify Instance variable type")
     end
 
     return false if errors.any?
@@ -163,6 +174,7 @@ class Group < ActiveRecord::Base
     self.save
   end
 
+  # add variable to player
   def variable_player_add(name, type, val)
     puts self.instances
     if self.variables[:player][:info].has_key? name
@@ -187,6 +199,7 @@ class Group < ActiveRecord::Base
     self.save
   end
 
+  # update player variable
   def variable_player_update(player)
     if not self.variables[:player][:vars].has_key? player
       self.variables[:player][:vars][player] = {}
@@ -197,6 +210,7 @@ class Group < ActiveRecord::Base
     self.save
   end
 
+  # remove player variable
   def variable_player_remove(player)
     if not self.variables[:player][:vars].has_key? player
       return

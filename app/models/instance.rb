@@ -1,5 +1,5 @@
 class Instance < ActiveRecord::Base
-  include Provider
+  include Provider # This is where the AWS stuff is coming from
   require 'open-uri'
   require 'dynamic_ip'
 
@@ -18,9 +18,9 @@ class Instance < ActiveRecord::Base
   validate :validate_stopped, :validate_internet_accessible, :validate_ip_address
 
   after_destroy :update_scenario_modified
-  before_destroy :validate_stopped
+  before_destroy :validate_stopped 
   after_save :update_statistic
-
+  
   def update_statistic
     statistic = self.scenario.statistic
     if statistic
@@ -28,6 +28,7 @@ class Instance < ActiveRecord::Base
     end
   end
 
+  # Check to see if the instance has stopped
   def validate_stopped
     if not self.stopped?
       errors.add(:running, "can not modify while scenario is booted")
@@ -39,12 +40,14 @@ class Instance < ActiveRecord::Base
     true
   end
 
+  # Check if the instance can access the internet
   def validate_internet_accessible
     if self.internet_accessible and not self.subnet.internet_accessible
       errors.add(:internet_accessible, "Instances subnet must also be internet accessible")
     end
   end
-
+  
+  # Check if the instance has a valid IP
   def validate_ip_address
     if not self.ip_address_dynamic == "" and self.ip_address_dynamic and not self.has_dynamic_ip?
       dip = DynamicIP.new(self.ip_address_dynamic)
@@ -105,6 +108,7 @@ class Instance < ActiveRecord::Base
     return self.ip_address_dynamic.respond_to?(:octets)
   end
 
+  # Add a role to the scenario
   def role_add(role_name)
     if not self.stopped?
       errors.add(:running, 'instance must be stopped to add role')
@@ -128,18 +132,22 @@ class Instance < ActiveRecord::Base
     return ir
   end
 
+  # Get the cloud scenario and return it
   def scenario
     return self.subnet.cloud.scenario
   end
 
+  # Return the owner of the scenario
   def owner?(id)
     return self.subnet.cloud.scenario.user_id == id
   end
 
+  # Return the status of instance
+  # Marked for refactoring
   def status_check
     puts "\nstatus check\n"
     if self.driver_id
-      if AWS::EC2.new.instances[self.driver_id].exists?
+      if AWS::EC2.new.instances[self.driver_id].exists? 
         # check if it is running
       else
         self.driver_id = nil
@@ -149,11 +157,13 @@ class Instance < ActiveRecord::Base
     end
   end
 
+  # Return the bash history for the instance
+  # Mark for refactoring
   def get_bash_history
     return "" if (!self.bash_history_page or (self.bash_history_page == ""))
 
     begin
-      s3 = AWS::S3.new
+      s3 = AWS::S3.new 
       bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
       if bucket.objects[self.aws_S3_object_name('bash_history')].exists?
         bash_history =  bucket.objects[self.aws_S3_object_name('bash_history')].read()
@@ -183,6 +193,8 @@ class Instance < ActiveRecord::Base
     return ""
   end
 
+  # Return script log
+  # Marked for refactoring
   def get_script_log
     return "" if (!self.script_log_page or (self.script_log_page == ""))
 
@@ -200,6 +212,8 @@ class Instance < ActiveRecord::Base
     return ""
   end
 
+  # Return chef erros
+  # Marked for refactoring
   def get_chef_error
     return "" if !self.bash_history_page
     s3 = AWS::S3.new
@@ -211,6 +225,7 @@ class Instance < ActiveRecord::Base
     return ""
   end
 
+  # Check if the instance is initialized
   def initialized?
     return "-" if !self.com_page
 
@@ -256,11 +271,12 @@ class Instance < ActiveRecord::Base
     return false
   end
 
+  # Marked for refactoring
   def s3_name_prefix
     scenario = self.subnet.cloud.scenario
     return scenario.user.name + scenario.name + scenario.id.to_s + scenario.uuid
   end
-
+ 
   def add_progress(val)
     # debug "Adding progress to instance!"
     # PrivatePub.publish_to "/scenarios/#{self.subnet.cloud.scenario.id}", instance_progress: val
@@ -308,7 +324,8 @@ class Instance < ActiveRecord::Base
       return
     end
   end
-
+  
+  # Marked for refactoring
   def generate_cookbook
     begin
       # Find out if this is a global or custom recipe
@@ -349,6 +366,7 @@ class Instance < ActiveRecord::Base
     end
   end
 
+  # Names of students participating in the scenario instance
   def player_names
     names = []
     self.groups.each do |g|

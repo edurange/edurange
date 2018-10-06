@@ -1,0 +1,96 @@
+---
+Name: Getting_Started
+Description: Getting Started teaches the basics of using the terminal on Linux (but also can extend to Mac)
+Instructions: Use the pdf/Google CodeLabs documentation to help with step-through
+Roles:
+  - Name: Getting_Started
+    Packages:
+      - git
+      - cowsay
+      - fortune
+      - vim
+    Recipes:
+      - install
+Groups:
+- Name: Instructor
+  Instructions:
+  Access:
+  - Instance: GettingStarted_Inst
+    Administrator: true
+    IP_Visible: true
+  Users:
+  - Login: instructor
+    Password: si11yb1LLY
+- Name: Students
+  Instructions:
+  Access:
+  - Instance: GettingStarted_Inst
+    Administrator: false
+    IP_Visible: true
+  Users:
+Clouds:
+- Name: Cloud
+  CIDR_Block: 10.0.0.0/16
+  Subnets:
+  - Name: Subnet
+    CIDR_Block: 10.0.0.0/16
+    Internet_Accessible: true
+    Instances:
+    - Name: GettingStarted_Inst
+      OS: ubuntu
+      IP_Address: 10.0.0.4
+      IP_Address_Dynamic:
+      Internet_Accessible: true
+      Roles:
+      - Getting_Started
+Scoring:
+- Text: how many subdirectories are there for /tmp/?
+  Type: Number
+  Options:
+  - accept-integer
+  - accept-decimal
+  Values:
+  - Value: '7'
+    Points: '15'
+  Order: 1
+  Points: 15
+- Text: Cut and paste the name line for the man page for file.
+  Type: String
+  Options: []
+  Values:
+  - Value: file — determine file type
+    Points: '15'
+  Order: 2
+  Points: 15
+- Text: Copy the secret code.
+  Type: String
+  Options: []
+  Values:
+  - Value: 32144SUPERSECRET
+    Points: '15'
+  Order: 3
+  Points: 15
+- Text: Write the command or list of commands to create a file with the contents of the three files
+  Type: String
+  Options: []
+  Values:
+  - Value: cat one.txt two.txt three.txt >> alltogether.txt
+    Points: '15'
+  Order: 4
+  Points: 15
+- Text: What are the six filenames (delineate by comma eg. file1, file2, ...)?
+  Type: String
+  Options: []
+  Values:
+  - Value: edurange5meow.JPG, edurange001.gif, 4edurange.jpeg, edurange006weeeeeee.png, 002edurange.jpg, edurange3.GIF
+    Points: '20'
+  Order: 5
+  Points: 20
+- Text: What is the path to the file that has 'cowFJS' in it?
+  Type: String
+  Options: []
+  Values:
+  - Value: ./tmp/i/y/f/kitty/k/r/u/U348bdks8cowFJS8dJF3hHDFj.jpg
+    Points: '20'
+  Order: 6
+  Points: 20

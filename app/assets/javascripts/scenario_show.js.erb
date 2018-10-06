@@ -103,7 +103,7 @@ function scoring_question_modal_add_value(modal) {
 		}
 	}
 
-	// make suer points are numbers
+	// make sure points are numbers
 	if (!(/^[0-9]+$/.test(points))) {
 		$('#modal-scoring-question-value-add').find('#points-div').attr('class', 'has-error');
 		$('#modal-scoring-question-value-add').find('#points-help').text('must be zero or a positive integer');
