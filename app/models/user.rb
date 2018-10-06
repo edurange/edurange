@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   end
 
   def validate_running
+    # TODO: this was on production, evaluate if this is the correct behavior
+    return true
     if self.scenarios.select{ |s| not s.stopped? }.size > 0
       errors.add(:running, "can not modify while a scenario is running")
       return false
