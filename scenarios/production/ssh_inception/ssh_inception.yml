@@ -38,13 +38,11 @@ Groups:
     Administrator: true
     IP_Visible: false
   Users:
-  - Login: instructor
-    Password: vLCu3Crf
-    Id: 
-    UserId: 
-    StudentGroupId: 
   Variables:
-    Instance: []
+    Instance:
+    - Name: fifth_stop_password_key
+      Type: string
+      Value: 8fddakjfds0s9f
     Player: []
 - Name: Students
   Instructions: 
@@ -312,3 +310,4 @@ Scoring:
     Points: '1'
   Order: 7
   Points: 1
+

@@ -1,5 +1,6 @@
 script "anon_ftp" do
   interpreter "bash"
+  flags "-x"
   user "root"
   cwd "/tmp"
 
@@ -11,7 +12,7 @@ script "anon_ftp" do
   chmod 555 /var/ftp
   pass=$(edurange-get-var instance fifth_stop_password_key)
 echo -e "ip: 10.0.0.17
-decryption password: ${pass}" > /var/ftp/hint
+decryption_password: ${pass}" > /var/ftp/hint
 chmod 444 /var/ftp/hint
   echo -e "listen=YES
 " > /etc/vsftpd.conf
