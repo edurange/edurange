@@ -58,6 +58,7 @@
     %table.table
       %tr
         %th Name
+        %th Date Created
         %th Status
         - if @user.is_admin?
           %th Instructor
@@ -66,6 +67,7 @@
       - @scenarios.each do |scenario|
         %tr
           %td= scenario.name
+          %td= scenario.created_at
           %td= scenario.instances_initialized? ? "booted" : scenario.status
           - if @user.is_admin?
             - if not scenario.user.nil?

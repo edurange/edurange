@@ -7,7 +7,7 @@ if Rails.configuration.x.provider == 'aws'
     raise 'MissingAWSEnv' if not ENV['AWS_SECRET_ACCESS_KEY']
     raise 'MissingAWSEnv' if not ENV['AWS_REGION']
     AWS::EC2.new.vpcs.count
-  rescue
+  rescue => e
     if !ENV['AWS_ACCESS_KEY_ID'] or !ENV['AWS_SECRET_ACCESS_KEY'] or !ENV['AWS_REGION']
       puts "\nThe following Aws required environment variables are missing:\n\n"
       puts "AWS_ACCESS_KEY_ID" if not ENV['AWS_ACCESS_KEY_ID']
@@ -16,11 +16,12 @@ if Rails.configuration.x.provider == 'aws'
     else
       puts "\nOne or more of your Aws environment variables are invalid:\n\n"
       puts "AWS_ACCESS_KEY_ID=#{ENV['AWS_ACCESS_KEY_ID']}"
-      puts "AWS_SECRET_ACCESS_KEY#{ENV['AWS_SECRET_ACCESS_KEY']}"
+      puts "AWS_SECRET_ACCESS_KEY=#{ENV['AWS_SECRET_ACCESS_KEY']}"
       puts "AWS_REGION=#{ENV['AWS_REGION']}"
     end
 
     puts ""
+    puts e
     raise 'AWS Config Error'
   end
 
@@ -30,7 +31,7 @@ if Rails.configuration.x.provider == 'aws'
   rescue => e
     Rails.configuration.x.aws['iam_user_name'] = /user\/.* is/.match(e.message).to_s.gsub("user\/", "").gsub(" is", "")
   end
-  Rails.configuration.x.aws['s3_bucket_name'] = Rails.configuration.x.aws['iam_user_name']
+  Rails.configuration.x.aws['s3_bucket_name'] = "edurange-" + Rails.configuration.x.aws['iam_user_name']
   Rails.configuration.x.aws['ec2_key_pair_name'] = "#{Rails.configuration.x.aws['iam_user_name']}-#{Rails.configuration.x.aws['region']}"
 
   # create keypair if it doesn't already exist
