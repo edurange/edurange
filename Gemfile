@@ -18,7 +18,6 @@ gem 'pundit'
 gem 'simple_form'
 gem 'underscore-rails'
 gem 'thin'
-gem 'delayed_job_active_record'
 gem 'jquery-turbolinks'
 gem 'therubyracer'
 gem 'aws-sdk', '1.61.0'
@@ -38,6 +37,7 @@ gem 'dotenv-rails', :groups => [:development, :test]
 gem 'fullcalendar-rails'
 gem 'momentjs-rails'
 gem 'symbol_serializer', github: 'Bizongo/symbol-serializer'
+gem 'sidekiq'
 
 group :development do
   gem 'better_errors'
