@@ -8,7 +8,7 @@ class ScenariosController < ApplicationController
   before_action :set_scenario, only: [
     :clone, :destroyme, :edit, :modify, :show, :update, :save, :save_as, :log_get,
     :boot, :status, :unboot, :pause, :start,
-    :cloud_add, 
+    :cloud_add,
     :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
     :role_recipe_add, :role_add,
     :recipe_custom_add, :recipe_global_add, :recipe_global_get, :recipe_remove, :recipe_update, :recipe_update_view, :recipe_view,
@@ -261,56 +261,56 @@ class ScenariosController < ApplicationController
   # BOOTING
 
   def boot
-    @scenario.delay(queue: 'scenario').boot(background: true)
+    BootJob.perform_later(@scenario, background: true)
     respond_to do |format|
       format.js { render 'scenarios/js/boot/boot_scenario.js.erb', :layout => false }
     end
   end
 
   def unboot
-    @scenario.delay(queue: 'scenario').unboot(background: true)
+    UnbootJob.perform_later(@scenario, background: true)
     respond_to do |format|
       format.js { render 'scenarios/js/boot/unboot_scenario.js.erb', :layout => false }
     end
   end
 
   def boot_cloud
-    @cloud.delay(queue: 'cloud').boot(background: true)
+    BootJob.perform_later(@cloud, background: true)
     respond_to  do |format|
       format.js { render template: 'scenarios/js/boot/boot_cloud.js.erb', layout: false }
     end
   end
 
   def unboot_cloud
-    @cloud.delay(queue: 'cloud').unboot(background: true)
+    UnbootJob.perform_later(@cloud, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/unboot_cloud.js.erb',  layout: false }
     end
   end
 
   def boot_subnet
-    @subnet.delay(queue: 'subnet').boot(background: true)
+    UnbootJob.perform_later(@subnet, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/boot_subnet.js.erb', layout: false }
     end
   end
 
   def unboot_subnet
-    @subnet.delay(queue: 'subnet').unboot(background: true)
+    UnbootJob.perform_later(@subnet, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/unboot_subnet.js.erb', layout: false }
     end
   end
 
   def boot_instance
-    @instance.delay(queue: 'instance').boot(background: true)
+    BootJob.perform_later(@instance, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/boot_instance.js.erb', layout: false }
     end
   end
 
   def unboot_instance
-    @instance.delay(queue: 'instance').unboot(background: true)
+    UnbootJob.perform_later(@instance, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/unboot_instance.js.erb', layout: false }
     end
