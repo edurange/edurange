@@ -80,13 +80,19 @@ Edit the file "config/secrets.yml". Under 'development:' fill in "admin\_name", 
 
 Now run ```rake db:setup```. This will create the database and admin account.
 
-####  V. Run the server
-  
-You'll need to run the delayed jobs start script:
+#### V. Background worker on ActiveJob
+
+We are using `sidekiq` as an `ActiveJob` backend to do things like send emails and boot/unboot scenarios in the background.
+`sidekiq` requires a `redis` server on `localhost` and is started via
 ```
-./delayed_job_start
+bundle exec sidekiq
 ```
-Now bootup the developement server:
+
+To reduce the complexity of setting up development, we may want to use an in memory ActiveJob backend like Sucker Punch or Active Job Async in development environments and sidekiq in production.
+
+#### VI. Run the server
+
+To start the developement server:
 ```
 rails server
 ```
@@ -100,11 +106,7 @@ Now that you have an admin user you can boot a scenario after some minor configu
 After doing that, go ahead and navigate to the "Scenarios" tab and load a new scenario. Choose from the default scenarios available. Once the scenario is loaded you should be brought to a detail view where you can boot the scenario.
 
 ##### Keeping things working
-From time to time, you might find parts of your scenario stuck on "queued_boot". To fix this, run the delayed jobs
-restart script.
-```
-./delayed_job_restart
-```
+
 After you pull changes from the github repository, if the database was changed you'll need to rake the database:
 ```
 rake db:migrate
