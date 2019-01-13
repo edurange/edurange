@@ -1,0 +1,8 @@
+---
+:queues:
+  - emails
+  - scenario
+  - cloud
+  - subnet
+  - instance
+
