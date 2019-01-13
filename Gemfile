@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.6.0'
 gem 'rails', '~> 4.2.0'
-gem 'sqlite3'
 gem 'sass-rails', '~> 4.0.3'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
@@ -39,6 +38,10 @@ gem 'momentjs-rails'
 gem 'symbol_serializer', github: 'Bizongo/symbol-serializer'
 gem 'sidekiq'
 
+group :production do
+  gem 'pg'
+end
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_20]
@@ -64,6 +67,7 @@ group :development, :test do
   gem 'daemons'
   gem 'faker'
   gem 'factory_girl_rails', '~> 4.0'
+  gem 'sqlite3'
 end
 group :test do
   gem 'capybara'
