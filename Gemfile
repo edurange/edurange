@@ -26,7 +26,7 @@ gem 'ipaddress'
 gem 'nokogiri'
 # gem 'faye'
 # gem 'puma'
-# gem 'pg'
+gem 'pg'
 gem 'netaddr', '~>1.5.1'
 gem 'chartkick'
 gem 'groupdate'
@@ -37,10 +37,6 @@ gem 'fullcalendar-rails'
 gem 'momentjs-rails'
 gem 'symbol_serializer', github: 'Bizongo/symbol-serializer'
 gem 'sidekiq'
-
-group :production do
-  gem 'pg'
-end
 
 group :development do
   gem 'better_errors'
