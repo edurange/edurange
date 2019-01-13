@@ -26,7 +26,7 @@ gem 'ipaddress'
 gem 'nokogiri'
 # gem 'faye'
 # gem 'puma'
-gem 'pg'
+gem 'pg', '~> 0.18' #TODO, we need to upgrade our rails version we're using some very old versions of libraries.
 gem 'rails_12factor'
 gem 'netaddr', '~>1.5.1'
 gem 'chartkick'

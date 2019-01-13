@@ -207,7 +207,7 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     orm_adapter (0.5.0)
-    pg (1.1.4)
+    pg (0.21.0)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -389,7 +389,7 @@ DEPENDENCIES
   momentjs-rails
   netaddr (~> 1.5.1)
   nokogiri
-  pg
+  pg (~> 0.18)
   pry-byebug
   pry-rails
   pundit
