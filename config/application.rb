@@ -38,5 +38,7 @@ module Edurange
     config.x.provider = 'aws'
     config.x.aws = config_for(:aws) if config.x.provider == 'aws'
 
+    config.active_job.queue_adapter = :delayed_job
+
   end
 end

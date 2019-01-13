@@ -282,7 +282,7 @@ module Provider
       opts_descendent = @opts[:resources][descendent.name]
       log "#{opts_descendent[:action]} \"#{descendent.name}\": background=#{opts_descendent[:background]}"
       if opts_descendent[:background]
-        descendent.delay(queue: descendent.class.to_s.downcase).boot_descendent(@opts)
+        BootDescendentJob.perform_later(descendent, @opts)
       else
         descendent.boot_descendent(@opts)
       end
@@ -293,14 +293,14 @@ module Provider
     result = true
     @opts[:resources].each do |name, values|
       log "waiting for descendent \"#{name}\" to finish: status=#{values[:obj].status}"
-      
+
       begin
         (sleep 1; values[:obj].reload) until values[:obj].boot_done?
       rescue ActiveRecord::RecordNotFound => e
         # skip if resource gets deleted
         next
       end
-          
+
       # cleanup failed resources
       if values[:obj].boot_fail? or values[:obj].unboot_fail?
         log "descendent \"#{name}\" #{values[:action]} failed"
@@ -443,10 +443,10 @@ module Provider
       errors.add(:boot, "must be booted to pause")
       return
     end
-    
+
     if self.class == Scenario
       self.set_pausing
-      self.delay(queue: self.class.to_s.downcase).send("provider_pause_#{self.class.to_s.downcase}")
+      PauseScenarioJob.perform_later(self)
     else
       self.send("provider_pause_#{self.class.to_s.downcase}")
     end
@@ -464,7 +464,7 @@ module Provider
 
     if self.class == Scenario
       self.set_starting
-      self.delay(queue: self.class.to_s.downcase).send("provider_start_#{self.class.to_s.downcase}")
+      ResumeScenarioJob.perform_later(self)
     else
       self.send("provider_start_#{self.class.to_s.downcase}")
     end

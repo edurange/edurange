@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.2.4'
+ruby '2.6.0'
 gem 'rails', '~> 4.2.0'
 gem 'sqlite3'
 gem 'sass-rails', '~> 4.0.3'
@@ -37,6 +37,7 @@ gem 'rubyzip'
 gem 'dotenv-rails', :groups => [:development, :test]
 gem 'fullcalendar-rails'
 gem 'momentjs-rails'
+gem 'symbol_serializer', github: 'Bizongo/symbol-serializer'
 
 group :development do
   gem 'better_errors'
