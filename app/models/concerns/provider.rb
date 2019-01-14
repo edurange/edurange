@@ -74,7 +74,7 @@ module Provider
     opts[:console_print] = true if not opts.has_key?(:console_print)
     opts[:pretend] ||= false
     opts[:background] ||= false
-    opts[:boot_code] = "#{Time.now.strftime("%y-%m-%d-%H-%M-%S")}_#{`uuidgen`[0..7]}"
+    opts[:boot_code] = "#{Time.now.strftime("%y-%m-%d-%H-%M-%S")}_#{SecureRandom.uuid[0..7]}"
     opts[:resources] ||= {}
     errs = []
 
