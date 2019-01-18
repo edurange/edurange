@@ -15,6 +15,6 @@ production:
   adapter: postgresql
   encoding: unicode
   database: edurange_production
-  pool: 5
+  pool: <%= ENV["DB_POOL"] || 5 %>
   timeout: 5000
 
