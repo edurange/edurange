@@ -71,6 +71,6 @@
 %script
   - if @clone
     update_flash("Scenario successfully cloned");
-%script
-  = "get_scnario_status('#{@scenario.id}');"
-  
+:javascript
+  get_scenario_status('#{@scenario.id}');
+
