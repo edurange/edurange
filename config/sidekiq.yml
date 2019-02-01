@@ -1,5 +1,5 @@
 ---
-:concurrency: <%= ENV["SIDEKIQ_CONCURRENCY"] || 10 %> # maximu number of jobs to process concurrently
+:concurrency: 15
 :queues:
   - emails
   - scenario

@@ -1,7 +1,7 @@
 
 development:
   adapter: sqlite3
-  pool: 5
+  pool: 20
   timeout: 5000
   database: db/development.sqlite3
 
@@ -14,7 +14,6 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  database: edurange_production
-  pool: <%= ENV["DB_POOL"] || 5 %>
+  pool: 50
   timeout: 5000
 
