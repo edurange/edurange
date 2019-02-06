@@ -473,12 +473,13 @@ module ProviderAws
 
   # generic fn to call one of the helper fns below
   def aws_call(func_name, opts = {})
+    timeout ||= 3
     return self.send(func_name, opts)
   rescue => e
     log "AWS: Call Rescue: #{e.class} opts=#{opts}"
     if e.class == AWS::EC2::Errors::RequestLimitExceeded
-      log "AWS: '#{e.class}' sleeping 1s and retrying"
-      sleep 1
+      log "AWS: '#{e.class}' sleeping 5s and retrying"
+      sleep 5
       timeout -= 1
       retry if timeout != 0
     elsif opts.has_key?(:errs) and opts[:errs].include?(e.class)
