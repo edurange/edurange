@@ -3,5 +3,3 @@ class DropTableDelayedJobs < ActiveRecord::Migration
     drop_table :delayed_jobs
   end
 end
-
-
