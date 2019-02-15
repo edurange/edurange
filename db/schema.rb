@@ -200,6 +200,8 @@ ActiveRecord::Schema.define(version: 20190113040925) do
     t.string   "resource_info"
   end
 
+  add_foreign_key "statistics", "scenarios", on_delete: :nullify
+
   create_table "student_group_users", force: :cascade do |t|
     t.integer  "student_group_id"
     t.integer  "user_id"

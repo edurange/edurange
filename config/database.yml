@@ -1,9 +1,14 @@
 
 development:
-  adapter: sqlite3
-  pool: 20
+  adapter: postgresql
+  pool: 50
   timeout: 5000
-  database: db/development.sqlite3
+  host: localhost
+  database: edurange_development
+  # In development you must create this user in postgresql
+  # CREATE USER edurange WITH PASSWORD 'edurange_rocks!' CREATEDB;
+  username: edurange
+  password: 'edurange_rocks!'
 
 test:
   adapter: sqlite3
@@ -16,4 +21,4 @@ production:
   encoding: unicode
   pool: 50
   timeout: 5000
-
+  # The DATABASE_URL environment variables supplies database name, username, password, etc.
