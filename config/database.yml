@@ -1,11 +1,12 @@
 
 development:
   adapter: postgresql
+  encoding: unicode
   pool: 50
   timeout: 5000
   host: localhost
   database: edurange_development
-  # In development you must create this user in postgresql
+  # In development you must create this user in postgresql. This can be done by:
   # CREATE USER edurange WITH PASSWORD 'edurange_rocks!' CREATEDB;
   username: edurange
   password: 'edurange_rocks!'
@@ -21,4 +22,4 @@ production:
   encoding: unicode
   pool: 50
   timeout: 5000
-  # The DATABASE_URL environment variables supplies database name, username, password, etc.
+  # The DATABASE_URL environment variables supplies host, port, database, username, password, etc.
