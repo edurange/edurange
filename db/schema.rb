@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190113040925) do
+ActiveRecord::Schema.define(version: 20190215090344) do
 
   create_table "answers", force: :cascade do |t|
     t.boolean  "correct"
@@ -199,6 +199,8 @@ ActiveRecord::Schema.define(version: 20190113040925) do
     t.integer  "scenario_id"
     t.string   "resource_info"
   end
+
+  add_foreign_key "statistics", "scenarios", on_delete: :nullify
 
   create_table "student_group_users", force: :cascade do |t|
     t.integer  "student_group_id"

@@ -48,6 +48,8 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]
 
+  config.logger = Logger.new(STDOUT)
+
   # Use a different logger for distributed setups.
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
 
@@ -84,6 +86,6 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :sendmail
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_options = {from: 'no-reply@' + 'cloud.edurange.org' }
-  config.action_mailer.default_url_options = { :host => 'cloud.edurange.org' }
+  config.action_mailer.default_options = {from: 'no-reply@' + ENV['DOMAIN_NAME'] }
+  config.action_mailer.default_url_options = { :host => ENV['DOMAIN_NAME'] }
 end
