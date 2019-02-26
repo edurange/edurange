@@ -19,22 +19,21 @@ if Rails.configuration.x.provider == 'aws'
   end
 
   # get iam user name and set some aws configs
-  # TODO: I know I'm playing fast and lose, I am just experimenting on this branch.
   Rails.configuration.x.aws['iam_user_name'] = AWS::IAM::Client.new.get_user.user.user_name
   Rails.configuration.x.aws['s3_bucket_name'] = "edurange-" + Rails.configuration.x.aws['iam_user_name']
   Rails.configuration.x.aws['ec2_key_pair_name'] = "#{Rails.configuration.x.aws['iam_user_name']}-#{Rails.configuration.x.aws['region']}"
 
   # create keypair if it doesn't already exist
-#  aws_key_pair_path = "#{Rails.root}/keys/#{Rails.configuration.x.aws['ec2_key_pair_name']}"
-#  FileUtils.mkdir("#{Rails.root}/keys") if not File.exists?("#{Rails.root}/keys")
-#  if not File.exists?(aws_key_pair_path)
-#    begin
-#      aws_key_pair = AWS::EC2::Client.new.create_key_pair(key_name: Rails.configuration.x.aws['ec2_key_pair_name'])
-#      File.open(aws_key_pair_path, "w") { |f| f.write(aws_key_pair[:key_material]) }
-#      FileUtils.chmod(0400, aws_key_pair_path)
-#    rescue
-#    end
-#  end
+  aws_key_pair_path = "#{Rails.root}/keys/#{Rails.configuration.x.aws['ec2_key_pair_name']}"
+  FileUtils.mkdir("#{Rails.root}/keys") if not File.exists?("#{Rails.root}/keys")
+  if not File.exists?(aws_key_pair_path)
+    begin
+      aws_key_pair = AWS::EC2::Client.new.create_key_pair(key_name: Rails.configuration.x.aws['ec2_key_pair_name'])
+      File.open(aws_key_pair_path, "w") { |f| f.write(aws_key_pair[:key_material]) }
+      FileUtils.chmod(0400, aws_key_pair_path)
+    rescue
+    end
+  end
 
 end
 
