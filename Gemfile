@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.5.1'
 gem 'rails', '~> 4.2.11'
-gem 'sqlite3'
 gem 'sass-rails', '~> 4.0.3'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
@@ -27,7 +26,8 @@ gem 'ipaddress'
 gem 'nokogiri'
 # gem 'faye'
 # gem 'puma'
-# gem 'pg'
+gem 'pg', '~> 0.18' #TODO, we need to upgrade our rails version we're using some very old versions of libraries.
+gem 'rails_12factor'
 gem 'netaddr', '~>1.5.1'
 gem 'chartkick'
 gem 'groupdate'
@@ -64,6 +64,7 @@ group :development, :test do
   gem 'daemons'
   gem 'faker'
   gem 'factory_girl_rails', '~> 4.0'
+  gem 'sqlite3'
 end
 group :test do
   gem 'capybara'

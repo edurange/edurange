@@ -208,6 +208,7 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     orm_adapter (0.5.0)
+    pg (0.21.0)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -245,9 +246,14 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rails_12factor (0.0.3)
+      rails_serve_static_assets
+      rails_stdout_logging
     rails_apps_pages (0.6.7)
     rails_apps_testing (0.3.13)
     rails_layout (1.0.42)
+    rails_serve_static_assets (0.0.5)
+    rails_stdout_logging (0.0.5)
     railties (4.2.11)
       actionpack (= 4.2.11)
       activesupport (= 4.2.11)
@@ -388,10 +394,12 @@ DEPENDENCIES
   momentjs-rails
   netaddr (~> 1.5.1)
   nokogiri
+  pg (~> 0.18)
   pry-byebug
   pry-rails
   pundit
   quiet_assets
+  rails_12factor
   rails (~> 4.2.11)
   rails_apps_pages
   rails_apps_testing

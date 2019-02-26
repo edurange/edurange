@@ -29,7 +29,9 @@ Rails.application.configure do
   }
 
   # Rotate log file after 10MB
-  config.logger = Logger.new("log/#{Rails.env}.log", 50, 10240000)
+#  config.logger = Logger.new("log/#{Rails.env}.log", 50, 10240000)
+
+  config.logger = Logger.new(STDOUT)
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

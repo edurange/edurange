@@ -1,7 +1,7 @@
 class Statistic < ActiveRecord::Base
   belongs_to :user
   belongs_to :scenario
-    
+
   # active directory has support for arrays and hash tables
   serialize :bash_analytics
   serialize :resource_info
