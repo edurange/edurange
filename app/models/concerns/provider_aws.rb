@@ -222,6 +222,8 @@ module ProviderAws
 
     # add route to nat
     aws_instance_create_route_to_nat(instance) if self.os == 'nat'
+
+    aws_instance_wait_till_initialized
   end
 
   def aws_instance_unboot
@@ -270,13 +272,38 @@ module ProviderAws
     aws_instance_S3_files_delete
   end
 
+  def aws_instance_wait_till_initialized
+    Timeout.timeout(300) do
+      sleep 5 while not aws_instance_initialized?
+    end
+  end
+
+  # return true if initialized, false if initializing, throw an exception otherwise.
+  # TODO: figure out a way to safely remove the similar method `initilized?` in the Instance model, and all the views that method is used.
+  # "initialized" is like a quasi-status of an instance.
+  # Before this commit an instance could be booted, but not initialized, so wherever statuses were dealt with there are special conditionals for dealing with that case.
+  def aws_instance_initialized?
+    com_page = AWS::S3.new.buckets[Rails.configuration.x.aws['s3_bucket_name']].objects[self.aws_S3_object_name('com')]
+    if com_page.exists? then
+      text = com_page.read()
+      status = text.split("\n")[0]
+      if status == 'error' then
+        raise RuntimeError.new 'Error in chef script'
+      else
+        return status == 'finished'
+      end
+    else
+      return false
+    end
+  end
+
   # helper fn to wait a predetermined amount of time or until an aws resource's status is the one desired
   def aws_instance_wait_till_status_equals(obj, status, time)
     log "AWS: waiting for #{obj.class.to_s.split("::").last} '#{obj.id}' status to change to ':#{status}'"
     begin
-      Timeout.timeout(time) do 
+      Timeout.timeout(time) do
         sleep 1 while aws_call(
-          'aws_instance_status', 
+          'aws_instance_status',
           instance: obj,
           errs: { AWS::EC2::Errors::InvalidInstanceID::NotFound => 60 }
         ) != status
@@ -305,7 +332,7 @@ module ProviderAws
       elastic_ip: elastic_ip,
       errs: { AWS::EC2::Errors::InvalidAllocationID::NotFound => 60 }
     )
-  
+
     # update ip_address_public attribute
     self.update_attribute(:ip_address_public, elastic_ip.public_ip)
   end
@@ -395,7 +422,7 @@ module ProviderAws
     name = aws_S3_object_name(name)
     log "AWS: creating S3 Object '#{name}'"
     obj = aws_call('aws_S3_obj_create', bucket: bucket, name: name)
-    
+
     log "AWS: getting S3Object url for '#{obj.key}'"
     url = aws_call('aws_S3_bucket_url_get', obj: obj, method: url_method)
     self.update_attribute(attribute, url.to_s)
