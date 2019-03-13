@@ -19,28 +19,25 @@ EOF
 # /root/chef/solo.json
 cat << EOF > solo.json
 {
-  "run_list": [ "recipe[op::cheferror]", "recipe[op::default]" ]
+  "run_list": [ "recipe[op::default]"]
 }
 EOF
 
 # check for cheff error and write to s3 file if found
-cat << EOF > /root/chef/cookbooks/op/recipes/cheferror.rb
-ruby_block 'chef_error' do
-	block do
-		if File.exists? "/root/chef/chef-stacktrace.out"
-			put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
-		  put.body = "error\n" + File.read("/root/chef/chef-stacktrace.out")
+cat << EOF > /root/chef/cheferror.rb
+require 'net/http'
 
-		  # send the PUT request
-		  http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-		  http.use_ssl = true
-		  http.start
-		  resp = http.request(put)
-		  resp = [resp.code.to_i, resp.to_hash, resp.body]
-		  http.finish
-		end
-	end
-	action :run
+if File.exists? "/root/chef/chef-stacktrace.out"
+	put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
+  put.body = "error\n" + File.read("/root/chef/chef-stacktrace.out")
+
+  # send the PUT request
+  http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
+  http.use_ssl = true
+  http.start
+  resp = http.request(put)
+  resp = [resp.code.to_i, resp.to_hash, resp.body]
+  http.finish
 end
 EOF
 
@@ -73,7 +70,7 @@ begin
       exit_statuses += "## #{username}\n"
       if File.exists?(exit_file)
         exit_statuses += File.open(exit_file, "r").read + "\n"
-      end      
+      end
       script_file = "#{user}/.script.log"
       username = user[6..user.length]
       script_logs += "## #{username}\n"
@@ -117,16 +114,10 @@ EOF
 
 apt-get -y install ruby
 
-cat << EOF > cron.sh
-#!/usr/bin/env bash
 wget -O /root/chef/cookbooks/op/recipes/default.rb '<%= instance.cookbook_url %>'
-cd /root/chef
 chef-solo -c solo.rb -j solo.json
-EOF
-chmod +x /root/chef/cron.sh
 
-wget -O /root/chef/cookbooks/op/recipes/default.rb '<%= instance.cookbook_url %>'
-chef-solo -c solo.rb -j solo.json
+ruby /root/chef/cheferror.rb
 
 ruby /root/chef/bash_histories.rb &
 

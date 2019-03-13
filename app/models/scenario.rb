@@ -309,10 +309,6 @@ class Scenario < ActiveRecord::Base
     return self.instances.select{ |i| not i.port_open?(22) }.any?
   end
 
-  def instances_initialized?
-    self.instances.select{ |i| i.initialized? == "true" }.size == self.instances.size
-  end
-
   def check_status
     return
     cnt = 0
