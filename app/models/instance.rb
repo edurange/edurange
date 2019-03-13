@@ -248,7 +248,7 @@ class Instance < ActiveRecord::Base
 
   def port_open?(ip, port)
     begin
-      Timeout::timeout(1) do 
+      Timeout::timeout(1) do
         begin
           s = TCPSocket.open(ip, port)
           s.close

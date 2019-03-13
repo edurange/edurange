@@ -10,7 +10,7 @@ $('#role-add-button-li').attr('class', '<%= @scenario.stopped? ? "" : "disabled"
 $('#start-button-li').attr('class', '<%= @scenario.paused? ? "" : "disabled" %>');
 $('#pause-button-li').attr('class', '<%= @scenario.booted? ? "" : "disabled" %>');
 
-update_status('scenario', '<%= @scenario_status %>')
+update_status('scenario', '<%= @scenario.status %>')
 
 <% @scenario.clouds.each do |cloud| %>
 
@@ -51,16 +51,8 @@ update_status('scenario', '<%= @scenario_status %>')
       $("#instance-<%= instance.id %>-driver").text('<%= instance.driver_id ? instance.driver_id : "not set" %>');
       $("#instance-<%= instance.id %>-ssh-ready").text('<%= instance.ssh_ready? ? "true" : "-" %>');
 
-      <% if instance.booted? %>
-        <% if instance.initialized? == "true" %>
-          update_status('instance-<%= instance.id %>', '<%= instance.status %>');
-        <% else %>
-          update_status('instance-<%= instance.id %>', 'initializing');
-        <% end %>
-      <% else %>
-        update_status('instance-<%= instance.id %>', '<%= instance.status %>');
-      <% end %>
-      
+      update_status('instance-<%= instance.id %>', '<%= instance.status %>');
+
       <% if instance.initialized? == "chef script error" %>
         $("#instance-<%= instance.id %>-initialized-error").removeClass('hidden');
       <% else %>

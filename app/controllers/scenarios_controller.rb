@@ -246,12 +246,6 @@ class ScenariosController < ApplicationController
 
     @scenario.status_update
 
-    if @scenario.booted?
-      @scenario_status = @scenario.instances_initialized? ? "booted" : "initializing"
-    else
-      @scenario_status = @scenario.status
-    end
-
     respond_to do |format|
       format.js { render 'scenarios/js/status.js.erb', :layout => false }
     end
