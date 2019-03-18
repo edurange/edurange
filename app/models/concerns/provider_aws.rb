@@ -273,7 +273,7 @@ module ProviderAws
   end
 
   def aws_instance_wait_till_initialized
-    Timeout.timeout(300) do
+    Timeout.timeout(600) do
       sleep 5 while not aws_instance_initialized?
     end
   end
