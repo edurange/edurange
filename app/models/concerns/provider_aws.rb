@@ -288,7 +288,7 @@ module ProviderAws
       text = com_page.read()
       status = text.split("\n")[0]
       if status == 'error' then
-        raise RuntimeError.new 'Error in chef script'
+        raise RuntimeError.new "Error in chef script:\n#{text}"
       else
         return status == 'finished'
       end
