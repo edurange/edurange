@@ -9,9 +9,9 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0',          group: :doc
 gem 'spring',        group: :development
-gem 'bootstrap-sass'
+gem 'bootstrap-sass', '~> 3.4.1'
 gem 'devise', '~> 4.6'
-gem 'figaro', :github=>"laserlemon/figaro"
+gem 'figaro', git: 'https://github.com/laserlemon/figaro'
 gem 'haml-rails'
 gem 'pundit'
 gem 'simple_form'
@@ -36,7 +36,7 @@ gem 'rubyzip'
 gem 'dotenv-rails', :groups => [:development, :test]
 gem 'fullcalendar-rails'
 gem 'momentjs-rails'
-gem 'symbol_serializer', github: 'Bizongo/symbol-serializer'
+gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
 
 group :development do
