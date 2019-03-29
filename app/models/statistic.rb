@@ -151,11 +151,11 @@ class Statistic < ActiveRecord::Base
    #    return result # users that map to lists of strings of commands
     # # empty hash (no commands within timeframe?)
     else
-      return result  
+      return result
     end
   end
 
-  def bash_histories_partition(data)
+  def self.bash_histories_partition(data)
     # input -> data: a list of strings of bash commands split by newline
     # output -> d: a hash {user->{timestamp->command}}
 
@@ -432,7 +432,7 @@ class Statistic < ActiveRecord::Base
       next if instance_id == '.' or instance_id == '..' or instance_id == 'users'
 
       bash_history = File.open(data_instance_bash_histories_path_by_id(instance_id), 'r').read().encode('utf-8', :invalid => :replace, :undef => :replace, :replace => '_')
-      bash_histories_partition(bash_history.split("\n")).each do |user_name, commands|
+      self.class.bash_histories_partition(bash_history.split("\n")).each do |user_name, commands|
 
         File.open(data_instance_by_id_user_bash_history_path(instance_id, user_name), "w") do |f| 
           f.write(commands.to_yaml)

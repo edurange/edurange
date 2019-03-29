@@ -224,6 +224,8 @@ module ProviderAws
     aws_instance_create_route_to_nat(instance) if self.os == 'nat'
 
     aws_instance_wait_till_initialized
+
+    aws_instance_schedule_bash_history_download
   end
 
   def aws_instance_unboot
@@ -351,6 +353,10 @@ module ProviderAws
     self.scenario.subnets.select { |s| s.driver_id and !s.internet_accessible }.each do |subnet|
       aws_call('aws_subnet_route_table_route_to_nat_create', subnet_id: subnet.driver_id, instance_id: instance.id)
     end
+  end
+
+  def aws_instance_schedule_bash_history_download
+    DownloadBashHistoryFromS3.set(wait: 1.minute).perform_later(self)
   end
 
   # collect instance related data from S3 and save it on the local filesystem
