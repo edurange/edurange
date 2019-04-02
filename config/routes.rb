@@ -8,7 +8,7 @@ Edurange::Application.routes.draw do
   get 'tutorials/instructor_manual'
   get 'tutorials/quick_start_guide'
   get 'tutorials/instr_ssh_inception'
- 
+
   get 'tutorials/ssh_inception'
   get 'tutorials/total_recon'
 
@@ -25,6 +25,11 @@ Edurange::Application.routes.draw do
   resources :subnets
   resources :clouds
   resources :tutorials
+
+  namespace 'analytics' do
+    resources :commands, only: [:index]
+  end
+
   resources :statistics do
     member do  # define routing for the statistics controller methods
       # destorying statistics
@@ -38,16 +43,16 @@ Edurange::Application.routes.draw do
       get 'download_bash_history'
       get 'download_exit_status'
       get 'download_script_log'
-        
+
       # analytics, complicated query params
-      post 'generate_analytics' 
+      post 'generate_analytics'
       get 'instance_users'
     end
   end
-  
+
 
   get 'statistic/id', to: 'scenarios#id'
-  
+
 
   resources :scenarios do
     member do

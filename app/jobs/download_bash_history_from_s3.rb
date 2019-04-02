@@ -9,7 +9,7 @@ class DownloadBashHistoryFromS3 < ApplicationJob
       player = Player.joins(:group).find_by(login: user_name, groups: { scenario_id: instance.scenario.id })
       if player then
         commands.each do |timestamp, command|
-          record = BashHistory.find_or_create_by!(
+          BashHistory.find_or_create_by!(
             instance: instance,
             player: player,
             command: command,
