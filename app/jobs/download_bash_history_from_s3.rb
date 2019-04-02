@@ -6,7 +6,7 @@ class DownloadBashHistoryFromS3 < ApplicationJob
     contents = instance.get_bash_history
 
     Statistic.bash_histories_partition(contents.split("\n")).each do |user_name, commands|
-      player = Player.joins(:group).find_by(login: user_name, groups: { scenario_id: instance.scenario.id })
+      player = Player.joins(:scenario).find_by(login: user_name, scenarios: { id: instance.scenario.id })
       if player then
         commands.each do |timestamp, command|
           BashHistory.find_or_create_by!(
