@@ -1,0 +1,16 @@
+%table.table
+  %thead
+    %tr
+      %th Time
+      %th Scenario
+      %th Instance
+      %th Player
+      %th Command
+  %tbody
+    - @commands.each do |record|
+      %tr
+        %td= record.performed_at
+        %td= record.instance.scenario.name
+        %td= record.instance.name
+        %td= record.player.login
+        %td= record.command
