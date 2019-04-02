@@ -10,7 +10,7 @@ class Analytics::CommandsController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        send_data self.class.to_csv(@commands), filename: "commands.csv"
+        render text: self.class.to_csv(@commands)
       end
     end
   end
