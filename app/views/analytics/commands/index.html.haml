@@ -1,7 +1,6 @@
 // %button.btn.btn-primary{ type: 'button' } Export
 = link_to('Export', analytics_commands_path(params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), class: 'btn btn-primary', type: 'text/csv', download: 'commands.csv')
 
-
 %table.table
   %thead
     %tr
@@ -11,10 +10,14 @@
       %th Player
       %th Command
   %tbody
-    - @commands.each do |record|
-      %tr
-        %td= record.performed_at
-        %td= link_to(record.scenario.name, scenario_path(record.scenario))
-        %td= record.instance.name
-        %td= record.player.login
-        %td= record.command
+    - if @commands.empty?
+      %tr.no-data
+        %td{colspan: 5} No Records
+    - else
+      - @commands.each do |record|
+        %tr
+          %td= record.performed_at
+          %td= link_to(record.scenario.name, scenario_path(record.scenario))
+          %td= record.instance.name
+          %td= record.player.login
+          %td= record.command
