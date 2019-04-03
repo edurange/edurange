@@ -29,7 +29,7 @@
     %li
       = link_to 'Show Boot Log', log_get_scenario_path(@scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-default'
     %li
-      = link_to 'Analytics', @scenario.statistic, method: :get, class: 'btn btn-default'
+      = link_to 'Analytics', analytics_commands_path(scenario_id: @scenario.id), class: 'btn btn-default'
 
   %div.indent.panel-body
     %ul.nav.nav-tabs
