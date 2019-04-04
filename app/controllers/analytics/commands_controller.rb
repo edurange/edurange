@@ -2,6 +2,11 @@ require 'csv'
 
 class Analytics::CommandsController < ApplicationController
   def index
+    if params[:scenario_id] then
+      @scenario = Scenario.find(params[:scenario_id])
+    end
+
+
     @commands = BashHistory.joins(:scenario, :player, :instance).order(:performed_at)
     @commands = @commands.where(scenarios: { id: params[:scenario_id] }) if params[:scenario_id].present?
     @commands = @commands.where(players: {login: params[:player_login]}) if params[:player_login].present?
