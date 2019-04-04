@@ -1,0 +1,13 @@
+<%= CSV.generate(headers: true) do |csv|
+  csv << %w{time scenario_id Scenario Instance Player Command}
+  @commands.each do |record|
+    csv << [
+      record.performed_at,
+      record.scenario.id,
+      record.scenario.name,
+      record.instance.name,
+      record.player.login,
+      record.command
+    ]
+  end
+end %>

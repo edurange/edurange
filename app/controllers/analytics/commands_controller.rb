@@ -10,19 +10,7 @@ class Analytics::CommandsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.csv do
-        render text: self.class.to_csv(@commands)
-      end
+      format.csv
     end
   end
-
-  def self.to_csv commands
-    CSV.generate(headers: true) do |csv|
-      csv << %w{time scenario_id Scenario Instance Player Command}
-      commands.each do |record|
-        csv << [record.performed_at, record.scenario.id, record.scenario.name, record.instance.name, record.player.login, record.command]
-      end
-    end
-  end
-
 end
