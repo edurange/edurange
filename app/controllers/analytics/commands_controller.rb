@@ -1,21 +1,45 @@
-require 'csv'
-
 class Analytics::CommandsController < ApplicationController
+
   def index
-    if params[:scenario_id] then
-      @scenario = Scenario.find(params[:scenario_id])
-    end
-
-
-    @commands = BashHistory.joins(:scenario, :player, :instance).order(:performed_at)
-    @commands = @commands.where(scenarios: { id: params[:scenario_id] }) if params[:scenario_id].present?
-    @commands = @commands.where(players: {login: params[:player_login]}) if params[:player_login].present?
-    @commands = @commands.where(instances: {name: params[:instance_name]}) if params[:instance_name].present?
-    @commands = @commands.where(instances: {id: params[:instance_id]}) if params[:instance_id].present?
-
+    @query = CommandHistoryQuery.new(filter_params)
     respond_to do |format|
       format.html
       format.csv
     end
   end
+
+  def filter_params
+    params.permit(CommandHistoryQuery::PARAMETERS)
+  end
+
+  class CommandHistoryQuery
+    include ActiveModel::Model
+
+    PARAMETERS = [:scenario_id, :player_login, :instance_name, :instance_id]
+
+    attr_accessor *PARAMETERS
+
+    def command_history
+      rel = BashHistory.all
+      rel = rel.with_scenario_id   scenario_id   if scenario_id.present?
+      rel = rel.with_player_login  player_login  if player_login.present?
+      rel = rel.with_instance_name instance_name if instance_name.present?
+      rel = rel.with_instance_id   instance_id   if instance_id.present?
+      rel
+    end
+
+    def scenario
+      Scenario.find(scenario_id) if scenario_id.present?
+    end
+
+    def player_options
+      scenario.players if scenario.present?
+    end
+
+    def instance_options
+      scenario.instances if scenario.present?
+    end
+
+  end
+
 end

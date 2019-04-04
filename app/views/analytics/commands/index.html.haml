@@ -4,18 +4,19 @@
   %div.panel-heading
     %h4 Player Command History
   %div.panel-body
-    - if @scenario
-      = form_tag '', method: :get, class: 'form-inline well well-sm' do
-        = hidden_field_tag 'scenario_id', @scenario.id
+    = form_tag '', method: :get, class: 'form-inline well well-sm' do
+      = hidden_field_tag 'scenario_id', @query.scenario_id
+      - if @query.player_options
         %div.form-group
           = label_tag 'player_login', 'Player'
-          = select_tag 'player_login', options_from_collection_for_select(@scenario.players, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
+          = select_tag 'player_login', options_from_collection_for_select(@query.player_options, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
+      - if @query.instance_options
         %div.form-group
           = label_tag 'instance_id', 'Instance'
-          = select_tag 'instance_id', options_from_collection_for_select(@scenario.instances, :id, :name, selected: params[:instance_id]), include_blank: 'All', class: 'form-control'
-        %div.pull-right
-          = submit_tag "Filter", class: 'btn btn-primary'
-          = link_to('Export', analytics_commands_path(params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-primary')
+          = select_tag 'instance_id', options_from_collection_for_select(@query.instance_options, :id, :name, selected: params[:instance_id]), include_blank: 'All', class: 'form-control'
+      %div.pull-right
+        = submit_tag "Filter", class: 'btn btn-primary'
+        = link_to('Export', analytics_commands_path(params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-primary')
 
     %table.table
       %thead
@@ -26,11 +27,11 @@
           %th Player
           %th Command
       %tbody
-        - if @commands.empty?
+        - if @query.command_history.empty?
           %tr.no-data
             %td{colspan: 5} No Records
         - else
-          - @commands.each do |record|
+          - @query.command_history.each do |record|
             %tr
               %td= record.performed_at
               %td= link_to(record.scenario.name, scenario_path(record.scenario))
