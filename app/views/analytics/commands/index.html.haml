@@ -1,23 +1,20 @@
-// %button.btn.btn-primary{ type: 'button' } Export
-
 %div.panel.panel-default
   %div.panel-heading
     %h4 Player Command History
   %div.panel-body
-    = form_tag '', method: :get, class: 'form-inline well well-sm' do
+    = form_tag '', method: :get, class: 'form-inline filter-controls' do
       = hidden_field_tag 'scenario_id', @query.scenario_id
       - if @query.player_options
         %div.form-group
-          = label_tag 'player_login', 'Player'
+          = label_tag 'player_login', 'Player', class: 'control-label'
           = select_tag 'player_login', options_from_collection_for_select(@query.player_options, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
       - if @query.instance_options
         %div.form-group
-          = label_tag 'instance_id', 'Instance'
+          = label_tag 'instance_id', 'Instance', class: 'control-label'
           = select_tag 'instance_id', options_from_collection_for_select(@query.instance_options, :id, :name, selected: params[:instance_id]), include_blank: 'All', class: 'form-control'
       %div.pull-right
         = submit_tag "Filter", class: 'btn btn-primary'
         = link_to('Export', analytics_commands_path(params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-primary')
-
     %table.table
       %thead
         %tr
@@ -27,14 +24,16 @@
           %th Player
           %th Command
       %tbody
-        - if @query.command_history.empty?
+        - if @commands.empty?
           %tr.no-data
             %td{colspan: 5} No Records
         - else
-          - @query.command_history.each do |record|
+          - @commands.each do |record|
             %tr
               %td= record.performed_at
               %td= link_to(record.scenario.name, scenario_path(record.scenario))
               %td= record.instance.name
               %td= record.player.login
               %td= record.command
+    = raw pagy_bootstrap_nav(@pagy)
+

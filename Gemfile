@@ -8,7 +8,6 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0',          group: :doc
-gem 'spring',        group: :development
 gem 'bootstrap-sass', '~> 3.4.1'
 gem 'devise', '~> 4.6'
 gem 'figaro', git: 'https://github.com/laserlemon/figaro'
@@ -24,8 +23,6 @@ gem 'erubis'
 gem 'unix-crypt'
 gem 'ipaddress'
 gem 'nokogiri'
-# gem 'faye'
-# gem 'puma'
 gem 'pg', '~> 0.18' #TODO, we need to upgrade our rails version we're using some very old versions of libraries.
 gem 'rails_12factor'
 gem 'netaddr', '~>1.5.1'
@@ -38,6 +35,7 @@ gem 'fullcalendar-rails'
 gem 'momentjs-rails'
 gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
+gem 'pagy'
 
 group :development do
   gem 'better_errors'
@@ -53,6 +51,7 @@ group :development do
   gem 'rb-fchange', :require=>false
   gem 'rb-fsevent', :require=>false
   gem 'rb-inotify', :require=>false
+  gem 'spring'
 end
 group :development, :test do
   # gem 'pry-stack_explorer'

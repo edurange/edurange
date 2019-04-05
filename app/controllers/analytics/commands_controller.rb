@@ -1,7 +1,11 @@
 class Analytics::CommandsController < ApplicationController
+  include Pagy::Backend
+  helper Pagy::Frontend
 
   def index
     @query = CommandHistoryQuery.new(filter_params)
+    @pagy, @commands = pagy(@query.command_history)
+
     respond_to do |format|
       format.html
       format.csv
