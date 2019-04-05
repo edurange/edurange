@@ -17,6 +17,7 @@ class Scenario < ActiveRecord::Base
   has_many :groups, dependent: :destroy
   has_many :subnets, through: :clouds
   has_many :instances, through: :subnets
+  has_many :players, through: :groups
   has_one :statistic
 
   # Validations
@@ -245,30 +246,6 @@ class Scenario < ActiveRecord::Base
 
   def scenario
     return self
-  end
-
-  def players
-    players = []
-    self.clouds.each do |cloud|
-      cloud.subnets.each do |subnet|
-        subnet.instances.each do |instance|
-          instance.instance_groups.each do |instance_group|
-            instance_group.group.players.each do |player|
-              found = false
-              players.each do |inplayer|
-                if inplayer.login == player.login
-                  found = true
-                end
-              end
-              if !found
-                players.push(player)
-              end
-            end
-          end
-        end
-      end
-    end
-    return players
   end
 
   def students
