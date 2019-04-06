@@ -30,30 +30,6 @@ Edurange::Application.routes.draw do
     resources :commands, only: [:index]
   end
 
-  resources :statistics do
-    member do  # define routing for the statistics controller methods
-      # destorying statistics
-      post 'destroyme'
-      # downloading statistics
-      post 'download_instance_user_bash_history'
-      post 'download_instance_exit_statuses'
-      post 'download_instance_script_logs'
-      post 'download_all'
-
-      get 'download_bash_history'
-      get 'download_exit_status'
-      get 'download_script_log'
-
-      # analytics, complicated query params
-      post 'generate_analytics'
-      get 'instance_users'
-    end
-  end
-
-
-  get 'statistic/id', to: 'scenarios#id'
-
-
   resources :scenarios do
     member do
       post 'destroyme'

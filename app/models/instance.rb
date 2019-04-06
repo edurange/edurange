@@ -18,15 +18,7 @@ class Instance < ActiveRecord::Base
   validate :validate_stopped, :validate_internet_accessible, :validate_ip_address
 
   after_destroy :update_scenario_modified
-  before_destroy :validate_stopped 
-  after_save :update_statistic
-  
-  def update_statistic
-    statistic = self.scenario.statistic
-    if statistic
-      statistic.gen_info
-    end
-  end
+  before_destroy :validate_stopped
 
   # Check to see if the instance has stopped
   def validate_stopped
@@ -46,7 +38,7 @@ class Instance < ActiveRecord::Base
       errors.add(:internet_accessible, "Instances subnet must also be internet accessible")
     end
   end
-  
+
   # Check if the instance has a valid IP
   def validate_ip_address
     if not self.ip_address_dynamic == "" and self.ip_address_dynamic and not self.has_dynamic_ip?
@@ -163,7 +155,7 @@ class Instance < ActiveRecord::Base
     return "" if (!self.bash_history_page or (self.bash_history_page == ""))
 
     begin
-      s3 = AWS::S3.new 
+      s3 = AWS::S3.new
       bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
       if bucket.objects[self.aws_S3_object_name('bash_history')].exists?
         bash_history =  bucket.objects[self.aws_S3_object_name('bash_history')].read()
@@ -349,7 +341,7 @@ class Instance < ActiveRecord::Base
       cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/com_page_and_bash_histories.rb.erb")).result(instance: self) + "\n"
       # This recipe changes /etc/bash.bashrc so that the bash history is written to file with every command
       cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/write_bash_histories.rb.erb")).result(instance: self) + "\n"
-      
+
       # do iptables rules
       routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
       s3_routing_rules = ''
@@ -414,4 +406,23 @@ class Instance < ActiveRecord::Base
     end
     vars
   end
+
+  def data_path_instance
+    path = "#{scenario.data_path_instances}/#{id}"
+    FileUtils.mkdir(path) if not File.exist?(path)
+    path
+  end
+
+  def data_instance_bash_histories_path
+    "#{data_path_instance}/bash_histories"
+  end
+
+  def data_instance_exit_statuses_path
+    "#{data_path_instance}/exit_statuses"
+  end
+
+  def data_instance_script_logs_path
+    "#{data_path_instance}/script_logs"
+  end
+
 end

@@ -40,7 +40,7 @@ module Provider
   end
 
   def log_file
-    "#{self.scenario.statistic.data_path_boot}/#{@opts[:boot_code]}"
+    "#{self.scenario.data_path_boot}/#{@opts[:boot_code]}"
   end
 
   def log_file_read
@@ -48,7 +48,7 @@ module Provider
   end
 
   def log_last
-    if path = Dir.glob("#{self.scenario.statistic.data_path_boot}/*").max_by { |f| File.mtime(f) }
+    if path = Dir.glob("#{self.scenario.data_path_boot}/*").max_by { |f| File.mtime(f) }
       return File.open(path, 'r').read()
     end
   end

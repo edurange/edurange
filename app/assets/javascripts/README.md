@@ -14,8 +14,6 @@ Updated 4/11/18
  - scenario_show.js.erb: Handles displaying instances that are running as well as displaying and calculating scoring.
  - schedules.js.coffee: All the behaviors and hooks related to the schedule controller go here. Displays the schedule for each scenario. Shows the time started and time ened and saves them ti schedules.json.
  - scoring.js.erb: Edit scoring questions.
- - statistics.js: 
- - statistics.js.coffee: Empty. Place all the behaviors and hooks related to the statistics controller here.
  - student_groups.js.coffee: Empty. Place all the behaviors and hooks related to the student_groups controller here.
  - student.js.coffee: Empty. Place all the behaviors and hooks related to the student controller here.
  - tutorial.js.coffee:  Empty. Place all the behaviors and hooks related to the tutorial controller here. 

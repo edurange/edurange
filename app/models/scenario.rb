@@ -18,7 +18,6 @@ class Scenario < ActiveRecord::Base
   has_many :subnets, through: :clouds
   has_many :instances, through: :subnets
   has_many :players, through: :groups
-  has_one :statistic
 
   # Validations
   # http://guides.rubyonrails.org/active_record_validations.html
@@ -45,8 +44,8 @@ class Scenario < ActiveRecord::Base
 
   # Callbacks
   # http://guides.rubyonrails.org/active_record_callbacks.html
-  after_create :get_aws_prefixes, :create_statistic, :modifiable_check
-  before_destroy :validate_stopped, :save_questions_and_answers, prepend: true
+  after_create :get_aws_prefixes, :modifiable_check
+  before_destroy :validate_stopped, prepend: true
 
   def get_aws_prefixes
     content = open('https://ip-ranges.amazonaws.com/ip-ranges.json').read
@@ -56,24 +55,7 @@ class Scenario < ActiveRecord::Base
     self.update_attribute(:aws_prefixes, arr)
   end
 
-  # Statistics
-
-  def save_questions_and_answers
-    if self.statistic
-      self.statistic.save_questions_and_answers
-      self.statistic.save_scenario_yml
-    end
-  end
-
   # File structure
-
-  def destroy_dependents
-    self.clouds.each do |cloud| cloud.destroy end
-    self.groups.each do |group| group.destroy end
-    self.roles.each do |role| role.destroy end
-    self.recipes.each do |recipe| recipe.destroy end
-    self.questions.each do |question| question.destroy end
-  end
 
   def update_yml
     if not self.modifiable?
@@ -534,14 +516,4 @@ class Scenario < ActiveRecord::Base
     path
   end
 
-  private
-
-    def create_statistic
-      statistic = Statistic.new(scenario_id: self.id)
-      statistic.save
-      # statistic.save_bash_histories_exit_status_script_log
-      # statistic.save_questions_and_answers
-    end
-
 end
-  

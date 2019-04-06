@@ -10,7 +10,6 @@ class Player < ActiveRecord::Base
   validates :password, presence: true
   validate :instances_stopped
 
-  after_save :update_scenario_modified, :update_statistic
   after_destroy :update_scenario_modified, :remove_group_player_variables
   after_create :update_group_player_variables
 
@@ -19,12 +18,6 @@ class Player < ActiveRecord::Base
       if self.group.scenario
         self.group.scenario.update(modified: true)
       end
-    end
-  end
-
-  def update_statistic
-    if self.scenario.statistic
-      self.scenario.statistic.gen_info
     end
   end
 
