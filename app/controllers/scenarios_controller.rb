@@ -438,7 +438,7 @@ class ScenariosController < ApplicationController
       internet_accessible:  params[:internet_accessible],
       os:  params[:os]
     )
-    
+
     respond_to do |format|
       format.js { render template: 'scenarios/js/instance/modify.js.erb', layout: false }
     end
@@ -455,13 +455,6 @@ class ScenariosController < ApplicationController
     @instance_role.destroy
     respond_to do |format|
       format.js { render template: 'scenarios/js/instance/role_remove.js.erb', layout: false }
-    end
-  end
-
-  def instance_bash_history
-    @bash_history = @instance.get_bash_history.gsub("\n", "<br>").gsub('"', "'").html_safe;
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/instance/bash_history.js.erb', layout: false }
     end
   end
 
