@@ -852,7 +852,7 @@ class ScenariosController < ApplicationController
   #  Helpers
 
   def log_get
-    @htmllog = @scenario.statistic.boot_log_last_read.gsub("\n", "<br>").html_safe;
+    @htmllog = @scenario.log_last.gsub("\n", "<br>").html_safe;
     respond_to do |format|
       format.js { render template: 'scenarios/js/log.js.erb', layout: false }
     end

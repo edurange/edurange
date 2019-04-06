@@ -269,7 +269,6 @@ module ProviderAws
 
     # save our instance related documents and delete the S3 bucket
     aws_instance_S3_files_save
-    self.scenario.statistic.data_process
 
     aws_instance_S3_files_delete
   end
@@ -364,41 +363,19 @@ module ProviderAws
     time = Time.now.strftime("%y_%m_%d")
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
 
-    path = self.scenario.statistic.data_path_instance(self.name)
-
     log "AWS: saving bash history from Instance '#{self.name}'"
-    File.open(self.scenario.statistic.data_instance_bash_histories_path(self.name), "wb") do |f|
+    File.open(data_instance_bash_histories_path, "wb") do |f|
       f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('bash_history')) )
     end
 
     log "AWS: saving exit status from Instance '#{self.name}'"
-    File.open(self.scenario.statistic.data_instance_exit_statuses_path(self.name), "wb") do |f|
+    File.open(data_instance_exit_statuses_path, "wb") do |f|
       f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('exit_status')) )
     end
 
     log "AWS: saving script log from Instance '#{self.name}'"
-    File.open(self.scenario.statistic.data_instance_script_logs_path(self.name), "wb") do |f|
+    File.open(data_instance_script_logs_path, "wb") do |f|
       f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('script_log')) )
-    end
-  end
-
-  # same method as above but without logging
-  def aws_instance_S3_files_save_no_log
-    time = Time.now.strftime("%y_%m_%d")
-    bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
-
-    path = self.scenario.statistic.data_path_instance(self.name)
-
-    File.open(self.scenario.statistic.data_instance_bash_histories_path(self.name), "wb") do |f|
-      f.write(aws_S3_object_get_and_read_no_log(bucket, aws_S3_object_name('bash_history')) )
-    end
-
-    File.open(self.scenario.statistic.data_instance_exit_statuses_path(self.name), "wb") do |f|
-      f.write(aws_S3_object_get_and_read_no_log(bucket, aws_S3_object_name('exit_status')) )
-    end
-
-    File.open(self.scenario.statistic.data_instance_script_logs_path(self.name), "wb") do |f|
-      f.write(aws_S3_object_get_and_read_no_log(bucket, aws_S3_object_name('script_log')) )
     end
   end
 
