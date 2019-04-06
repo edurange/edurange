@@ -155,34 +155,6 @@ class Statistic < ActiveRecord::Base
     end
   end
 
-  def self.bash_histories_partition(data)
-    # input -> data: a list of strings of bash commands split by newline
-    # output -> d: a hash {user->{timestamp->command}}
-
-    # method to populate the bash_analytics field of
-    # a Statistic model with a nested hash
-    # that maps users to timestamps to commands
-    hash = {} # {user -> { timestamp -> command }}
-    user = nil
-    time = nil
-
-    data.each do |line|
-      if /^\#\#\#\s/.match(line) # ignore timestamp
-      elsif /^\#\#\s/.match(line)
-        user = line[3..-1]
-        hash[user] = {} if not hash.has_key?(user)
-        time = nil
-      else
-        if /^#\d{10}$/.match(line)
-          time = line[1..-1]
-        else
-          hash[user][time] = line if (user and time and not /^\s*$/.match(line))
-        end
-      end
-    end
-    hash
-  end
-
   def command_frequency(instance_name, user)
     return false if not self.resource_info[:instances].has_key?(instance_name)
     path = data_instance_by_id_user_command_frequency(self.resource_info[:instances][instance_name][:id], user)
@@ -432,7 +404,7 @@ class Statistic < ActiveRecord::Base
       next if instance_id == '.' or instance_id == '..' or instance_id == 'users'
 
       bash_history = File.open(data_instance_bash_histories_path_by_id(instance_id), 'r').read().encode('utf-8', :invalid => :replace, :undef => :replace, :replace => '_')
-      self.class.bash_histories_partition(bash_history.split("\n")).each do |user_name, commands|
+      BashHistoryFile.parse(bash_history).each do |user_name, commands|
 
         File.open(data_instance_by_id_user_bash_history_path(instance_id, user_name), "w") do |f| 
           f.write(commands.to_yaml)
