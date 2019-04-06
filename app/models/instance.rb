@@ -124,18 +124,15 @@ class Instance < ActiveRecord::Base
     return ir
   end
 
-  # Get the cloud scenario and return it
   def scenario
     return self.subnet.cloud.scenario
   end
 
-  # Return the owner of the scenario
   def owner?(id)
     return self.subnet.cloud.scenario.user_id == id
   end
 
   # Return the status of instance
-  # Marked for refactoring
   def status_check
     puts "\nstatus check\n"
     if self.driver_id
@@ -149,59 +146,16 @@ class Instance < ActiveRecord::Base
     end
   end
 
-  # Return the bash history for the instance
-  # Mark for refactoring
   def get_bash_history
-    return "" if (!self.bash_history_page or (self.bash_history_page == ""))
-
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_S3_object_name('bash_history')].exists?
-        bash_history =  bucket.objects[self.aws_S3_object_name('bash_history')].read()
-        return bash_history == nil ? "" : bash_history
-      end
-    rescue => e
-      return "error getting bash history: #{e}"
-    end
-
-    return ""
+    provider_get_bash_history
   end
 
   def get_exit_status
-    return "" if (!self.exit_status_page or (self.exit_status_page == ""))
-
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_instance_exit_status_page_name].exists?
-        exit_status =  bucket.objects[self.aws_instance_exit_status_page_name].read()
-        return exit_status == nil ? "" : exit_status
-      end
-    rescue
-      return "error getting exit status"
-    end
-
-    return ""
+    provider_get_exit_status
   end
 
-  # Return script log
-  # Marked for refactoring
   def get_script_log
-    return "" if (!self.script_log_page or (self.script_log_page == ""))
-
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_instance_script_log_page_name].exists?
-        script_log =  bucket.objects[self.aws_instance_script_log_page_name].read()
-        return script_log == nil ? "" : script_log
-      end
-    rescue
-      return "error getting script log"
-    end
-
-    return ""
+    provider_get_script_log
   end
 
   # Return chef erros
