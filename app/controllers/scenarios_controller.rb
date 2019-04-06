@@ -188,7 +188,7 @@ class ScenariosController < ApplicationController
         respond_to do |format|
           format.js { render js: "window.location.pathname='/scenarios'" }
         end
-      else 
+      else
         respond_to do |format|
           format.js { render 'scenarios/js/scenario/destroy.js.erb', :layout => false }
         end
@@ -769,7 +769,7 @@ class ScenariosController < ApplicationController
       format.js { render template: 'scenarios/js/scoring/question/move_up.js.erb', layout: false }
     end
   end
-    
+
   def scoring_question_move_down
     @question2 = @question.move_down
     respond_to do |format|
