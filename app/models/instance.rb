@@ -158,17 +158,8 @@ class Instance < ActiveRecord::Base
     provider_get_script_log
   end
 
-  # Return chef erros
-  # Marked for refactoring
   def get_chef_error
-    return "" if !self.bash_history_page
-    s3 = AWS::S3.new
-    bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-    if bucket.objects[self.aws_S3_object_name('com')].exists?
-      chef_err =  bucket.objects[self.aws_S3_object_name('com')].read()
-      return chef_err == nil ? "" : chef_err
-    end
-    return ""
+    provider_get_chef_error
   end
 
   # Check if the instance is initialized
@@ -217,12 +208,6 @@ class Instance < ActiveRecord::Base
     return false
   end
 
-  # Marked for refactoring
-  def s3_name_prefix
-    scenario = self.subnet.cloud.scenario
-    return scenario.user.name + scenario.name + scenario.id.to_s + scenario.uuid
-  end
- 
   def add_progress(val)
     # debug "Adding progress to instance!"
     # PrivatePub.publish_to "/scenarios/#{self.subnet.cloud.scenario.id}", instance_progress: val

@@ -409,6 +409,17 @@ module ProviderAws
     return ""
   end
 
+  def aws_get_chef_error
+    return "" if !self.bash_history_page
+    s3 = AWS::S3.new
+    bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
+    if bucket.objects[self.aws_S3_object_name('com')].exists?
+      chef_err =  bucket.objects[self.aws_S3_object_name('com')].read()
+      return chef_err == nil ? "" : chef_err
+    end
+    return ""
+  end
+
   # collect instance related data from S3 and save it on the local filesystem
   def aws_instance_S3_files_save
     time = Time.now.strftime("%y_%m_%d")
