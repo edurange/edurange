@@ -5,6 +5,7 @@ class Player < ActiveRecord::Base
   belongs_to :student_group
   belongs_to :user
   has_one :scenario, through: :group
+  has_many :bash_histories, dependent: :destroy
 
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true

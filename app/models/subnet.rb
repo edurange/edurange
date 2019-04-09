@@ -5,7 +5,7 @@ class Subnet < ActiveRecord::Base
   has_many :instances, dependent: :destroy
   has_one :user, through: :cloud
 
-  validates :name, presence: true, uniqueness: { scope: :cloud, message: "name already taken" } 
+  validates :name, presence: true, uniqueness: { scope: :cloud, message: "name already taken" }
   validates_presence_of :cidr_block, :cloud
   validate :cidr_validate, :internet_validate, :validate_stopped
 

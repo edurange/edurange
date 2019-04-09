@@ -8,13 +8,15 @@ class Instance < ActiveRecord::Base
   has_many :instance_roles, dependent: :destroy
   has_many :groups, through: :instance_groups, dependent: :destroy
   has_many :roles, through: :instance_roles, dependent: :destroy
+  has_many :players, through: :groups
+  has_many :bash_histories, dependent: :destroy
   has_one :user, through: :subnet
   has_one :scenario, through: :subnet
 
   serialize :ip_address_dynamic
 
   validates_presence_of :name, :os, :subnet
-  validates :name, presence: true, uniqueness: { scope: :subnet, message: "Name taken" } 
+  validates :name, presence: true, uniqueness: { scope: :subnet, message: "Name taken" }
   validate :validate_stopped, :validate_internet_accessible, :validate_ip_address
 
   after_destroy :update_scenario_modified

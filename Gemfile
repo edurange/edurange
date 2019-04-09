@@ -36,6 +36,7 @@ gem 'momentjs-rails'
 gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
 gem 'pagy'
+gem 'composite_primary_keys', '~> 8'
 
 group :development do
   gem 'better_errors'
