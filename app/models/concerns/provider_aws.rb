@@ -381,12 +381,12 @@ module ProviderAws
     begin
       s3 = AWS::S3.new
       bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_instance_exit_status_page_name].exists?
-        exit_status =  bucket.objects[self.aws_instance_exit_status_page_name].read()
+      if bucket.objects[self.aws_S3_object_name('exit_status')].exists?
+        exit_status =  bucket.objects[self.aws_S3_object_name('exit_status')].read()
         return exit_status == nil ? "" : exit_status
       end
     rescue
-      return "error getting exit status"
+      return "error getting exit status: #{e}"
     end
 
     return ""
