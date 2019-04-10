@@ -24,7 +24,7 @@ class Analytics::CommandsController < ApplicationController
     attr_accessor *PARAMETERS
 
     def command_history
-      rel = BashHistory.all
+      rel = BashHistory.order(performed_at: :desc)
       rel = rel.with_scenario_id   scenario_id   if scenario_id.present?
       rel = rel.with_player_login  player_login  if player_login.present?
       rel = rel.with_instance_name instance_name if instance_name.present?
