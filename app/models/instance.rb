@@ -349,10 +349,4 @@ class Instance < ActiveRecord::Base
     vars
   end
 
-  def data_path_instance
-    path = "#{scenario.data_path_instances}/#{id}"
-    FileUtils.mkdir(path) if not File.exist?(path)
-    path
-  end
-
 end

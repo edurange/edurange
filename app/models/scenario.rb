@@ -504,12 +504,6 @@ class Scenario < ActiveRecord::Base
     path
   end
 
-  def data_path_instances
-    path = "#{self.data_path}/instances"
-    FileUtils.mkdir_p(path) if not File.exists?(path)
-    path
-  end
-
   def data_path_boot
     path = "#{self.data_path}/boot"
     FileUtils.mkdir_p(path) if not File.exists?(path)
