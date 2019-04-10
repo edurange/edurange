@@ -165,9 +165,10 @@ class Instance < ActiveRecord::Base
   end
 
   # Check if the instance is initialized
+  # duplicated code in provider_aws::instance_initialized?
+  # needs to be removed.
+  # Where it is used, needs to be replaced with sensible code.
   def initialized?
-    return "-" if !self.com_page
-
     begin
       com_page = AWS::S3.new.buckets[Rails.configuration.x.aws['s3_bucket_name']].objects[self.aws_S3_object_name('com')]
       if com_page.exists?
@@ -352,18 +353,6 @@ class Instance < ActiveRecord::Base
     path = "#{scenario.data_path_instances}/#{id}"
     FileUtils.mkdir(path) if not File.exist?(path)
     path
-  end
-
-  def data_instance_bash_histories_path
-    "#{data_path_instance}/bash_histories"
-  end
-
-  def data_instance_exit_statuses_path
-    "#{data_path_instance}/exit_statuses"
-  end
-
-  def data_instance_script_logs_path
-    "#{data_path_instance}/script_logs"
   end
 
 end

@@ -359,42 +359,22 @@ module ProviderAws
   end
 
   def aws_get_bash_history
-    return "" if (!self.bash_history_page or (self.bash_history_page == ""))
-
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_S3_object_name('bash_history')].exists?
-        bash_history =  bucket.objects[self.aws_S3_object_name('bash_history')].read()
-        return bash_history == nil ? "" : bash_history
-      end
-    rescue => e
-      return "error getting bash history: #{e}"
+    if aws_s3_bash_history_object.exists?
+      aws_s3_bash_history_object.read
+    else
+      ''
     end
-
-    return ""
   end
 
   def aws_get_exit_status
-    return "" if (!self.exit_status_page or (self.exit_status_page == ""))
-
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_S3_object_name('exit_status')].exists?
-        exit_status =  bucket.objects[self.aws_S3_object_name('exit_status')].read()
-        return exit_status == nil ? "" : exit_status
-      end
-    rescue
-      return "error getting exit status: #{e}"
+    if aws_s3_exit_status_object.exists?
+      aws_s3_exit_status_object.read
+    else
+      ''
     end
-
-    return ""
   end
 
   def aws_get_script_log
-    return "" if (!self.script_log_page or (self.script_log_page == ""))
-
     begin
       s3 = AWS::S3.new
       bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
@@ -410,7 +390,6 @@ module ProviderAws
   end
 
   def aws_get_chef_error
-    return "" if !self.bash_history_page
     s3 = AWS::S3.new
     bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
     if bucket.objects[self.aws_S3_object_name('com')].exists?
@@ -420,25 +399,9 @@ module ProviderAws
     return ""
   end
 
-  # collect instance related data from S3 and save it on the local filesystem
+  # collect instance related data from S3
   def aws_instance_S3_files_save
-    time = Time.now.strftime("%y_%m_%d")
-    bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
-
-    log "AWS: saving bash history from Instance '#{self.name}'"
-    File.open(data_instance_bash_histories_path, "wb") do |f|
-      f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('bash_history')) )
-    end
-
-    log "AWS: saving exit status from Instance '#{self.name}'"
-    File.open(data_instance_exit_statuses_path, "wb") do |f|
-      f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('exit_status')) )
-    end
-
-    log "AWS: saving script log from Instance '#{self.name}'"
-    File.open(data_instance_script_logs_path, "wb") do |f|
-      f.write(aws_S3_object_get_and_read(bucket, aws_S3_object_name('script_log')) )
-    end
+    DownloadBashHistoryFromS3.perform_now(self)
   end
 
   # create aws s3 files for instance; exit statuses, script logs, and bash history
@@ -446,60 +409,45 @@ module ProviderAws
     bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
     if not aws_call('aws_obj_exists?', obj: bucket)
       log "AWS: creating S3 Bucket '#{Rails.configuration.x.aws['s3_bucket_name']}'"
-      bucekt = aws_call('aws_S3_bucket_create', name: Rails.configuration.x.aws['s3_bucket_name'])
+      aws_call('aws_S3_bucket_create', name: Rails.configuration.x.aws['s3_bucket_name'])
     end
 
-    aws_instance_S3_object_create(bucket, 'exit_status', :exit_status_page, :write)
-    aws_instance_S3_object_create(bucket, 'script_log', :script_log_page, :write)
-    aws_instance_S3_object_create(bucket, 'bash_history', :bash_history_page, :write)
+    aws_instance_S3_object_create(bucket, 'exit_status')
+    aws_instance_S3_object_create(bucket, 'script_log')
+    aws_instance_S3_object_create(bucket, 'bash_history')
 
-    obj = aws_instance_S3_object_create(bucket, 'com', :com_page, :write)
+    obj = aws_instance_S3_object_create(bucket, 'com')
     log "AWS: writing to S3Object '#{obj.key}'"
     aws_call('aws_S3_object_write', obj: obj, data: 'waiting')
 
-    obj = aws_instance_S3_object_create(bucket, 'cookbook', :cookbook_url, :read)
+    obj = aws_instance_S3_object_create(bucket, 'cookbook')
     log "AWS: writing to S3Object '#{obj.key}'"
     aws_call('aws_S3_object_write', obj: obj, data: self.generate_cookbook)
   end
 
   # helper fn to create an aws s3 object
-  def aws_instance_S3_object_create(bucket, name, attribute, url_method)
+  def aws_instance_S3_object_create(bucket, name)
     name = aws_S3_object_name(name)
     log "AWS: creating S3 Object '#{name}'"
-    obj = aws_call('aws_S3_obj_create', bucket: bucket, name: name)
-
-    log "AWS: getting S3Object url for '#{obj.key}'"
-    url = aws_call('aws_S3_bucket_url_get', obj: obj, method: url_method)
-    self.update_attribute(attribute, url.to_s)
-
-    obj
-  end
-
-  # get the url to a given aws s3 bucket
-  def aws_S3_bucket_url_get(opts)
-    if opts[:method] == :write
-      opts[:obj].url_for(opts[:method], expires: 30.days, content_type: 'text/plain')
-    else
-      opts[:obj].url_for(opts[:method], expires: 30.days)
-    end
+    aws_call('aws_S3_obj_create', bucket: bucket, name: name)
   end
 
   # delete all s3 instance files
   def aws_instance_S3_files_delete
     log "AWS: looking for instance S3 files to delete"
-    bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
-    return false if not aws_call('aws_obj_exists?', obj: bucket)
+    return false if not aws_s3_bucket.exists?
 
-    ret = true if aws_instance_S3_object_delete(bucket, aws_S3_object_name('cookbook'), :cookbook_url)
-    ret = true if aws_instance_S3_object_delete(bucket, aws_S3_object_name('com'), :com_page)
-    ret = true if aws_instance_S3_object_delete(bucket, aws_S3_object_name('bash_history'), :bash_history_page)
-    ret = true if aws_instance_S3_object_delete(bucket, aws_S3_object_name('exit_status'), :exit_status_page)
-    ret = true if aws_instance_S3_object_delete(bucket, aws_S3_object_name('script_log'), :script_log_page)
-    ret
+    object_base_names = ['cookbook', 'com', 'bash_history', 'exit_status', 'script_log']
+
+    deleted = object_base_names.map do |base_name|
+      aws_instance_S3_object_delete(aws_s3_bucket, aws_S3_object_name(base_name))
+    end
+
+    deleted.any?
   end
 
   # deletes an instance's s3 object
-  def aws_instance_S3_object_delete(bucket, name, attribute)
+  def aws_instance_S3_object_delete(bucket, name)
     obj = aws_call('aws_S3_obj_get', bucket: bucket, name: name)
     if aws_call('aws_obj_exists?', obj: obj)
       log "AWS: deleting S3Object '#{obj.key}'"
@@ -507,8 +455,55 @@ module ProviderAws
     else
       return false
     end
-    self.update_attribute(attribute, "")
     true
+  end
+
+  def aws_s3
+    @aws_s3 ||= AWS::S3.new
+  end
+
+  def aws_s3_bucket
+    aws_s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
+  end
+
+  def aws_s3_bash_history_object
+    aws_s3_bucket.objects[aws_S3_object_name('bash_history')]
+  end
+
+  def aws_s3_cookbook_object
+    aws_s3_bucket.objects[aws_S3_object_name('cookbook')]
+  end
+
+  def aws_s3_com_object
+    aws_s3_bucket.objects[aws_S3_object_name('com')]
+  end
+
+  def aws_s3_exit_status_object
+    aws_s3_bucket.objects[aws_S3_object_name('exit_status')]
+  end
+
+  def aws_s3_script_log_object
+    aws_s3_bucket.objects[aws_S3_object_name('script_log')]
+  end
+
+  def cookbook_url
+    aws_s3_cookbook_object.url_for(:read, expires: 30.days)
+  end
+
+  def com_page
+    aws_s3_com_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+  end
+
+  def exit_status_page
+    aws_s3_exit_status_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+  end
+
+  def bash_history_page
+    aws_s3_bash_history_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+  end
+
+  def script_log_page
+    aws_s3_script_log_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
   end
 
   # build the string which is our S3 object name
