@@ -1,14 +1,15 @@
 <% require 'csv' %>
-<%= CSV.generate(headers: true) do |csv|
-  csv << %w{time scenario_id Scenario Instance Player Command}
+<%= raw(CSV.generate(headers: true) do |csv|
+  csv << %w{performed_at scenario_uuid scenario_name instance_name player_login exit_status command}
   @query.command_history.each do |record|
     csv << [
       record.performed_at,
-      record.scenario.id,
+      record.scenario.uuid,
       record.scenario.name,
       record.instance.name,
       record.player.login,
+      record.exit_status,
       record.command
     ]
   end
-end %>
+end) %>
