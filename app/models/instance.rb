@@ -156,10 +156,6 @@ class Instance < ActiveRecord::Base
     provider_get_exit_status
   end
 
-  def get_script_log
-    provider_get_script_log
-  end
-
   def get_chef_error
     provider_get_chef_error
   end
