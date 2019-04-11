@@ -229,44 +229,42 @@ module ProviderAws
   end
 
   def aws_instance_unboot
-    if self.driver_id == nil
-      raise 'AWS: no driver id' if not aws_instance_S3_files_delete
-    end
+    if self.driver_id.present?
+      # get instance object
+      log "AWS: getting Instance '#{self.driver_id}'"
+      instance = aws_call('aws_instance_get', instance_id: self.driver_id)
 
-    # get instance object
-    log "AWS: getting Instance '#{self.driver_id}'"
-    instance = aws_call('aws_instance_get', instance_id: self.driver_id)
+      # check if we got instance object
+      log "AWS: checking if Instance '#{instance.id}' exists"
+      if aws_call('aws_obj_exists?', obj: instance)
 
-    # check if we got instance object
-    log "AWS: checking if Instance '#{instance.id}' exists"
-    if aws_call('aws_obj_exists?', obj: instance)
+        # if we got an instance object; check if it has an elastic ip and delete elastic ip if so
+        log "AWS: looking for Instance '#{self.driver_id}' ElasticIP" if self.internet_accessible
+        if elastic_ip = aws_call('aws_instance_elastic_ip_get', instance: instance)
+          log "AWS: disassociating ElasticIP '#{elastic_ip.public_ip}'"
+          aws_call('aws_instance_elastic_ip_disassociate', instance: instance)
 
-      # if we got an instance object; check if it has an elastic ip and delete elastic ip if so
-      log "AWS: looking for Instance '#{self.driver_id}' ElasticIP" if self.internet_accessible
-      if elastic_ip = aws_call('aws_instance_elastic_ip_get', instance: instance)
-        log "AWS: disassociating ElasticIP '#{elastic_ip.public_ip}'"
-        aws_call('aws_instance_elastic_ip_disassociate', instance: instance)
+          log "AWS: deleting ElasticIP '#{elastic_ip.public_ip}'"
+          aws_call('aws_obj_delete', obj: elastic_ip)
 
-        log "AWS: deleting ElasticIP '#{elastic_ip.public_ip}'"
-        aws_call('aws_obj_delete', obj: elastic_ip)
+          self.update_attribute(:ip_address_public, nil)
+        end
 
-        self.update_attribute(:ip_address_public, nil)
+        # set the delete volumes on terminating instance option
+        aws_instance_volumes_delete_on_termination_set(instance)
+
+        # delete instance
+        log "AWS: deleting Instance '#{instance.id}'"
+        aws_call('aws_obj_delete', obj: instance)
+
+        # wait till its deleted
+        aws_instance_wait_till_status_equals(instance, :terminated, 360)
+        self.update_attribute(:driver_id, nil)
+      else
+        log "AWS: Instance '#{self.driver_id}' does not exist abandoning driver id"
+        self.update_attribute(:driver_id, nil)
       end
-
-      # set the delete volumes on terminating instance option
-      aws_instance_volumes_delete_on_termination_set(instance)
-
-      # delete instance
-      log "AWS: deleting Instance '#{instance.id}'"
-      aws_call('aws_obj_delete', obj: instance)
-      self.update_attribute(:driver_id, nil)
-
-      # wait till its deleted
-      aws_instance_wait_till_status_equals(instance, :terminated, 360)
-    else
-      log "AWS: Instance '#{self.driver_id}' does not exist abandoning driver id"
     end
-
     # save our instance related documents and delete the S3 bucket
     aws_instance_S3_files_save
 
@@ -284,9 +282,8 @@ module ProviderAws
   # "initialized" is like a quasi-status of an instance.
   # Before this commit an instance could be booted, but not initialized, so wherever statuses were dealt with there are special conditionals for dealing with that case.
   def aws_instance_initialized?
-    com_page = AWS::S3.new.buckets[Rails.configuration.x.aws['s3_bucket_name']].objects[self.aws_S3_object_name('com')]
-    if com_page.exists? then
-      text = com_page.read()
+    if aws_s3_com_object.exists? then
+      text = aws_s3_com_object.read()
       status = text.split("\n")[0]
       if status == 'error' then
         raise RuntimeError.new "Error in chef script:\n#{text}"
@@ -374,29 +371,12 @@ module ProviderAws
     end
   end
 
-  def aws_get_script_log
-    begin
-      s3 = AWS::S3.new
-      bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-      if bucket.objects[self.aws_instance_script_log_page_name].exists?
-        script_log =  bucket.objects[self.aws_instance_script_log_page_name].read()
-        return script_log == nil ? "" : script_log
-      end
-    rescue
-      return "error getting script log"
-    end
-
-    return ""
-  end
-
   def aws_get_chef_error
-    s3 = AWS::S3.new
-    bucket = s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
-    if bucket.objects[self.aws_S3_object_name('com')].exists?
-      chef_err =  bucket.objects[self.aws_S3_object_name('com')].read()
-      return chef_err == nil ? "" : chef_err
+    if aws_s3_com_object.exists?
+      aws_s3_com_object.read
+    else
+      ''
     end
-    return ""
   end
 
   # collect instance related data from S3
@@ -404,86 +384,63 @@ module ProviderAws
     DownloadBashHistoryFromS3.perform_now(self)
   end
 
-  # create aws s3 files for instance; exit statuses, script logs, and bash history
   def aws_instance_S3_files_create
-    bucket = aws_call('aws_S3_bucket_get', name: Rails.configuration.x.aws['s3_bucket_name'])
-    if not aws_call('aws_obj_exists?', obj: bucket)
-      log "AWS: creating S3 Bucket '#{Rails.configuration.x.aws['s3_bucket_name']}'"
-      aws_call('aws_S3_bucket_create', name: Rails.configuration.x.aws['s3_bucket_name'])
-    end
+    create_aws_s3_bucket! if not aws_s3_bucket.exists?
 
-    aws_instance_S3_object_create(bucket, 'exit_status')
-    aws_instance_S3_object_create(bucket, 'script_log')
-    aws_instance_S3_object_create(bucket, 'bash_history')
+    log "AWS: writing to S3Object '#{aws_s3_com_object.key}'"
+    aws_s3_com_object.write('waiting')
 
-    obj = aws_instance_S3_object_create(bucket, 'com')
-    log "AWS: writing to S3Object '#{obj.key}'"
-    aws_call('aws_S3_object_write', obj: obj, data: 'waiting')
-
-    obj = aws_instance_S3_object_create(bucket, 'cookbook')
-    log "AWS: writing to S3Object '#{obj.key}'"
-    aws_call('aws_S3_object_write', obj: obj, data: self.generate_cookbook)
-  end
-
-  # helper fn to create an aws s3 object
-  def aws_instance_S3_object_create(bucket, name)
-    name = aws_S3_object_name(name)
-    log "AWS: creating S3 Object '#{name}'"
-    aws_call('aws_S3_obj_create', bucket: bucket, name: name)
+    log "AWS: writing to S3Object '#{aws_s3_cookbook_object.key}'"
+    aws_s3_cookbook_object.write(generate_cookbook)
   end
 
   # delete all s3 instance files
   def aws_instance_S3_files_delete
-    log "AWS: looking for instance S3 files to delete"
-    return false if not aws_s3_bucket.exists?
-
-    object_base_names = ['cookbook', 'com', 'bash_history', 'exit_status', 'script_log']
-
-    deleted = object_base_names.map do |base_name|
-      aws_instance_S3_object_delete(aws_s3_bucket, aws_S3_object_name(base_name))
+    log "AWS: deleting instance S3 objects"
+    if aws_s3_bucket.exists?
+      aws_s3_bucket.objects.with_prefix(aws_s3_instance_object_prefix).delete_all
     end
-
-    deleted.any?
-  end
-
-  # deletes an instance's s3 object
-  def aws_instance_S3_object_delete(bucket, name)
-    obj = aws_call('aws_S3_obj_get', bucket: bucket, name: name)
-    if aws_call('aws_obj_exists?', obj: obj)
-      log "AWS: deleting S3Object '#{obj.key}'"
-      aws_call('aws_obj_delete', obj: obj)
-    else
-      return false
-    end
-    true
   end
 
   def aws_s3
     @aws_s3 ||= AWS::S3.new
   end
 
+  def aws_s3_bucket_name
+    Rails.configuration.x.aws['s3_bucket_name']
+  end
+
   def aws_s3_bucket
-    aws_s3.buckets[Rails.configuration.x.aws['s3_bucket_name']]
+    aws_s3.buckets[aws_s3_bucket_name]
+  end
+
+  def create_aws_s3_bucket!
+    log "AWS: creating S3 Bucket '#{aws_s3_bucket_name}'"
+    aws_s3.buckets.create(aws_s3_bucket_name)
   end
 
   def aws_s3_bash_history_object
-    aws_s3_bucket.objects[aws_S3_object_name('bash_history')]
+    aws_s3_instance_object('bash_history')
   end
 
   def aws_s3_cookbook_object
-    aws_s3_bucket.objects[aws_S3_object_name('cookbook')]
+    aws_s3_instance_object('cookbook')
   end
 
   def aws_s3_com_object
-    aws_s3_bucket.objects[aws_S3_object_name('com')]
+    aws_s3_instance_object('com')
   end
 
   def aws_s3_exit_status_object
-    aws_s3_bucket.objects[aws_S3_object_name('exit_status')]
+    aws_s3_instance_object('exit_status')
   end
 
   def aws_s3_script_log_object
-    aws_s3_bucket.objects[aws_S3_object_name('script_log')]
+    aws_s3_instance_object('script_log')
+  end
+
+  def aws_s3_instance_object suffix
+    aws_s3_bucket.objects[aws_S3_object_name(suffix)]
   end
 
   def cookbook_url
@@ -506,35 +463,14 @@ module ProviderAws
     aws_s3_script_log_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
   end
 
+  def aws_s3_instance_object_prefix
+    "#{Rails.configuration.x.aws['iam_user_name']}_#{scenario.user.name}_#{scenario.name}_#{scenario.id.to_s}_#{name}_#{id.to_s}_#{self.uuid[0..5]}_"
+  end
+
   # build the string which is our S3 object name
   def aws_S3_object_name(suffix)
-    "#{Rails.configuration.x.aws['iam_user_name']}_#{self.scenario.user.name}_#{self.scenario.name}_#{self.scenario.id.to_s}_#{self.name}_#{self.id.to_s}_#{self.uuid[0..5]}_#{suffix}"
+    "#{aws_s3_instance_object_prefix}#{suffix}"
   end
-
-  # try to get aws S3 object, if it exists then return the data stored in the object
-  def aws_S3_object_get_and_read(bucket, name)
-    log "AWS: getting S3Object 'name'"
-    object = aws_call('aws_S3_object_get', bucket: bucket, name: name)
-    if aws_call('aws_obj_exists?', obj: object)
-      log "AWS: reading S3Object '#{object.key}'"
-      return aws_call('aws_S3_object_read', object: object)
-    end
-    return ""
-  rescue AWS::S3::Errors::NoSuchKey => e
-    return ""
-  end
-
-  # same as above but with no log
-  def aws_S3_object_get_and_read_no_log(bucket, name)
-    object = aws_call('aws_S3_object_get', bucket: bucket, name: name)
-    if aws_call('aws_obj_exists?', obj: object)
-      return aws_call('aws_S3_object_read', object: object)
-    end
-    return ""
-  rescue AWS::S3::Errors::NoSuchKey => e
-    return ""
-  end
-
 
   # Helper Functions
 
@@ -726,40 +662,6 @@ module ProviderAws
   end
 
   # AWS::S3
-
-  def aws_S3_object_get(opts)
-    opts[:bucket].objects[opts[:name]]
-  end
-
-  def aws_S3_object_read(opts)
-    opts[:object].read
-  end
-
-  def aws_S3_object_write(opts)
-    opts[:obj].write(opts[:data])
-  end
-
-  def aws_S3_obj_url_get(opts)
-    opts[:obj].url_for(opts[:method], opts[:url_opts]).to_s
-  end
-
-  def aws_S3_obj_write(opts)
-  end
-
-  # get bucket for given name
-  def aws_S3_bucket_get(opts)
-    AWS::S3.new.buckets[opts[:name]]
-  end
-
-  # create S3 bucket
-  def aws_S3_bucket_create(opts)
-    AWS::S3.new.buckets.create(opts[:name])
-  end
-
-  def aws_S3_obj_create(opts)
-    opts[:bucket].objects.create(opts[:name], "")
-  end
-
   def aws_S3_obj_get(opts)
     opts[:bucket].objects[opts[:name]]
   end
