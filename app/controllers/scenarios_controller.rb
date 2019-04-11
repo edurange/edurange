@@ -37,7 +37,7 @@ class ScenariosController < ApplicationController
 
   # Group
   before_action :set_group, only: [
-    :group_delete, :group_modify, :group_admin_access_add, :group_user_access_add, :group_player_add, 
+    :group_delete, :group_modify, :group_admin_access_add, :group_user_access_add, :group_player_add,
     :group_student_group_add, :group_student_group_remove, :group_instructions_get, :group_instructions_modify
   ]
   before_action :set_instance_group, only: [

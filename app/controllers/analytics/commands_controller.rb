@@ -2,6 +2,13 @@ class Analytics::CommandsController < ApplicationController
   include Pagy::Backend
   helper Pagy::Frontend
 
+  before_action :authenticate_user!
+
+  # TODO
+  # Admins should have access to all scenarios, instances, and players.
+  # Instructors should have access to the instance and players of scenarios they own.
+  # Students should have access to the scenarios and instances they are players in, and only view their own commands.
+
   def index
     @query = CommandHistoryQuery.new(filter_params)
     @pagy, @commands = pagy(@query.command_history)
