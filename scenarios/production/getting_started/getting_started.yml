@@ -27,7 +27,10 @@ Groups:
   - Instance: GettingStarted_Inst
     Administrator: false
     IP_Visible: true
-  Users:
+  Variables:
+    Player:
+    - Name: super_secret
+      Type: random
 Clouds:
 - Name: Cloud
   CIDR_Block: 10.0.0.0/16
@@ -44,7 +47,7 @@ Clouds:
       Roles:
       - Getting_Started
 Scoring:
-- Text: how many subdirectories are there for /tmp/?
+- Text: How many subdirectories are in your home directory?
   Type: Number
   Options:
   - accept-integer
@@ -54,7 +57,7 @@ Scoring:
     Points: '15'
   Order: 1
   Points: 15
-- Text: Cut and paste the name line for the man page for file.
+- Text: Cut and paste the name line for the man page for the file command.
   Type: String
   Options: []
   Values:
@@ -62,11 +65,12 @@ Scoring:
     Points: '15'
   Order: 2
   Points: 15
-- Text: Copy the secret code.
+- Text: What is the secret code.
   Type: String
-  Options: []
+  Options:
+  - variable-group-player
   Values:
-  - Value: 32144SUPERSECRET
+  - Value: Students:super_secret
     Points: '15'
   Order: 3
   Points: 15
@@ -86,11 +90,11 @@ Scoring:
     Points: '20'
   Order: 5
   Points: 20
-- Text: What is the path to the file that has 'cowFJS' in it?
+- Text: What is the path (relative to your home directory) that has 'cowFJS' in it?
   Type: String
   Options: []
   Values:
-  - Value: ./tmp/i/y/f/kitty/k/r/u/U348bdks8cowFJS8dJF3hHDFj.jpg
+  - Value: ./i/y/f/kitty/k/r/u/U348bdks8cowFJS8dJF3hHDFj.jpg
     Points: '20'
   Order: 6
   Points: 20
