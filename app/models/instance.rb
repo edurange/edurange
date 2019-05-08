@@ -22,6 +22,9 @@ class Instance < ActiveRecord::Base
   after_destroy :update_scenario_modified
   before_destroy :validate_stopped
 
+  # hacky way so instances with 'nat' os are first, and thus are scheduled first.
+  default_scope { order(os: :asc) }
+
   # Check to see if the instance has stopped
   def validate_stopped
     if not self.stopped?

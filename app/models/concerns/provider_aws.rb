@@ -106,7 +106,7 @@ module ProviderAws
 
   def aws_subnet_boot
     raise 'AWS: driver id already set' if self.driver_id != nil
-    
+
     # create Subnet
     log "AWS: creating Subnet"
     subnet = aws_call(
@@ -146,8 +146,8 @@ module ProviderAws
       if nat = self.scenario.nat_instance
         if nat.driver_id
           aws_call(
-            'aws_route_table_instance_route_create', 
-            route_table: route_table, 
+            'aws_route_table_instance_route_create',
+            route_table: route_table,
             instance_id: nat.driver_id,
             errs: { AWS::EC2::Errors::MissingParameter => 60 }
           )
@@ -379,6 +379,14 @@ module ProviderAws
     end
   end
 
+  def iam_user_name
+    @iam_user_name ||= AWS::IAM::Client.new.get_user.user.user_name
+  end
+
+  def s3_bucket_name
+    "edurange-#{iam_user_name}"
+  end
+
   # collect instance related data from S3
   def aws_instance_S3_files_save
     DownloadBashHistoryFromS3.perform_now(self)
@@ -464,7 +472,7 @@ module ProviderAws
   end
 
   def aws_s3_instance_object_prefix
-    "#{Rails.configuration.x.aws['iam_user_name']}_#{scenario.user.name}_#{scenario.name}_#{scenario.id.to_s}_#{name}_#{id.to_s}_#{self.uuid[0..5]}_"
+    "#{iam_user_name}_#{scenario.user.name}_#{scenario.name}_#{scenario.id.to_s}_#{name}_#{id.to_s}_#{self.uuid[0..5]}_"
   end
 
   # build the string which is our S3 object name
@@ -516,8 +524,8 @@ module ProviderAws
   # tag an aws object with default values
   def aws_obj_tags_default(obj)
     log "AWS: creating default tags for #{obj.class.to_s.split("::").last} '#{obj.id}'"
-    aws_call('aws_obj_tag', obj: obj, tag: "Name", value: "#{Rails.configuration.x.aws['iam_user_name']}-#{self.scenario.user.name}-#{self.scenario.name}-#{self.scenario.id.to_s}")
-    aws_call('aws_obj_tag', obj: obj, tag: 'host', value: Rails.configuration.x.aws['iam_user_name'])
+    aws_call('aws_obj_tag', obj: obj, tag: "Name", value: "#{iam_user_name}-#{self.scenario.user.name}-#{self.scenario.name}-#{self.scenario.id.to_s}")
+    aws_call('aws_obj_tag', obj: obj, tag: 'host', value: iam_user_name)
     aws_call('aws_obj_tag', obj: obj, tag: 'instructor', value: self.scenario.user.name)
     aws_call('aws_obj_tag', obj: obj, tag: 'scenario_id', value: self.scenario.id)
   end
@@ -624,7 +632,7 @@ module ProviderAws
     AWS::EC2::InstanceCollection.new.create(
       image_id: Rails.configuration.x.aws[Rails.configuration.x.aws['region']]["ami_#{self.os}"], 
       private_ip_address: self.ip_address,
-      key_name: Rails.configuration.x.aws['ec2_key_pair_name'],
+#      key_name: Rails.configuration.x.aws['ec2_key_pair_name'],
       user_data: self.generate_init,
       instance_type: "t2.small",
       subnet: self.subnet.driver_id
@@ -674,10 +682,6 @@ module ProviderAws
   end
 
   # AWS::RouteTable
-
-  def aws_route_table_association_main?(opts)
-    opts[:route_table_association].main?
-  end
 
   def aws_route_table_instance_route_create(opts)
     opts[:route_table].create_route("0.0.0.0/0", { instance: opts[:instance_id]  } )

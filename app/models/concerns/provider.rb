@@ -175,7 +175,7 @@ module Provider
         descendent.id,
         descendent.class.statuses[:boot_scheduled]
       ).update_all(
-        status:  action == :boot ? descendent.class.statuses[:stopped] : descendent.class.statuses[:booted], 
+        status:  action == :boot ? descendent.class.statuses[:stopped] : descendent.class.statuses[:booted],
         boot_code: ""
       )
       if result > 0
@@ -257,13 +257,13 @@ module Provider
     # schedule descendents, fail if some other boot process schedules them first
     @opts[:resources].each do |name, values|
       if values[:action] == :boot
-        result = values[:obj].class.where("id = ? AND status = ?", 
-          values[:obj].id, 
+        result = values[:obj].class.where("id = ? AND status = ?",
+          values[:obj].id,
           values[:obj].class.statuses[:stopped]
         ).update_all(status: values[:obj].class.statuses[:boot_scheduled], boot_code: @opts[:boot_code]) > 0
       elsif values[:action] ==:unboot
-        result = values[:obj].class.where("id = ? AND status = ?", 
-          values[:obj].id, 
+        result = values[:obj].class.where("id = ? AND status = ?",
+          values[:obj].id,
           values[:obj].class.statuses[:booted]
         ).update_all(status: values[:obj].class.statuses[:unboot_scheduled], boot_code: @opts[:boot_code]) > 0
       end
@@ -358,10 +358,10 @@ module Provider
   def boot_descendent_lock
     log "getting boot lock"
     if self.class.where(
-        "id = ? AND (status = ? OR status = ?) AND boot_code = ?", 
-        self.id, 
-        @opts_self[:action] == :boot ? self.class.statuses[:stopped] : self.class.statuses[:booted], 
-        @opts_self[:action] == :boot ? self.class.statuses[:boot_scheduled] : self.class.statuses[:unboot_scheduled], 
+        "id = ? AND (status = ? OR status = ?) AND boot_code = ?",
+        self.id,
+        @opts_self[:action] == :boot ? self.class.statuses[:stopped] : self.class.statuses[:booted],
+        @opts_self[:action] == :boot ? self.class.statuses[:boot_scheduled] : self.class.statuses[:unboot_scheduled],
         @opts[:boot_code]
       ).update_all(status: @opts_self[:action] == :boot ? self.class.statuses[:booting] : self.class.statuses[:unbooting]) <= 0
       self.reload
