@@ -1,0 +1,71 @@
+script "csv_install" do
+   interpreter "bash"
+   user "root"
+   cwd "/usr/local/src"
+   code <<-EOH
+   #This is all the necessary installs for csv
+   
+   cd /usr/local/src
+   sudo mkdir /usr/local/src/logs
+   #necessary files
+   
+   wget https://raw.githubusercontent.com/edurange/csv_logging/master/ttylog
+   wget https://raw.githubusercontent.com/edurange/csv_logging/master/analyze.py
+   wget https://raw.githubusercontent.com/edurange/csv_logging/master/logsnoopy.pl
+   wget https://raw.githubusercontent.com/edurange/csv_logging/master/start_ttylog.sh
+
+   chmod +x start_ttylog.sh
+   chmod +x logsnoopy.pl
+   chmod +x ttylog
+
+   # ttylog is not correctly aliased once installed this adds an
+   # alias so ttylog is correctly pathed for all users
+   if grep -q "alias ttylog=/usr/local/src/ttylog" /etc/bash.bashrc; then
+	:
+   else
+	echo "alias ttylog=/usr/local/src/ttylog" >> /etc/bash.bashrc;
+   fi
+
+   #Problems with being unable to resolve host 
+
+   sed -i "/127\.0\.0\.1/ s/$/ $(hostname)/" /etc/hosts
+
+   #This line begins the loop that collects the csv
+
+   #perl logsnoopy.pl &
+
+   #To fix sudo privileges for start ttylog
+   #line grabs all human users with uid >= 1000
+   awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd > /usr/local/src/user_names.txt
+
+   while read line; do
+	   echo "$line ALL=(ALL) NOPASSWD: /bin/mkdir -p /usr/local/src/logs/" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /bin/touch /usr/local/src/logs/count.$(hostname).*" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /bin/chmod ugo+rw /usr/local/src/logs/count.$(hostname).*" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /usr/local/src/ttylog" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /bin/touch /usr/local/src/logs/ttylog.$(hostname).*.*" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /bin/chmod ugo+rw /usr/local/src/logs/ttylog.$(hostname).*.*" | sudo EDITOR='tee -a' visudo
+	   #echo "$line ALL=(ALL) NOPASSWD: /usr/local/src/ttylog * /var/log/ttylog/ttylog.$(hostname).* 2>/dev/null &" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /usr/bin/perl /usr/local/src/logsnoopy.pl &" | sudo EDITOR='tee -a' visudo
+	   echo "$line ALL=(ALL) NOPASSWD: /usr/bin/python3.4 /usr/local/src/analyze.py /usr/local/src/logs/alltty.$(hostname)* /usr/local/src/logs/cli.$(hostname)*" | sudo EDITOR='tee -a' visudo
+   done</usr/local/src/user_names.txt
+
+   #starts ttylog when connected through ssh
+
+   if grep -q "ForceCommand /usr/local/src/start_ttylog.sh" /etc/ssh/sshd_config; then
+   	:
+   else
+   	echo "ForceCommand /usr/local/src/start_ttylog.sh" >> /etc/ssh/sshd_config
+   fi
+
+   echo "if [[ -n \\$SSH_CONNECTION ]] ; then" >> /etc/bash.bashrc
+   echo "	perl /usr/local/src/logsnoopy.pl &" >> /etc/bash.bashrc
+   echo "fi" >> /etc/bash.bashrc
+
+   #sudo chmod 777 -R /var/log/ttylog
+   sudo chmod 755 -R /usr/local/src
+   sudo chmod 777 -R /usr/local/src/logs
+   #sudo chmod 744 /var/log/auth.log
+
+   EOH
+end
