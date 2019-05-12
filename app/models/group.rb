@@ -1,5 +1,3 @@
-require 'variable'
-
 class Group < ActiveRecord::Base
   belongs_to :scenario
   has_many :instance_groups, dependent: :destroy
@@ -13,7 +11,7 @@ class Group < ActiveRecord::Base
   after_save :update_scenario_modified
   before_destroy :instances_stopped
   after_destroy :update_scenario_modified
-  after_create :create_variable_hashes
+  after_initialize :create_variable_hashes
 
   serialize :variables
 
@@ -51,13 +49,10 @@ class Group < ActiveRecord::Base
 
   # initialize the groups variables
   def create_variable_hashes
-    self.update_attribute(:variables, { 
-      instance: {}, 
-      player: { 
-        info: {},
-        vars: {} 
-      } 
-    })
+    self.variables ||= {
+      instance: [],
+      player: []
+    }
   end
 
   # return instances which the group has user level access to
@@ -157,11 +152,10 @@ class Group < ActiveRecord::Base
     return instance_group
   end
 
-  # add variable to an instance
   def variable_instance_add(name, type, val)
-    if self.variables[:instance].has_key? name
-      errors.add(:variables, "already has Instance variable '#{name}'")
-    end
+#    if self.variables[:instance].find(name: name)
+#      errors.add(:variables, "already has Instance variable '#{name}'")
+#    end
 
     if not type
       errors.add(:variables, "must specify Instance variable type")
@@ -169,54 +163,53 @@ class Group < ActiveRecord::Base
 
     return false if errors.any?
 
-    self.variables[:instance][name] = Variable.new(type, val) 
+    attributes = {
+      name: name,
+      type: type,
+      value: val
+    }
 
+
+    self.scenario_variable_templates << attributes
     self.save
+
+    self.scenario.variables.create!(attributes)
   end
 
   # add variable to player
   def variable_player_add(name, type, val)
-    puts self.instances
-    if self.variables[:player][:info].has_key? name
-      errors.add(:variables, "alread has Instance variable '#{name}'")
-    end
+#    if self.variables[:player].find(name: name)
+#      errors.add(:variables, "already has player variable '#{name}'")
+#    end
 
     if not type
-      errors.add(:variables, "must specity Instance variable type")
+      errors.add(:variables, "must specify player variable type")
     end
 
     return false if errors.any?
 
-    self.variables[:player][:info][name] = { type: type, val: val }
+    attributes = {
+      name: name,
+      type: type,
+      value: val
+    }
 
+    self.player_variable_templates << attributes
+    self.save
+
+    # instantiate the variable template for each existing player
     self.players.each do |player|
-      if not self.variables[:player][:vars].has_key? player
-        self.variables[:player][:vars][player] = {}
-      end
-      self.variables[:player][:vars][player][name] = Variable.new(type, val)
+      player.variables.create!(attributes)
     end
 
-    self.save
   end
 
-  # update player variable
-  def variable_player_update(player)
-    if not self.variables[:player][:vars].has_key? player
-      self.variables[:player][:vars][player] = {}
-    end
-    self.variables[:player][:info].each do |name, hash|
-      self.variables[:player][:vars][player][name] = Variable.new(hash[:type], hash[:val])
-    end
-    self.save
+  def player_variable_templates
+    self.variables[:player]
   end
 
-  # remove player variable
-  def variable_player_remove(player)
-    if not self.variables[:player][:vars].has_key? player
-      return
-    end
-    self.variables[:player][:vars].delete(player)
-    self.save
+  def scenario_variable_templates
+    self.variables[:instance]
   end
 
 end

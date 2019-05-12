@@ -327,25 +327,4 @@ class Instance < ActiveRecord::Base
     InstanceGroup.create(group: group, instance: self, administrator: false, ip_visible: ip_visible)
   end
 
-  def variables_instance
-    vars = {}
-    self.groups.each do |g|
-      vars = vars.merge(g.variables[:instance]) if g.variables[:instance]
-    end
-    vars
-  end
-
-  def variables_player
-    vars = {}
-    self.groups.each do |g|
-      g.variables[:player][:vars].each do |player, v|
-        if not vars.has_key? player
-          vars[player] = {}
-        end
-        vars[player] = vars[player].merge(v)
-      end
-    end
-    vars
-  end
-
 end

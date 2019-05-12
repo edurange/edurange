@@ -11,8 +11,8 @@ class Variable < ActiveRecord::Base
     string: 'string'
   }
 
-  after_initialize def instantiate!
-    self.value = case
+  def generate_value
+    case
       when random?
         SecureRandom.hex(4)
       when openssl_pkey_rsa?
@@ -20,6 +20,10 @@ class Variable < ActiveRecord::Base
       else
         value
     end
+  end
+
+  after_initialize def instantiate!
+    self.value ||= generate_value
   end
 
 end

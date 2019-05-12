@@ -7,11 +7,13 @@ class CreateVariablesTables < ActiveRecord::Migration
       table.string :value
     end
 
-    create_table :instances_variables, id: false do |table|
-      table.references :instance, foreign_key: { on_delete: :cascade }
+    # in the group model what are called "instance variables" are more aptly
+    # called scenario variables as they are used as if they are scoped to a scenario
+    create_table :scenarios_variables, id: false do |table|
+      table.references :scenario, foreign_key: { on_delete: :cascade }
       table.references :variable, foreign_key: { on_delete: :cascade }
     end
-    execute 'ALTER TABLE instances_variables ADD PRIMARY KEY (instance_id, variable_id);'
+    execute 'ALTER TABLE scenarios_variables ADD PRIMARY KEY (scenario_id, variable_id);'
 
     create_table :players_variables, id: false do |table|
       table.references :player, foreign_key: { on_delete: :cascade }
