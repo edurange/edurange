@@ -163,17 +163,17 @@ class Group < ActiveRecord::Base
 
     return false if errors.any?
 
-    attributes = {
+    prototype = Variable.new(
       name: name,
       type: type,
       value: val
-    }
+    )
 
 
-    self.scenario_variable_templates << attributes
+    self.scenario_variable_templates << prototype
     self.save
 
-    self.scenario.variables.create!(attributes)
+    self.scenario.variables << prototype.instantiate
   end
 
   # add variable to player
@@ -188,28 +188,28 @@ class Group < ActiveRecord::Base
 
     return false if errors.any?
 
-    attributes = {
+    prototype = Variable.new(
       name: name,
       type: type,
       value: val
-    }
+    )
 
-    self.player_variable_templates << attributes
+    self.player_variable_templates << prototype
     self.save
 
     # instantiate the variable template for each existing player
     self.players.each do |player|
-      player.variables.create!(attributes)
+      player.variables << prototype.instantiate
     end
 
   end
 
   def player_variable_templates
-    self.variables[:player]
+    self.variables[:player].map{|hash| Variable.new hash }
   end
 
   def scenario_variable_templates
-    self.variables[:instance]
+    self.variables[:instance].map{|hash| Variable.new hash }
   end
 
 end

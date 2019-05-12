@@ -22,8 +22,12 @@ class Variable < ActiveRecord::Base
     end
   end
 
-  after_initialize def instantiate!
-    self.value ||= generate_value
+  def instantiate
+    Variable.new(
+      name: name,
+      type: type,
+      value: generate_value
+    )
   end
 
 end

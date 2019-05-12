@@ -105,13 +105,13 @@ class Scenario < ActiveRecord::Base
         },
 
         "Variables" => group.variables.empty? ? nil : {"Instance" => group.scenario_variable_templates.map { |v| {
-             "Name"  => v[:name],
-             "Type"  => v[:type],
-             "Value" => v[:value]
+             "Name"  => v.name,
+             "Type"  => v.type,
+             "Value" => v.value
           }}}.merge!({"Player" => group.player_variable_templates.map { |v| {
-            "Name"  => v[:name],
-            "Type"  => v[:type],
-            "Value" => v[:value]
+            "Name"  => v.name,
+            "Type"  => v.type,
+            "Value" => v.value
             }}})
       }
     }

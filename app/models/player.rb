@@ -25,7 +25,7 @@ class Player < ActiveRecord::Base
 
   def create_variables
     self.group.player_variable_templates.each do |template|
-      self.variables.create!(template)
+      self.variables << template.instantiate
     end
   end
 
