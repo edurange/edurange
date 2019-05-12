@@ -5,14 +5,15 @@ class Player < ActiveRecord::Base
   belongs_to :student_group
   belongs_to :user
   has_one :scenario, through: :group
-  has_many :bash_histories, dependent: :destroy
+  has_many :bash_histories, dependent: :delete_all
+  has_and_belongs_to_many :variables, dependent: :destroy
 
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true
   validate :instances_stopped
 
-  after_destroy :update_scenario_modified, :remove_group_player_variables
-  after_create :update_group_player_variables
+  after_destroy :update_scenario_modified, :destroy_variables
+  after_create :create_variables
 
   def update_scenario_modified
     if self.group.scenario.modifiable?
@@ -22,12 +23,14 @@ class Player < ActiveRecord::Base
     end
   end
 
-  def update_group_player_variables
-    self.group.variable_player_update(self)
+  def create_variables
+    self.group.player_variable_templates.each do |template|
+      self.variables.create!(template)
+    end
   end
 
-  def remove_group_player_variables
-    self.group.variable_player_remove(self)
+  def destroy_variables
+    self.variables.destroy_all
   end
 
   def instances_stopped

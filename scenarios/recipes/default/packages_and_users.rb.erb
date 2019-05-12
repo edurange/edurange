@@ -85,12 +85,12 @@ script "write_vars" do
   mkdir variables
   cd variables
   mkdir users
-<% instance.variables_instance.each do |name, var| %>
-  echo "<%= name %>:<%= var.val.gsub(/\n/, "\\\\\\n") %>" >> instance 
+<% instance.scenario.variables.each do |var| %>
+  echo "<%= var.name %>:<%= var.value.gsub(/\n/, "\\\\\\n") %>" >> instance
 <% end %>
-<% instance.variables_player.each do |player, vars| %>
-<% vars.each do |name, var| %>
-  echo "<%= name %>:<%= var.val.gsub(/\n/, "\\\\\\n") %>" >> users/<%= player.login %> 
+<% instance.players.each do |player| %>
+<% player.variables.each do |variable| %>
+  echo "<%= variable.name %>:<%= variable.value.gsub(/\n/, "\\\\\\n") %>" >> users/<%= player.login %>
 <% end %>
 <% end %>
   EOH

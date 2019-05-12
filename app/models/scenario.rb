@@ -18,6 +18,7 @@ class Scenario < ActiveRecord::Base
   has_many :subnets, through: :clouds
   has_many :instances, through: :subnets
   has_many :players, through: :groups
+  has_and_belongs_to_many :variables, dependent: :destroy
 
   # Validations
   # http://guides.rubyonrails.org/active_record_validations.html
@@ -102,19 +103,15 @@ class Scenario < ActiveRecord::Base
           "StudentGroupId" => p.student_group_id
           } 
         },
-        # I haven't significantly tested this Variables section.
-        # I'm not sure why "Instances > Type/Value" only accepted .type
-        #   while "Player > Type/Value" only accepted [:type]
-        # Both are accessing a Variable (lib/variable.rb)
-        # That might be a section of future issues.
-        "Variables" => group.variables.empty? ? nil : {"Instance" => group.variables[:instance].map { |i| {
-             "Name" => i.at(0),
-             "Type" => i.at(1).type,
-             "Value" => i.at(1).val
-          }}}.merge!({"Player" => group.variables[:player][:info].map { |p| {
-            "Name" => p.at(0),
-            "Type" => p.at(1)[:type],
-            "Value" => p.at(1)[:val]
+
+        "Variables" => group.variables.empty? ? nil : {"Instance" => group.scenario_variable_templates.map { |v| {
+             "Name"  => v[:name],
+             "Type"  => v[:type],
+             "Value" => v[:value]
+          }}}.merge!({"Player" => group.player_variable_templates.map { |v| {
+            "Name"  => v[:name],
+            "Type"  => v[:type],
+            "Value" => v[:value]
             }}})
       }
     }
