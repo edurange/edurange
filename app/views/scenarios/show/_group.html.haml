@@ -106,9 +106,9 @@
             %th Value
           - group.scenario_variable_templates.each do |var|
             %tr
-              %td= var[:name]
-              %td= var[:type]
-              %td= var[:value]
+              %td= var.name
+              %td= var.type
+              %td= var.value
     %ul
       - if group.player_variable_templates.size > 0
         Player:
@@ -121,9 +121,9 @@
               %th Value
             - group.player_variable_templates.each do |hash|
               %tr
-                %td= hash[:name]
-                %td= hash[:type]
-                %td= hash[:val]
+                %td= hash.name
+                %td= hash.type
+                %td= hash.val
         %ul
           Players:
           - group.players.each do |player|
