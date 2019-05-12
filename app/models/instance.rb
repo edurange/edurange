@@ -9,7 +9,7 @@ class Instance < ActiveRecord::Base
   has_many :groups, through: :instance_groups, dependent: :destroy
   has_many :roles, through: :instance_roles, dependent: :destroy
   has_many :players, through: :groups
-  has_many :bash_histories, dependent: :destroy
+  has_many :bash_histories, dependent: :delete_all
   has_one :user, through: :subnet
   has_one :scenario, through: :subnet
 
