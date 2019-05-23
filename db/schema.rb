@@ -266,18 +266,16 @@ ActiveRecord::Schema.define(version: 20190511040252) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "variables", force: :cascade do |t|
-    t.integer "scenario_id"
     t.integer "player_id"
     t.integer "group_id"
-    t.boolean "template",    default: true, null: false
-    t.string  "name",                       null: false
-    t.string  "type",                       null: false
+    t.boolean "template",  default: true, null: false
+    t.string  "name",                     null: false
+    t.string  "type",                     null: false
     t.string  "value"
   end
 
   add_index "variables", ["group_id", "name", "template"], name: "index_variables_on_group_id_and_name_and_template", unique: true, using: :btree
   add_index "variables", ["player_id", "name"], name: "index_variables_on_player_id_and_name", unique: true, using: :btree
-  add_index "variables", ["scenario_id", "name", "template"], name: "index_variables_on_scenario_id_and_name_and_template", unique: true, using: :btree
 
   add_foreign_key "bash_histories", "instances", name: "fk_bash_histories_instances"
   add_foreign_key "bash_histories", "players", name: "fk_bash_histories_players"
@@ -298,5 +296,4 @@ ActiveRecord::Schema.define(version: 20190511040252) do
   add_foreign_key "subnets", "clouds", name: "fk_subnets_clouds", on_delete: :cascade
   add_foreign_key "variables", "groups", on_delete: :cascade
   add_foreign_key "variables", "players", on_delete: :cascade
-  add_foreign_key "variables", "scenarios", on_delete: :cascade
 end

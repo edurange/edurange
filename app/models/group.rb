@@ -5,7 +5,7 @@ class Group < ActiveRecord::Base
   has_many :players, dependent: :destroy
   has_one :user, through: :scenario
 
-  has_many :variables
+  has_many :variables, after_add: :instantiate_player_variables
 
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
   validate :instances_stopped
@@ -147,32 +147,21 @@ class Group < ActiveRecord::Base
     )
   end
 
-  # add variable to player
   def variable_player_add(name, type, val)
-#    if self.variables[:player].find(name: name)
-#      errors.add(:variables, "already has player variable '#{name}'")
-#    end
-
-    if not type
-      errors.add(:variables, "must specify player variable type")
-    end
-
-    return false if errors.any?
-
-    prototype = Variable.new(
+    self.variables.create(
       name: name,
       type: type,
       value: val,
       template: true
     )
+  end
 
-    self.variables << prototype
-
-    # instantiate the variable template for each existing player
-    self.players.each do |player|
-      player.variables << prototype.instantiate
+  def instantiate_player_variables(variable)
+    if variable.template? then
+      self.players.each do |player|
+        player.variables << variable.instantiate
+      end
     end
-
   end
 
   def player_variables
