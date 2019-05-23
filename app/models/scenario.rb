@@ -18,7 +18,6 @@ class Scenario < ActiveRecord::Base
   has_many :subnets, through: :clouds
   has_many :instances, through: :subnets
   has_many :players, through: :groups
-  has_and_belongs_to_many :variables, dependent: :destroy
 
   # Validations
   # http://guides.rubyonrails.org/active_record_validations.html
@@ -104,11 +103,11 @@ class Scenario < ActiveRecord::Base
           } 
         },
 
-        "Variables" => group.variables.empty? ? nil : {"Instance" => group.scenario_variable_templates.map { |v| {
+        "Variables" => group.variables.empty? ? nil : {"Instance" => group.instance_variables.map { |v| {
              "Name"  => v.name,
              "Type"  => v.type,
              "Value" => v.value
-          }}}.merge!({"Player" => group.player_variable_templates.map { |v| {
+          }}}.merge!({"Player" => group.player_variables.map { |v| {
             "Name"  => v.name,
             "Type"  => v.type,
             "Value" => v.value

@@ -1,6 +1,14 @@
 class Variable < ActiveRecord::Base
   self.inheritance_column = nil # otherwise rails would be confused by the 'type' column.
 
+  def self.template
+    where(template: true)
+  end
+
+  def self.not_template
+    where(template: false)
+  end
+
   validates :name, presence: true
   validates :type, presence: true
   validates :value, presence: true, if: :string?
@@ -26,7 +34,8 @@ class Variable < ActiveRecord::Base
     Variable.new(
       name: name,
       type: type,
-      value: generate_value
+      value: generate_value,
+      template: false
     )
   end
 

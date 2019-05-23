@@ -5,15 +5,14 @@ class Group < ActiveRecord::Base
   has_many :players, dependent: :destroy
   has_one :user, through: :scenario
 
+  has_many :variables
+
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
   validate :instances_stopped
 
   after_save :update_scenario_modified
   before_destroy :instances_stopped
   after_destroy :update_scenario_modified
-  after_initialize :create_variable_hashes
-
-  serialize :variables
 
   def update_scenario_modified
     if self.scenario.modifiable?
@@ -45,14 +44,6 @@ class Group < ActiveRecord::Base
       end
     end
     true
-  end
-
-  # initialize the groups variables
-  def create_variable_hashes
-    self.variables ||= {
-      instance: [],
-      player: []
-    }
   end
 
   # return instances which the group has user level access to
@@ -120,12 +111,7 @@ class Group < ActiveRecord::Base
 
   # return player object for player with matching student id
   def find_player_by_student_id(student_id)
-    self.players.each do |player|
-      if player.user
-        return player if player.user.id == student_id
-      end
-    end
-    nil
+    self.players.find_by(user_id: student_id)
   end
 
   # update scenario instructions
@@ -153,27 +139,12 @@ class Group < ActiveRecord::Base
   end
 
   def variable_instance_add(name, type, val)
-#    if self.variables[:instance].find(name: name)
-#      errors.add(:variables, "already has Instance variable '#{name}'")
-#    end
-
-    if not type
-      errors.add(:variables, "must specify Instance variable type")
-    end
-
-    return false if errors.any?
-
-    prototype = Variable.new(
+    self.variables.create(
       name: name,
       type: type,
-      value: val
+      value: val,
+      template: false
     )
-
-
-    self.scenario_variable_templates << prototype
-    self.save
-
-    self.scenario.variables << prototype.instantiate
   end
 
   # add variable to player
@@ -191,11 +162,11 @@ class Group < ActiveRecord::Base
     prototype = Variable.new(
       name: name,
       type: type,
-      value: val
+      value: val,
+      template: true
     )
 
-    self.player_variable_templates << prototype
-    self.save
+    self.variables << prototype
 
     # instantiate the variable template for each existing player
     self.players.each do |player|
@@ -204,12 +175,12 @@ class Group < ActiveRecord::Base
 
   end
 
-  def player_variable_templates
-    self.variables[:player].map{|hash| Variable.new hash }
+  def player_variables
+    self.variables.merge(Variable.template)
   end
 
-  def scenario_variable_templates
-    self.variables[:instance].map{|hash| Variable.new hash }
+  def instance_variables
+    self.variables.merge(Variable.not_template)
   end
 
 end
