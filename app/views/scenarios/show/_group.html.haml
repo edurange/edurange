@@ -97,20 +97,20 @@
   %p
     Variables:
     %ul
-      - if group.scenario_variable_templates.size > 0
+      - if group.instance_variables.size > 0
         Instance:
         %table.table
           %tr
             %th Name
             %th Type
             %th Value
-          - group.scenario_variable_templates.each do |var|
+          - group.instance_variables.each do |var|
             %tr
               %td= var.name
               %td= var.type
               %td= var.value
     %ul
-      - if group.player_variable_templates.size > 0
+      - if group.player_variables.size > 0
         Player:
         %ul
           Info:
@@ -119,11 +119,11 @@
               %th Name
               %th Type
               %th Value
-            - group.player_variable_templates.each do |hash|
+            - group.player_variables.each do |hash|
               %tr
                 %td= hash.name
                 %td= hash.type
-                %td= hash.val
+                %td= hash.value
         %ul
           Players:
           - group.players.each do |player|

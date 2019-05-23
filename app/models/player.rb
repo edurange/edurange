@@ -6,13 +6,13 @@ class Player < ActiveRecord::Base
   belongs_to :user
   has_one :scenario, through: :group
   has_many :bash_histories, dependent: :delete_all
-  has_and_belongs_to_many :variables, dependent: :destroy
+  has_many :variables, dependent: :destroy
 
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true
   validate :instances_stopped
 
-  after_destroy :update_scenario_modified, :destroy_variables
+  after_destroy :update_scenario_modified
   after_create :create_variables
 
   def update_scenario_modified
@@ -24,13 +24,9 @@ class Player < ActiveRecord::Base
   end
 
   def create_variables
-    self.group.player_variable_templates.each do |template|
+    self.group.player_variables.each do |template|
       self.variables << template.instantiate
     end
-  end
-
-  def destroy_variables
-    self.variables.destroy_all
   end
 
   def instances_stopped
