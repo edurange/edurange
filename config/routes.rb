@@ -18,7 +18,9 @@ Edurange::Application.routes.draw do
 
   resources :instance_groups
   resources :players
-  resources :groups
+  resources :groups do
+    resources :variables, only: [:index, :new, :create]
+  end
   resources :instance_roles
   resources :roles
   resources :instances
