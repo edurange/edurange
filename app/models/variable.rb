@@ -1,6 +1,10 @@
 class Variable < ActiveRecord::Base
   self.inheritance_column = nil # otherwise rails would be confused by the 'type' column.
 
+  # both players and groups can have many variables.
+  belongs_to :group
+  belongs_to :player
+
   def self.template
     where(template: true)
   end
@@ -9,7 +13,7 @@ class Variable < ActiveRecord::Base
     where(template: false)
   end
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: {scope: [:group_id, :player_id], allow_blank: false}
   validates :type, presence: true
   validates :value, presence: true, if: :string?
 
