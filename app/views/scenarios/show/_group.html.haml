@@ -96,46 +96,34 @@
           %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.instances_stopped? ? "" : "hidden"
   %p
     Variables:
-    %ul
-      - if group.instance_variables.size > 0
-        Instance:
+    %div
+      - if group.variable_templates.size > 0
         %table.table
-          %tr
-            %th Name
-            %th Type
-            %th Value
-          - group.instance_variables.each do |var|
-            %tr
-              %td= var.name
-              %td= var.type
-              %td= var.value
-    %ul
-      - if group.player_variables.size > 0
-        Player:
-        %ul
-          Info:
-          %table.table
+          %thead
             %tr
               %th Name
               %th Type
               %th Value
-            - group.player_variables.each do |hash|
+          %tbody
+            - group.variable_templates.each do |var|
               %tr
-                %td= hash.name
-                %td= hash.type
-                %td= hash.value
+                %td= var.name
+                %td= var.type
+                %td= var.value
+    %div
+      Players:
+      - group.players.each do |player|
         %ul
-          Players:
-          - group.players.each do |player|
-            %ul
-              %b= player.login
-              %table.table
+          %b= player.login
+          %table.table
+            %thead
+              %tr
+                %th Name
+                %th Type
+                %th Value
+            %tbody
+              - player.variables.each do |var|
                 %tr
-                  %th Name
-                  %th Type
-                  %th Value
-                - player.variables.each do |var|
-                  %tr
-                    %td= var.name
-                    %td= var.type
-                    %td= var.value
+                  %td= var.name
+                  %td= var.type
+                  %td= var.value
