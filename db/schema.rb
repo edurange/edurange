@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190215090344) do
+ActiveRecord::Schema.define(version: 20190410053729) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "answers", force: :cascade do |t|
     t.boolean  "correct"
@@ -26,13 +29,21 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.integer  "user_id"
   end
 
-  add_index "answers", ["question_id"], name: "index_answers_on_question_id"
+  add_index "answers", ["question_id"], name: "index_answers_on_question_id", using: :btree
+
+  create_table "bash_histories", id: false, force: :cascade do |t|
+    t.integer  "player_id",    null: false
+    t.integer  "instance_id",  null: false
+    t.datetime "performed_at", null: false
+    t.string   "command",      null: false
+    t.integer  "exit_status"
+  end
 
   create_table "clouds", force: :cascade do |t|
     t.string   "name"
     t.string   "cidr_block"
     t.string   "driver_id"
-    t.integer  "scenario_id"
+    t.integer  "scenario_id",              null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "status",      default: 0
@@ -40,64 +51,59 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.string   "boot_code",   default: ""
   end
 
-  add_index "clouds", ["scenario_id"], name: "index_clouds_on_scenario_id"
+  add_index "clouds", ["scenario_id"], name: "index_clouds_on_scenario_id", using: :btree
 
   create_table "groups", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "scenario_id"
+    t.integer  "scenario_id",               null: false
     t.text     "instructions", default: ""
     t.string   "variables"
   end
 
   create_table "instance_groups", force: :cascade do |t|
-    t.integer  "group_id"
-    t.integer  "instance_id"
+    t.integer  "group_id",                     null: false
+    t.integer  "instance_id",                  null: false
     t.boolean  "administrator"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "ip_visible",    default: true
   end
 
-  add_index "instance_groups", ["group_id"], name: "index_instance_groups_on_group_id"
-  add_index "instance_groups", ["instance_id"], name: "index_instance_groups_on_instance_id"
+  add_index "instance_groups", ["group_id"], name: "index_instance_groups_on_group_id", using: :btree
+  add_index "instance_groups", ["instance_id"], name: "index_instance_groups_on_instance_id", using: :btree
 
   create_table "instance_roles", force: :cascade do |t|
-    t.integer  "instance_id"
-    t.integer  "role_id"
+    t.integer  "instance_id", null: false
+    t.integer  "role_id",     null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "instance_roles", ["instance_id"], name: "index_instance_roles_on_instance_id"
-  add_index "instance_roles", ["role_id"], name: "index_instance_roles_on_role_id"
+  add_index "instance_roles", ["instance_id"], name: "index_instance_roles_on_instance_id", using: :btree
+  add_index "instance_roles", ["role_id"], name: "index_instance_roles_on_role_id", using: :btree
 
   create_table "instances", force: :cascade do |t|
     t.string   "name"
     t.string   "ip_address"
     t.string   "driver_id"
-    t.string   "cookbook_url"
     t.string   "os"
     t.boolean  "internet_accessible"
-    t.integer  "subnet_id"
+    t.integer  "subnet_id",                        null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "status",              default: 0
     t.string   "scoring_url"
     t.string   "scoring_page"
     t.string   "uuid"
-    t.string   "com_page"
     t.string   "log",                 default: ""
-    t.string   "bash_history_page",   default: ""
-    t.string   "exit_status_page",    default: ""
-    t.string   "script_log_page",     default: ""
     t.string   "ip_address_dynamic",  default: ""
     t.string   "boot_code",           default: ""
     t.string   "ip_address_public"
   end
 
-  add_index "instances", ["subnet_id"], name: "index_instances_on_subnet_id"
+  add_index "instances", ["subnet_id"], name: "index_instances_on_subnet_id", using: :btree
 
   create_table "players", force: :cascade do |t|
     t.string   "login"
@@ -109,10 +115,10 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.integer  "student_group_id"
   end
 
-  add_index "players", ["group_id"], name: "index_players_on_group_id"
+  add_index "players", ["group_id"], name: "index_players_on_group_id", using: :btree
 
   create_table "questions", force: :cascade do |t|
-    t.integer  "scenario_id"
+    t.integer  "scenario_id",                         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "order"
@@ -124,10 +130,10 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.integer  "points_penalty"
   end
 
-  add_index "questions", ["scenario_id"], name: "index_questions_on_scenario_id"
+  add_index "questions", ["scenario_id"], name: "index_questions_on_scenario_id", using: :btree
 
   create_table "recipes", force: :cascade do |t|
-    t.integer  "scenario_id"
+    t.integer  "scenario_id", null: false
     t.string   "name"
     t.boolean  "custom"
     t.datetime "created_at",  null: false
@@ -136,13 +142,13 @@ ActiveRecord::Schema.define(version: 20190215090344) do
 
   create_table "role_recipes", force: :cascade do |t|
     t.integer  "role_id"
-    t.integer  "recipe_id"
+    t.integer  "recipe_id",  null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  add_index "role_recipes", ["recipe_id"], name: "index_role_recipes_on_recipe_id"
-  add_index "role_recipes", ["role_id"], name: "index_role_recipes_on_role_id"
+  add_index "role_recipes", ["recipe_id"], name: "index_role_recipes_on_recipe_id", using: :btree
+  add_index "role_recipes", ["role_id"], name: "index_role_recipes_on_role_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -200,8 +206,6 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.string   "resource_info"
   end
 
-  add_foreign_key "statistics", "scenarios", on_delete: :nullify
-
   create_table "student_group_users", force: :cascade do |t|
     t.integer  "student_group_id"
     t.integer  "user_id"
@@ -222,7 +226,7 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.string   "cidr_block"
     t.string   "driver_id"
     t.boolean  "internet_accessible", default: false
-    t.integer  "cloud_id"
+    t.integer  "cloud_id",                            null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "status",              default: 0
@@ -230,7 +234,7 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.string   "boot_code",           default: ""
   end
 
-  add_index "subnets", ["cloud_id"], name: "index_subnets_on_cloud_id"
+  add_index "subnets", ["cloud_id"], name: "index_subnets_on_cloud_id", using: :btree
 
   create_table "tutorials", force: :cascade do |t|
     t.string   "title"
@@ -258,7 +262,24 @@ ActiveRecord::Schema.define(version: 20190215090344) do
     t.string   "registration_code"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "bash_histories", "instances", name: "fk_bash_histories_instances"
+  add_foreign_key "bash_histories", "players", name: "fk_bash_histories_players"
+  add_foreign_key "clouds", "scenarios", name: "fk_clouds_scenarios", on_delete: :cascade
+  add_foreign_key "groups", "scenarios", name: "fk_groups_scenarios", on_delete: :cascade
+  add_foreign_key "instance_groups", "groups", name: "fk_instance_groups_groups", on_delete: :cascade
+  add_foreign_key "instance_groups", "instances", name: "fk_instance_groups_instances", on_delete: :cascade
+  add_foreign_key "instance_roles", "instances", name: "fk_instance_roles_instances", on_delete: :cascade
+  add_foreign_key "instance_roles", "roles", name: "fk_instance_roles_roles", on_delete: :cascade
+  add_foreign_key "instances", "subnets", name: "fk_instances_subnets", on_delete: :cascade
+  add_foreign_key "players", "groups", name: "fk_players_groups", on_delete: :cascade
+  add_foreign_key "players", "student_groups", name: "fk_players_student_groups", on_delete: :nullify
+  add_foreign_key "players", "users", name: "fk_players_users", on_delete: :nullify
+  add_foreign_key "questions", "scenarios", name: "fk_questions_scenarios", on_delete: :cascade
+  add_foreign_key "recipes", "scenarios", name: "fk_recipes_scenarios", on_delete: :cascade
+  add_foreign_key "role_recipes", "recipes", name: "fk_role_recipes_recipes", on_delete: :cascade
+  add_foreign_key "statistics", "scenarios", on_delete: :nullify
+  add_foreign_key "subnets", "clouds", name: "fk_subnets_clouds", on_delete: :cascade
 end
