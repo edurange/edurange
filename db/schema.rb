@@ -265,17 +265,26 @@ ActiveRecord::Schema.define(version: 20190511040252) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
-  create_table "variables", force: :cascade do |t|
-    t.integer "player_id"
+  create_table "variable_templates", force: :cascade do |t|
     t.integer "group_id"
-    t.boolean "template",  default: true, null: false
-    t.string  "name",                     null: false
-    t.string  "type",                     null: false
+    t.integer "scenario_id"
+    t.string  "name",        null: false
+    t.string  "type",        null: false
     t.string  "value"
   end
 
-  add_index "variables", ["group_id", "name", "template"], name: "index_variables_on_group_id_and_name_and_template", unique: true, using: :btree
-  add_index "variables", ["player_id", "name"], name: "index_variables_on_player_id_and_name", unique: true, using: :btree
+  add_index "variable_templates", ["group_id", "name"], name: "index_variable_templates_on_group_id_and_name", unique: true, using: :btree
+  add_index "variable_templates", ["scenario_id", "name"], name: "index_variable_templates_on_scenario_id_and_name", unique: true, using: :btree
+
+  create_table "variables", force: :cascade do |t|
+    t.integer "variable_template_id", null: false
+    t.integer "player_id"
+    t.integer "scenario_id"
+    t.string  "value",                null: false
+  end
+
+  add_index "variables", ["variable_template_id", "player_id"], name: "index_variables_on_variable_template_id_and_player_id", unique: true, using: :btree
+  add_index "variables", ["variable_template_id", "scenario_id"], name: "index_variables_on_variable_template_id_and_scenario_id", unique: true, using: :btree
 
   add_foreign_key "bash_histories", "instances", name: "fk_bash_histories_instances"
   add_foreign_key "bash_histories", "players", name: "fk_bash_histories_players"
@@ -294,6 +303,9 @@ ActiveRecord::Schema.define(version: 20190511040252) do
   add_foreign_key "role_recipes", "recipes", name: "fk_role_recipes_recipes", on_delete: :cascade
   add_foreign_key "statistics", "scenarios", on_delete: :nullify
   add_foreign_key "subnets", "clouds", name: "fk_subnets_clouds", on_delete: :cascade
-  add_foreign_key "variables", "groups", on_delete: :cascade
+  add_foreign_key "variable_templates", "groups", on_delete: :cascade
+  add_foreign_key "variable_templates", "scenarios", on_delete: :cascade
   add_foreign_key "variables", "players", on_delete: :cascade
+  add_foreign_key "variables", "scenarios", on_delete: :cascade
+  add_foreign_key "variables", "variable_templates", on_delete: :cascade
 end

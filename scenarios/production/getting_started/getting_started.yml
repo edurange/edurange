@@ -27,12 +27,14 @@ Groups:
   - Instance: GettingStarted_Inst
     Administrator: false
     IP_Visible: true
+  Users:
+  - Login: james
+    Password: password
   Variables:
-    Player:
-    - Name: super_secret
-      Type: random
-    - Name: follow_me_filename
-      Type: random
+  - Name: super_secret
+    Type: random
+  - Name: follow_me_filename
+    Type: random
 Clouds:
 - Name: Cloud
   CIDR_Block: 10.0.0.0/16
