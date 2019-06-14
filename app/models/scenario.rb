@@ -19,7 +19,7 @@ class Scenario < ActiveRecord::Base
   has_many :instances, through: :subnets
   has_many :players, through: :groups
 
-  has_many :variable_templates, after_add: :instantiate_variable
+  has_many :variable_templates
   has_many :variables
 
   # Validations

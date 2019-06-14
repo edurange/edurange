@@ -17,6 +17,8 @@ class VariableTemplate < ActiveRecord::Base
     string: 'string'
   }
 
+  after_create :instantiate_for
+
   def generate_value
     case
       when random?
@@ -33,6 +35,11 @@ class VariableTemplate < ActiveRecord::Base
       variable_template: self,
       value: generate_value
     )
+  end
+
+  def instantiate_for
+    entity = group || scenario
+    entity.instantiate_variable self
   end
 
 end

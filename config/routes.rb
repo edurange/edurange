@@ -18,9 +18,7 @@ Edurange::Application.routes.draw do
 
   resources :instance_groups
   resources :players
-  resources :groups do
-    resources :variables, only: [:index, :new, :create]
-  end
+  resources :groups
   resources :instance_roles
   resources :roles
   resources :instances
@@ -33,6 +31,9 @@ Edurange::Application.routes.draw do
   end
 
   resources :scenarios do
+
+    resources :variables, only: [:index, :new, :create, :destroy], controller: 'scenario_variables'
+
     member do
       post 'destroyme'
 
@@ -61,6 +62,8 @@ Edurange::Application.routes.draw do
       post 'instructions_student_get'
       post 'instructions_student_modify'
 
+      get 'instances'
+
       post 'cloud_add'
       post 'cloud_delete'
       post 'cloud_modify'
@@ -77,6 +80,8 @@ Edurange::Application.routes.draw do
       post 'instance_role_add'
       post 'instance_role_remove'
       post 'instance_dynamic_ip_roll'
+
+      get  'users'
 
       post 'group_add'
       post 'group_modify'
@@ -95,6 +100,8 @@ Edurange::Application.routes.draw do
       post 'group_user_access_add'
       post 'group_user_access_remove'
 
+      get  'roles'
+
       post 'role_add'
       post 'role_delete'
       post 'role_modify'
@@ -103,6 +110,7 @@ Edurange::Application.routes.draw do
       post 'role_recipe_add'
       post 'role_recipe_remove'
 
+      get  'recipes'
       post 'recipe_view'
       post 'recipe_update_view'
       post 'recipe_global_get'
@@ -110,6 +118,8 @@ Edurange::Application.routes.draw do
       post 'recipe_custom_add'
       post 'recipe_remove'
       post 'recipe_update'
+
+      get  'scoring'
 
       post 'scoring_question_add'
       post 'scoring_question_delete'

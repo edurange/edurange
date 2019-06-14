@@ -22,7 +22,7 @@
     - role.packages.each do |package|
       %li{ id: "role-#{role.id}-package-#{package.filename_safe}" }
         = package
-        = link_to 'remove', role_package_remove_scenario_path(role_id: role.id, name: package), remote: true, method: :post, id: "role-recipe-#{role.id}-remove-button", class: role.instances_stopped? ? "" : "hidden"
+        = link_to 'remove', role_package_remove_scenario_path(role.scenario, role_id: role.id, name: package), remote: true, method: :post, id: "role-recipe-#{role.id}-remove-button", class: role.instances_stopped? ? "" : "hidden"
   Recipes:
   %ul{ id: "role-#{role.id}-recipes" }
     - role.role_recipes.each do |role_recipe|
@@ -30,4 +30,3 @@
         = role_recipe.recipe.name
         - if role.scenario.modifiable?
           = link_to 'remove', role_recipe_remove_scenario_path(role_recipe_id: role_recipe.id), remote: true, method: :post, id: "role-recipe-#{role_recipe.id}-remove-button", class: role.instances_stopped? ? "" : "hidden"
-                  

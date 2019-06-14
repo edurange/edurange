@@ -1,0 +1,23 @@
+= render layout: 'scenarios/show' do
+  %p
+    Scenario variables are instantiated for the entire scenario and are available for use on any instance.
+  %table.table
+    %thead
+      %tr
+        %th Name
+        %th Type
+        %th Value
+        %th Action
+    %tbody
+      - if @variables.empty?
+        %tr.no-data
+          %td{colspan: 4} No Variables
+      - else
+        - @variables.each do |var|
+          %tr
+            %td= var.name
+            %td= var.type
+            %td= var.value
+            %td
+              %div.btn-group.btn-group-xs= link_to('Remove', scenario_variable_path(scenario_id: var.scenario.id, id: var.variable_template.id), method: :delete, class: 'btn btn-danger')
+  = link_to('Add', new_scenario_variable_path, class: 'btn btn-primary')

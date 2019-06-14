@@ -1,0 +1,53 @@
+= render '/scenarios/show/modals'
+
+%div.panel.panel-default
+  %div.panel-heading.nav.nav-pills
+    %li
+      %h4
+        %b
+          %span#scenario-name= @scenario.name
+          \:
+    %li
+      &nbsp;
+    %li{ id: 'boot-button-li', class: @scenario.bootable? ? "" : "disabled" }
+      = link_to 'Boot', boot_scenario_path(@scenario), method: :post, remote:true, id: 'boot-button', class: 'btn btn-default'
+    %li{ id: 'unboot-button-li', class: @scenario.unbootable? ? "" : "disabled" }
+      = link_to 'Unboot', unboot_scenario_path(@scenario), method: :post, remote:true, id: 'unboot-button', class: 'btn btn-default'
+    %li{ id: 'pause-button-li', class: @scenario.booted? ? "" : "disabled" }
+      = link_to 'Pause', pause_scenario_path(@scenario), method: :post, remote:true, id: 'pause-button', class: 'btn btn-default'
+    %li{ id: 'start-button-li', class: @scenario.paused? ? "" : "disabled" }
+      = link_to 'Start', start_scenario_path(@scenario), method: :post, remote:true, id: 'start-button', class: 'btn btn-default'
+    %li
+      = link_to 'Clone', "#modal-scenario-clone", :data => {:toggle=>"modal"}, :onclick => "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#name').val(''); $('#modal-scenario-clone').find('#name-help').html('');", class: 'btn btn-default'
+    %li{ id: 'destroy-button-li', class: @scenario.stopped? ? "" : "disabled" }
+      = link_to 'Destroy', destroyme_scenario_path(@scenario), method: :post, remote: true, id: 'destroy-button', class: 'btn btn-default'
+    - if @scenario.modifiable?
+      %li{ id: "save-button-li", class: @scenario.modified? ? "" : "disabled" }
+        = link_to 'Save', save_scenario_path(@scenario), method: :post, remote: true, id: 'save-button', class: 'btn btn-default', href: @scenario.modified? ? "/scenarios/#{@scenario.id}/save" : "javascript: void(0)"
+      %li{ id: 'save-as-button-li', class: @scenario.stopped? ? "" : "disabled" }
+        = link_to 'Save As', "#modal-scenario-save-as", :data => {:toggle=>"modal"}, id: 'save-as-button', onclick: "$('#modal-scenario-save-as').find('#name').val(''); $('#modal-scenario-save-as').find('#name-div').removeClass('has-error'); $('#modal-scenario-save-as').find('#name-help').html(''); $('#modal-scenario-save-as').find('#help-div').removeClass('has-error'); $('#modal-scenario-save-as').find('#help-help').html('');", class: 'btn btn-default'
+    %li
+      = link_to 'Show Boot Log', log_get_scenario_path(@scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-default'
+
+  %div.indent.panel-body
+    %ul.nav.nav-tabs
+      %li{class: (request.path == scenario_path(@scenario)           ? 'active' : '')}= link_to('Scenario',  scenario_path(@scenario))
+      %li{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Users',     users_scenario_path(@scenario))
+      %li{class: (request.path == scoring_scenario_path(@scenario)   ? 'active' : '')}= link_to('Scoring',   scoring_scenario_path(@scenario))
+      %li{class: (request.path == instances_scenario_path(@scenario) ? 'active' : '')}= link_to('Instances', instances_scenario_path(@scenario))
+      %li{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))
+      %li{class: (request.path == recipes_scenario_path(@scenario)   ? 'active' : '')}= link_to('Recipes',   recipes_scenario_path(@scenario))
+      %li{class: (request.path == scenario_variables_path(@scenario) ? 'active' : '')}= link_to('Variables', scenario_variables_path(@scenario))
+      %li= link_to('Analytics', analytics_commands_path(scenario_id: @scenario.id))
+    %br
+    %div
+      = yield
+
+= link_to 'Back', scenarios_path, class: 'btn btn-default'
+
+%script
+  - if @clone
+    update_flash("Scenario successfully cloned");
+:javascript
+  get_scenario_status('#{@scenario.id}');
+

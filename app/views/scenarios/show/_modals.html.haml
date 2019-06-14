@@ -8,7 +8,7 @@
         %h3.modal-title.inline#title
           Clone Scenario
       %div.modal-body#modalbody
-        = form_tag clone_scenario_path(@scenario), remote: true, method: :post do 
+        = form_tag clone_scenario_path(@scenario), remote: true, method: :post do
           %span#group
           %p
           %div#name-div
@@ -28,7 +28,7 @@
         %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
           &times;
         %h3.modal-title.inline#title
-          Scenario Save As: 
+          Scenario Save As:
       %div.modal-body#modalbody
         = form_tag save_as_scenario_path(@scenario), remote:true, method: :post do
           %div#name-div
@@ -106,7 +106,7 @@
         %h3.modal-title.inline#title
           Add Cloud
       %div.modal-body#modalbody
-        = form_tag cloud_add_scenario_path(@scenario), remote:true, method: :post do 
+        = form_tag cloud_add_scenario_path(@scenario), remote:true, method: :post do
           %div#name-div
             = label_tag "Name:", nil, class: 'control-label'
             = text_field_tag "name", nil, class: 'form-control'
@@ -132,7 +132,7 @@
           Modify:
           %span#modal-title
       %div.modal-body#modalbody
-        = form_tag cloud_modify_scenario_path(@scenario), remote:true, method: :post do 
+        = form_tag cloud_modify_scenario_path(@scenario), remote:true, method: :post do
           = hidden_field_tag 'cloud_id'
           %div#name-div
             = label_tag "Name:", nil, class: 'control-label'
@@ -159,10 +159,10 @@
         %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
           &times;
         %h3.modal-title.inline#title
-          Add Subnet: 
+          Add Subnet:
           %span#cloud-name
       %div.modal-body#modalbody
-        = form_tag subnet_add_scenario_path, remote:true, method: :post do
+        = form_tag subnets_path, remote:true, method: :post do
           = hidden_field_tag 'cloud_id'
           %div#name-div
             = label_tag "Name:", nil, class: 'control-label'

@@ -8,12 +8,12 @@ class ScenariosController < ApplicationController
   before_action :set_scenario, only: [
     :clone, :destroyme, :edit, :modify, :show, :update, :save, :save_as, :log_get,
     :boot, :status, :unboot, :pause, :start,
-    :cloud_add,
-    :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
-    :role_recipe_add, :role_add,
-    :recipe_custom_add, :recipe_global_add, :recipe_global_get, :recipe_remove, :recipe_update, :recipe_update_view, :recipe_view,
+    :instances, :cloud_add,
+    :users, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
+    :roles, :role_recipe_add, :role_add,
+    :recipes, :recipe_custom_add, :recipe_global_add, :recipe_global_get, :recipe_remove, :recipe_update, :recipe_update_view, :recipe_view,
     :group_add, :group_instructions_get, :group_instructions_modify,
-    :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
+    :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
     :scoring_answer_essay_grade_delete,
     :instructions_get, :instructions_modify, :instructions_student_get, :instructions_student_modify

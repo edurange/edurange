@@ -5,7 +5,7 @@ class Group < ActiveRecord::Base
   has_many :players, dependent: :destroy
   has_one :user, through: :scenario
 
-  has_many :variable_templates, after_add: :instantiate_player_variables
+  has_many :variable_templates
 
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
   validate :instances_stopped
@@ -138,7 +138,7 @@ class Group < ActiveRecord::Base
     return instance_group
   end
 
-  def instantiate_player_variables(variable_template)
+  def instantiate_variable(variable_template)
     self.players.each do |player|
       player.variables << variable_template.instantiate
     end

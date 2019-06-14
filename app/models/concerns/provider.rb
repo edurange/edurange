@@ -50,6 +50,8 @@ module Provider
   def log_last
     if path = Dir.glob("#{self.scenario.data_path_boot}/*").max_by { |f| File.mtime(f) }
       return File.open(path, 'r').read()
+    else
+      ''
     end
   end
 

@@ -9,15 +9,15 @@
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "instance-#{instance.id}-dropdown-button"}
         %li
           %li{ id: "instance-#{instance.id}-boot-button-li", class: instance.bootable? ? "" : "disabled" }
-            = link_to 'Boot', boot_instance_scenario_path(instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id.to_s}-boot-button"
+            = link_to 'Boot', boot_instance_scenario_path(id: instance.scenario, instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id.to_s}-boot-button"
           %li{ id: "instance-#{instance.id}-unboot-button-li", class: instance.unbootable? ? "" : "disabled" }
-            = link_to 'Unboot', unboot_instance_scenario_path(instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id}-unboot-button"
+            = link_to 'Unboot', unboot_instance_scenario_path(id: instance.scenario, instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id}-unboot-button"
           %li.divider
           - if instance.scenario.modifiable?
             %li{ id: "instance-#{instance.id}-modify-button-li", class: instance.stopped? ? "" : "disabled" }
               = link_to 'Modify', "#modal-instance-modify", :data => {:toggle=>"modal"}, onclick: "instance_modify(#{instance.id})", id: "instance-#{instance.id}-modify-button"
           %li{ id: "instance-#{instance.id}-delete-button-li", class: instance.stopped? ? "" : "disabled" }
-            = link_to 'Delete', instance_delete_scenario_path(instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id}-delete-button"
+            = link_to 'Delete', instance_delete_scenario_path(id: instance.scenario, instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id}-delete-button"
           %li.divider
           %li
             = link_to "Show Bash History", analytics_commands_path(instance_id: instance.id, scenario_id: instance.scenario.id)
@@ -32,7 +32,7 @@
   - hidden = (instance.initialized? == "chef script error") ? '' : 'hidden'
   %span{id: "instance-#{instance.id}-initialized-error", class: hidden }
     Chef Error
-    = link_to 'view', instance_chef_error_scenario_path(instance_id: instance), remote: true, method: :post
+    = link_to 'view', instance_chef_error_scenario_path(id: instance.scenario, instance_id: instance), remote: true, method: :post
     %br
   Driver:
   %span{id: "instance-#{instance.id}-driver" }
