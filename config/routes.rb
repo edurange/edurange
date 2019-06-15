@@ -18,13 +18,16 @@ Edurange::Application.routes.draw do
 
   resources :instance_groups
   resources :players
-  resources :groups
+  resources :groups do
+    resources :variables, only: [:new, :create], controller: 'group_variables'
+  end
   resources :instance_roles
   resources :roles
   resources :instances
   resources :subnets
   resources :clouds
   resources :tutorials
+  resources :variables, only: [:destroy]
 
   namespace 'analytics' do
     resources :commands, only: [:index]
@@ -32,7 +35,7 @@ Edurange::Application.routes.draw do
 
   resources :scenarios do
 
-    resources :variables, only: [:index, :new, :create, :destroy], controller: 'scenario_variables'
+    resources :variables, only: [:index, :new, :create], controller: 'scenario_variables'
 
     member do
       post 'destroyme'

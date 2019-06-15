@@ -97,6 +97,8 @@
   %p
     Variables:
     %div
+      %p
+        Group variables are intantiated separately for every player in the group.
       - if group.variable_templates.size > 0
         %table.table
           %thead
@@ -104,12 +106,16 @@
               %th Name
               %th Type
               %th Value
+              %th Action
           %tbody
             - group.variable_templates.each do |var|
               %tr
                 %td= var.name
                 %td= var.type
                 %td= var.value
+                %td
+                  %div.btn-group.btn-group-xs= link_to('Remove', variable_path(id: var.id), method: :delete, class: 'btn btn-danger')
+      = link_to('Add', new_group_variable_path(group_id: group.id), class: 'btn btn-primary')
     %div
       Players:
       - group.players.each do |player|
