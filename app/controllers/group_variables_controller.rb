@@ -1,22 +1,21 @@
 
-class ScenarioVariablesController < VariablesController
+class GroupVariablesController < VariablesController
 
   def index
-    @variables = @scenario.variables
+    @variables = group.variable_templates
   end
 
   def new
     @variable = VariableTemplate.new
-    @variable.scenario = @scenario
+    @variable.group = group
   end
 
   def create
     @variable = VariableTemplate.new(variable_params)
-    logger.debug(@variable.scenario.id)
     if @variable.valid? then
       @variable.save!
       flash[:notice] = "Variable '#{@variable.name}' Added"
-      redirect_to action: :index
+      redirect_to users_scenario_path(@variable.group.scenario)
     else
       render :new
     end
@@ -24,13 +23,13 @@ class ScenarioVariablesController < VariablesController
 
   private
 
-  def find_scenario
-    Scenario.find(params.require(:scenario_id))
+  def group
+    @group ||= Group.find(params.require(:group_id))
   end
 
   before_action def set_instance_variables
-    @scenario = find_scenario
     @user = current_user
+    @scenario = group.scenario
   end
 
 end
