@@ -1,11 +1,11 @@
 class AdminController < ApplicationController
-  before_action :authenticate_admin
+  before_action :authenticate_admin!
   before_action :set_student_group, only: [:student_group_destroy]
 
   def index
     @instructors = User.where role: 3
     @students = User.where role: 4
-    
+
     # Mark for refactoring
     begin
       @aws_vpc_cnt = AWS::EC2.new.vpcs.count
@@ -15,8 +15,7 @@ class AdminController < ApplicationController
       @aws_instance_cnt = nil
     end
   end
-  
-  
+
   # Creates a new instuctor.
   def instructor_create
     name = params[:name] == '' ? nil : params[:name]
@@ -138,7 +137,7 @@ class AdminController < ApplicationController
   # Add a user to a student group
   def student_group_user_add
     users = [*StudentGroupUser.find(params[:student_group_user_id])].collect{ |sgu| sgu.user }
-    @student_group = @user.student_groups.find_by_name(params[:student_group_name])
+    @student_group = current_user.student_groups.find_by_name(params[:student_group_name])
 
     if not @student_group.nil?
       @student_group_users = @student_group.user_add(users)

@@ -1,5 +1,6 @@
 
 class VariablesController < ApplicationController
+  before_action :authenticate_admin_or_instructor!
 
   def destroy
     v = VariableTemplate.find(params.require(:id))

@@ -35,11 +35,11 @@ git clone https://github.com/edurange/edurange-server.git
 sudo apt-get remove --purge ruby
 ```
 
-  Follow this guide to install RVM: (https://rvm.io/rvm/install#installation). Single-user instructions recommended.
-  This project uses Ruby 2.5.1 so use RVM to install and select the correct version of Ruby:
+Follow this guide to install RVM: (https://rvm.io/rvm/install#installation). Single-user instructions recommended.
+This project uses Ruby 2.5.1 so use RVM to install and select the correct version of Ruby:
 ```
-rvm install [ruby version number eg 2.5.1]  - rvm install 2.5.1
-rvm use [ruby version number eg 2.5.1]      - rvm use 2.5.1
+rvm install 2.5.1
+rvm use 2.5.1
 ```
 
 You may have to do something like: `bin/bash --login` in order to set the RVM ruby version (which doens't refer to the system ruby version).
@@ -47,10 +47,6 @@ You may have to do something like: `bin/bash --login` in order to set the RVM ru
 Also, install bundler (to take care of gem dependencies) and the rails framework:
 
 Debian/Ubuntu Linux:
-```
-gem install bundler -v 1.17.2
-```
-Fedora/Red Hat Linux
 ```
 gem install bundler -v 1.17.2
 ```
@@ -70,19 +66,38 @@ export AWS_SECRET_ACCESS_KEY='you-secret-access-key'
 export AWS_REGION='your-aws-region'
 ```
 
-
 Now you should be all ready to start your server and create some users.
 
 ####  IV. Database and User setup
 
+EDURange uses the PostgreSQL database server. Install postgres by running
+
+```
+sudo apt install postgresql
+```
+Next create a user in postgres that the EDURange app will use to connect.
+First connect to the postgres server by using the `psql` command line client. 
+```
+sudo -u postgres psql
+```
+In the client, execute the command 
+```
+CREATE USER edurange WITH PASSWORD 'edurange_rocks!' CREATEDB;
+```
+
 Edit the file "config/secrets.yml". Under 'development:' fill in "admin\_name", "admin\_email" and "admin\_password". Avoid using any spaces in those fields.
 
-Now run ```rake db:setup```. This will create the database and admin account.
+Now run ```rake db:setup```. This will create the database, the tables, and the admin account.
 
 #### V. Background worker on ActiveJob
 
 We are using `sidekiq` as an `ActiveJob` backend to do things like send emails and boot/unboot scenarios in the background.
-`sidekiq` requires a `redis` server on `localhost` and is started via
+`sidekiq` requires a `redis` server on `localhost`.
+You can install redis via
+```
+sudo apt install redis
+```
+You can start sidekiq via
 ```
 bundle exec sidekiq
 ```

@@ -1,18 +1,14 @@
 
 class ScenarioVariablesController < VariablesController
-
-  def index
-    @variables = @scenario.variables
-  end
+  before_action :authenticate_admin_or_instructor!
 
   def new
     @variable = VariableTemplate.new
-    @variable.scenario = @scenario
+    @variable.scenario = scenario
   end
 
   def create
     @variable = VariableTemplate.new(variable_params)
-    logger.debug(@variable.scenario.id)
     if @variable.valid? then
       @variable.save!
       flash[:notice] = "Variable '#{@variable.name}' Added"
@@ -24,11 +20,19 @@ class ScenarioVariablesController < VariablesController
 
   private
 
+  helper_method def scenario
+    @scenario ||= find_scenario
+  end
+
+  helper_method def variables
+    scenario.variables
+  end
+
   def find_scenario
     Scenario.find(params.require(:scenario_id))
   end
 
-  before_action def set_instance_variables
+  before_action do
     @scenario = find_scenario
     @user = current_user
   end
