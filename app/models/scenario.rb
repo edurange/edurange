@@ -497,8 +497,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def nat_instance
-    nat = self.instances.select{|i| i.internet_accessible and i.os == "nat" }
-    (nat.any? ? nat.first : nil)
+    self.instances.select{|i| i.internet_accessible and i.os == "nat" }.first
   end
 
   def data_path

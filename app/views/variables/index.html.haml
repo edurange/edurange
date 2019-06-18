@@ -9,11 +9,11 @@
         %th Value
         %th Action
     %tbody
-      - if @variables.empty?
+      - if variables.empty?
         %tr.no-data
           %td{colspan: 4} No Variables
       - else
-        - @variables.each do |var|
+        - variables.each do |var|
           %tr
             %td= var.name
             %td= var.type

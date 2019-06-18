@@ -1,7 +1,6 @@
 class SchedulesController < ApplicationController
   before_action :set_schedule, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_admin_or_instructor
-  before_action :set_user
+  before_action :authenticate_admin_or_instructor!
 
   # GET /schedules
   # GET /schedules.json
@@ -20,17 +19,17 @@ class SchedulesController < ApplicationController
     @templates = []
     @scenario_list = []
     if Rails.env == 'production'
-      @templates << YmlRecord.yml_headers('production', @user)
-      @templates << YmlRecord.yml_headers('local', @user)
+      @templates << YmlRecord.yml_headers('production', current_user)
+      @templates << YmlRecord.yml_headers('local', current_user)
     elsif Rails.env == 'development'
-      @templates << YmlRecord.yml_headers('development', @user)
-      @templates << YmlRecord.yml_headers('production', @user)
-      @templates << YmlRecord.yml_headers('local', @user)
-      @templates << YmlRecord.yml_headers('test', @user)
+      @templates << YmlRecord.yml_headers('development', current_user)
+      @templates << YmlRecord.yml_headers('production', current_user)
+      @templates << YmlRecord.yml_headers('local', current_user)
+      @templates << YmlRecord.yml_headers('test', current_user)
     elsif Rails.env == 'test'
-      @templates << YmlRecord.yml_headers('test', @user)
+      @templates << YmlRecord.yml_headers('test', current_user)
     end
-    @templates << YmlRecord.yml_headers('custom', @user)
+    @templates << YmlRecord.yml_headers('custom', current_user)
     @templates.each {|x| x.each {|y| @scenario_list.push(y[:name])}}
   end
 
@@ -41,7 +40,7 @@ class SchedulesController < ApplicationController
   # POST /schedules
   # POST /schedules.json
   def create
-    @schedule = @user.schedules.new(schedule_params)
+    @schedule = current_user.schedules.new(schedule_params)
     @schedule.save
     
     if @schedule.errors.any?
@@ -77,10 +76,6 @@ class SchedulesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_schedule
       @schedule = Schedule.find(params[:id])
-    end
-
-    def set_user
-      @user = User.find(current_user.id)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

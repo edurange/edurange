@@ -19,8 +19,6 @@
 //= require underscore
 //= require_tree .
 //= require turbolinks
-//= require Chart.bundle
-//= require chartkick
 
 function update_flash(message) {
     if (!$('#flash_notice').length) {

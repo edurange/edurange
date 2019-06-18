@@ -5,7 +5,7 @@
   <% end %>
 <% else %>
     $('#student-groups').append(
-        "<%= escape_javascript render partial: 'instructor/student_group', object: @student_group, as: :student_group, locals: { scenario: @scenario } %>");
+        "<%= escape_javascript render partial: 'instructor/student_group', object: @student_group, as: :student_group %>");
   $('#modal-student-group-create').modal('toggle');
   $('#student-group-select').append(
       '<option value="<%= @student_group.name %>"><%= @student_group.name %></option>');

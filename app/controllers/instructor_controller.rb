@@ -1,5 +1,5 @@
 class InstructorController < ApplicationController
-  before_action :authenticate_instructor
+  before_action :authenticate_instructor!
   before_action :set_student_group, only: [:student_group_destroy]
 
   def index
@@ -7,8 +7,7 @@ class InstructorController < ApplicationController
   end
 
   def student_group_create
-    @user = User.find(current_user.id)
-    @student_group = @user.student_groups.new(name: params[:name])
+    @student_group = current_user.student_groups.new(name: params[:name])
     @student_group.save
 
     respond_to do |format|

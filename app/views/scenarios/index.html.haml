@@ -60,7 +60,7 @@
         %th Name
         %th Date Created
         %th Status
-        - if @user.is_admin?
+        - if current_user.is_admin?
           %th Instructor
         %th
 
@@ -69,7 +69,7 @@
           %td= scenario.name
           %td= scenario.created_at
           %td= scenario.status
-          - if @user.is_admin?
+          - if current_user.is_admin?
             - if not scenario.user.nil?
               %td= scenario.user.name
             - else

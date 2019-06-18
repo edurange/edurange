@@ -1,5 +1,6 @@
 
 class GroupVariablesController < VariablesController
+  before_action :authenticate_admin_or_instructor!
 
   def index
     @variables = group.variable_templates
@@ -27,7 +28,7 @@ class GroupVariablesController < VariablesController
     @group ||= Group.find(params.require(:group_id))
   end
 
-  before_action def set_instance_variables
+  before_action do
     @user = current_user
     @scenario = group.scenario
   end

@@ -431,7 +431,7 @@
           = hidden_field_tag 'group_id'
           %div#student-group-div
             = label_tag nil, "Student Group:"
-            = select_tag "name", options_for_select(@user.student_groups.pluck(:name)), class: 'form-control'
+            = select_tag "name", options_for_select(current_user.student_groups.pluck(:name)), class: 'form-control'
             %span.help-block.inline#student-group-div-help
           %p
           %div#help-div
@@ -455,7 +455,7 @@
           = hidden_field_tag 'group_id'
           %div#student-group-div
             = label_tag nil, "Student Group:"
-            = select_tag "name", options_for_select(@user.student_groups.pluck(:name)), class: 'form-control'
+            = select_tag "name", options_for_select(current_user.student_groups.pluck(:name)), class: 'form-control'
             %span.help-block.inline#student-group-div-help
           %div#help-div
             %span.help-block#help-help
