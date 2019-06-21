@@ -8,9 +8,9 @@
         %span.caret
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "subnet-#{subnet.id}-dropdown-button" }
         %li{ id: "subnet-#{subnet.id}-boot-button-li", class: subnet.bootable? ? "" : "disabled" }
-          = link_to 'Boot', boot_subnet_scenario_path(subnet_id: subnet), method: :post, remote: true, id: "subnet-#{subnet.id}-boot-button"
+          = link_to 'Boot', boot_subnet_scenario_path(id: subnet.scenario, subnet_id: subnet), method: :post, remote: true, id: "subnet-#{subnet.id}-boot-button"
         %li{ id: "subnet-#{subnet.id}-unboot-button-li", class: subnet.unbootable? ? "" : "disabled" }
-          = link_to 'Unboot', unboot_subnet_scenario_path(subnet_id: subnet), method: :post, remote: true, id: "subnet-#{subnet.id}-unboot-button"
+          = link_to 'Unboot', unboot_subnet_scenario_path(id: subnet.scenario, subnet_id: subnet), method: :post, remote: true, id: "subnet-#{subnet.id}-unboot-button"
         - if subnet.scenario.modifiable?
           %li.divider
           %li{ id: "subnet-#{subnet.id}-modify-button-li", class: subnet.stopped? ? "" : "disabled" }

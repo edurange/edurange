@@ -1,12 +1,12 @@
-- if defined? @user
+- if defined? current_user
   %label Account Information: 
   %div.row
     %div.col-sm-6
       %b Name:
-      = @user.name
+      = current_user.name
       %br
       %b Email:
-      = @user.email
+      = current_user.email
       %br
       %b Password:
       ********
@@ -14,7 +14,7 @@
       = link_to 'edit', edit_user_registration_path
     %div.col-sm-6
       %b Last Sign In:
-      = @user.last_sign_in_at
+      = current_user.last_sign_in_at
       %br
       %b From:
-      = @user.last_sign_in_ip
+      = current_user.last_sign_in_ip

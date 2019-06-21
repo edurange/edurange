@@ -218,6 +218,9 @@ class Question < ActiveRecord::Base
   end
 
   def answer_string(text, user_id)
+
+    player = scenario.players.find_by(user_id: user_id)
+
     text = text.strip
 
     correct = false
@@ -237,13 +240,8 @@ class Question < ActiveRecord::Base
 
       if self.options.include? "variable-group-player"
         group_name, var_name = value[:value].split(':')
-        if group = self.scenario.groups.find_by_name(group_name)
-          group.variables[:player][:vars].each do |player, vars|
-            if player.user_id == user_id
-              value[:value] = vars[var_name].val
-            end
-          end
-        end
+        variable = player.variables.find_by(name: var_name)
+        value[:value] = variable.value
       end
 
       if self.options.include? "ignore-case"

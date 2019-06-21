@@ -9,7 +9,7 @@ class Instance < ActiveRecord::Base
   has_many :groups, through: :instance_groups, dependent: :destroy
   has_many :roles, through: :instance_roles, dependent: :destroy
   has_many :players, through: :groups
-  has_many :bash_histories, dependent: :destroy
+  has_many :bash_histories, dependent: :delete_all
   has_one :user, through: :subnet
   has_one :scenario, through: :subnet
 
@@ -325,27 +325,6 @@ class Instance < ActiveRecord::Base
 
   def add_user(group, ip_visible)
     InstanceGroup.create(group: group, instance: self, administrator: false, ip_visible: ip_visible)
-  end
-
-  def variables_instance
-    vars = {}
-    self.groups.each do |g|
-      vars = vars.merge(g.variables[:instance]) if g.variables[:instance]
-    end
-    vars
-  end
-
-  def variables_player
-    vars = {}
-    self.groups.each do |g|
-      g.variables[:player][:vars].each do |player, v|
-        if not vars.has_key? player
-          vars[player] = {}
-        end
-        vars[player] = vars[player].merge(v)
-      end
-    end
-    vars
   end
 
 end

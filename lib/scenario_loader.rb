@@ -29,6 +29,7 @@ class ScenarioLoader
       build_roles
       build_clouds
       build_groups
+      build_variables(@scenario, yaml['Variables'])
       @scenario.reload
       build_questions
     rescue => e
@@ -143,22 +144,16 @@ class ScenarioLoader
     end
   end
 
-  def build_variables(group, variables)
+  def build_variables(entity, variables)
     return if variables.nil?
     raise InvalidYAMLError unless variables.respond_to? :each
 
-    # Instance variables
-    if variables['Instance']
-      variables['Instance'].each do |var|
-        group.variable_instance_add(var['Name'], var['Type'], var['Value'])
-      end
-    end
-
-    # Player variables
-    if variables['Player']
-      variables['Player'].each do |var|
-        group.variable_player_add(var['Name'], var['Type'], var['Value'])
-      end
+    variables.each do |var|
+      entity.variable_templates.create(
+        name:  var['Name'],
+        type:  var['Type'],
+        value: var['Value']
+      )
     end
   end
 
@@ -172,7 +167,7 @@ class ScenarioLoader
       if hash["UserId"]
         if user = User.find(hash["UserId"])
           group.players.create!(
-            login: hash["Login"], 
+            login: hash["Login"],
             password: hash["Password"], 
             student_group_id: hash["StudentGroupId"], 
             user: user

@@ -13,7 +13,7 @@
           = hidden_field_tag 'user_id'
           %div#name-div
             = label_tag nil, "Add to group"
-            = select_tag 'student_group_name', options_for_select(@user.student_groups.all.select{ |s| s.name != "All" }.collect{ |s| s.name }),
+            = select_tag 'student_group_name', options_for_select(current_user.student_groups.all.select{ |s| s.name != "All" }.collect{ |s| s.name }),
                 class: 'form-control input-sm', id: 'student-group-select'
             %span.help-block.inline#name-help
           %br
