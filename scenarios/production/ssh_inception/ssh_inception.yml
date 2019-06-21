@@ -6,9 +6,12 @@ Instructions: Instruct students to connect to the first machine, and further log
   instructions will appear onscreen once connected. They can also be found in /etc/motd
 InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
   there.
+Variables:
+- Name: fifth_stop_password_key
+  Type: string
+  Value: 8fddakjfds0s9f
 Groups:
 - Name: Instructor
-  Instructions: 
   Access:
   - Instance: NAT
     Administrator: false
@@ -37,15 +40,7 @@ Groups:
   - Instance: AnonFTP
     Administrator: true
     IP_Visible: false
-  Users:
-  Variables:
-    Instance:
-    - Name: fifth_stop_password_key
-      Type: string
-      Value: 8fddakjfds0s9f
-    Player: []
 - Name: Students
-  Instructions: 
   Access:
   - Instance: NAT
     Administrator: false
@@ -74,48 +69,29 @@ Groups:
   Users:
   - Login: student
     Password: f26679f
-    Id: 
-    UserId: 
-    StudentGroupId: 
   Variables:
-    Instance:
-    - Name: fifth_stop_password_key
-      Type: string
-      Value: 8fddakjfds0s9f
-    Player:
-    - Name: third_stop_private_key
-      Type: openssl_pkey_rsa
-      Value: 
-    - Name: fourth_stop_password
-      Type: random
-      Value: 
-    - Name: fifth_stop_password
-      Type: random
-      Value: 
-    - Name: satans_palace_password
-      Type: random
-      Value: 
-    - Name: secret_starting_line
-      Type: random
-      Value: 
-    - Name: secret_first_stop
-      Type: random
-      Value: 
-    - Name: secret_second_stop
-      Type: random
-      Value: 
-    - Name: secret_third_stop
-      Type: random
-      Value: 
-    - Name: secret_fourth_stop
-      Type: random
-      Value: 
-    - Name: secret_fifth_stop
-      Type: random
-      Value: 
-    - Name: master_string
-      Type: random
-      Value: 
+  - Name: third_stop_private_key
+    Type: openssl_pkey_rsa
+  - Name: fourth_stop_password
+    Type: random
+  - Name: fifth_stop_password
+    Type: random
+  - Name: satans_palace_password
+    Type: random
+  - Name: secret_starting_line
+    Type: random
+  - Name: secret_first_stop
+    Type: random
+  - Name: secret_second_stop
+    Type: random
+  - Name: secret_third_stop
+    Type: random
+  - Name: secret_fourth_stop
+    Type: random
+  - Name: secret_fifth_stop
+    Type: random
+  - Name: master_string
+    Type: random
 Clouds:
 - Name: Cloud1
   CIDR_Block: 10.0.0.0/16
@@ -127,7 +103,6 @@ Clouds:
     - Name: NAT
       OS: nat
       IP_Address: 10.0.129.5
-      IP_Address_Dynamic: 
       Internet_Accessible: true
       Roles:
       - NAT

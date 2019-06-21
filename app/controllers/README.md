@@ -61,7 +61,6 @@ These may not be complete and may need more testing.
   - Destroy destroys schedule
   - Private
     - set_schedule
-    - set_user
     - schedule_params
     
 - scoring_controller.rb: Handles scoring but the code is currently insecure right now and need to be fixed so it is all commented ot

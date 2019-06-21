@@ -91,8 +91,6 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    composite_primary_keys (8.1.6)
-      activerecord (~> 4.2.0)
     concurrent-ruby (1.1.4)
     connection_pool (2.2.2)
     crass (1.0.4)
@@ -220,8 +218,6 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (3.0.3)
-    pundit (2.0.1)
-      activesupport (>= 3.0.0)
     quiet_assets (1.1.0)
       railties (>= 3.1, < 5.0)
     rack (1.6.11)
@@ -373,7 +369,6 @@ DEPENDENCIES
   bootstrap-sass (~> 3.4.1)
   capybara
   coffee-rails (~> 4.0.0)
-  composite_primary_keys (~> 8)
   daemons
   database_cleaner
   devise (~> 4.6)
@@ -400,7 +395,6 @@ DEPENDENCIES
   pg (~> 0.18)
   pry-byebug
   pry-rails
-  pundit
   quiet_assets
   rails (~> 4.2.11)
   rails_12factor

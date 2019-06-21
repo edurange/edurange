@@ -13,8 +13,8 @@
   - else
     %body{"data-turbolinks" => "false"}
   %header
-    = render 'layouts/links'
+    /= render 'layouts/links'
     = render 'layouts/navigation'
   %main{:role => "main"}
     = render 'layouts/messages'
-    = yield
+    = content_for?(:main) ? yield(:main) : yield

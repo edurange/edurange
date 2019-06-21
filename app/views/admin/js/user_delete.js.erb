@@ -1,4 +1,4 @@
-<% @users.each do |user| %>
+<% current_users.each do |user| %>
     $('#user-<%= user.id %>').each(function(i, obj) {
         $(obj).remove();
     });

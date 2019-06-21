@@ -55,7 +55,7 @@
     %br
     %label Groups:
     %ul
-      - @scenario.students_groups(@user).each do |group|
+      - @scenario.students_groups(current_user).each do |group|
         %li
           %label= group.name
           %br
@@ -64,7 +64,7 @@
           %br
           %label Credentials:
           %ul
-            - if player = group.find_player_by_student_id(@user.id)
+            - if player = group.find_player_by_student_id(current_user.id)
               login:
               = player.login
               %br
@@ -106,7 +106,7 @@
             = question.type_of
             %br
             - if question.type_of == "String" or question.type_of == "Number"
-              - answers = question.answers.where("user_id = ?", @user.id)
+              - answers = question.answers.where("user_id = ?", current_user.id)
               - if answers
                 %label My Answers:
                 %table.table{ id: "question-#{question.id}-answers-table" }
@@ -130,7 +130,7 @@
                   %th Comments
                   %th Date
                   %th
-                  - if answers = question.answers.where("user_id = ?", @user.id)
+                  - if answers = question.answers.where("user_id = ?", current_user.id)
                     - answers.each do |answer|
                       = render 'answer_essay', answer: answer
             

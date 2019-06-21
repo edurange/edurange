@@ -8,7 +8,7 @@
       = link_to 'Help Docs', tutorials_path
 
     // Only display relevant docs for admin or instructor
-    - if @user.is_admin? or @user.is_instructor?
+    - if current_user.is_admin? or current_user.is_instructor?
 
       %li{role: 'presentation' }
         = link_to 'Quick Start', tutorials_quick_start_guide_path
@@ -24,7 +24,7 @@
 
 
     // Only display student docs
-    - if @user.is_student?
+    - if current_user.is_student?
 
       %li{role: 'presentation'}
         = link_to 'SSH Inception Help', tutorials_ssh_inception_path

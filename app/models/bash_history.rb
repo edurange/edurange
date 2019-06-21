@@ -1,6 +1,4 @@
 class BashHistory < ActiveRecord::Base
-  self.primary_keys = :instance_id, :player_id, :performed_at, :command
-
   belongs_to :instance
   belongs_to :player
 

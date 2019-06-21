@@ -1,65 +1,26 @@
 class ApplicationController < ActionController::Base
-
-# before_filter :authenticate_user!
-
-  include Pundit
-  # Prevent CSRF attacks by raising an exception.
-  # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-  helper_method :nat_instance
 
   private
 
-  def nat_instance(nat_instance = nil)
-    @nat_instance ||= nat_instance
-  end
-
-  def user_not_authorized
+  def not_authorized
     flash[:alert] = "Access denied."
     redirect_to (request.referrer || root_path)
   end
 
-  def authenticate_admin
-    if user_signed_in?
-      @user = User.find(current_user.id)
-      if @user.is_admin?
-        return
-      end
-    end
-    redirect_to '/'
+  def authenticate_role!(*roles)
+    authenticate_user!
+    not_authorized unless roles.include? current_user.role
   end
 
-  def authenticate_instructor
-    if user_signed_in?
-      @user = User.find(current_user.id)
-      if @user.is_instructor?
-        return
-      end
+  User.roles.each do |role_name, _|
+    define_method "authenticate_#{role_name}!" do
+      authenticate_role! role_name
     end
-    redirect_to '/'
   end
 
-  def authenticate_admin_or_instructor
-    if user_signed_in?
-      @user = User.find(current_user.id)
-      if @user.is_admin? || @user.is_instructor?
-        return
-      end
-    end
-    redirect_to '/'
-  end
-
-  def authenticate_student
-    if user_signed_in?
-      @user = User.find(current_user.id)
-      if @user.is_student?
-        return
-      end
-    end
-    redirect_to '/'
+  def authenticate_admin_or_instructor!
+    authenticate_role!('admin', 'instructor')
   end
 
 end

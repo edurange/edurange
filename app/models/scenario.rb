@@ -19,6 +19,9 @@ class Scenario < ActiveRecord::Base
   has_many :instances, through: :subnets
   has_many :players, through: :groups
 
+  has_many :variable_templates
+  has_many :variables
+
   # Validations
   # http://guides.rubyonrails.org/active_record_validations.html
   validates_associated :clouds, :questions, :roles, :recipes, :groups, :user
@@ -72,8 +75,8 @@ class Scenario < ActiveRecord::Base
       return false
     end
 
-    yml = { 
-      "Name" => self.name, 
+    yml = {
+      "Name" => self.name,
       "Description" => self.description,
       "Instructions" => self.instructions,
       "InstructionsStudent" => self.instructions_student,
@@ -83,14 +86,22 @@ class Scenario < ActiveRecord::Base
       "Instances" => nil
     }
 
+    if not self.variable_templates.blank?
+      yml['Variables'] = self.variable_templates.map{ |v| {
+        "Name"  => v.name,
+        "Type"  => v.type,
+        "Value" => v.value
+      }}
+    end
+
     yml["Roles"] = self.roles.empty? ? nil : self.roles.map { |r|
-      { "Name"=>r.name, 
-        "Packages" => r.packages.empty? ? nil : r.packages, 
+      { "Name"=>r.name,
+        "Packages" => r.packages.empty? ? nil : r.packages,
         "Recipes"=>r.recipes.empty? ? nil : r.recipes.map { |rec| rec.name }
       }
     }
 
-    yml["Groups"] = self.groups.empty? ? nil : self.groups.map { |group| 
+    yml["Groups"] = self.groups.empty? ? nil : self.groups.map { |group|
       { "Name" => group.name,
         "Instructions" => group.instructions,
         "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map { |access|
@@ -99,43 +110,35 @@ class Scenario < ActiveRecord::Base
             "IP_Visible" => access.ip_visible
           }
         },
-        "Users" => group.players.empty? ? nil : group.players.map { |p| { 
-          "Login" => p.login, 
-          "Password" => p.password, 
+        "Users" => group.players.empty? ? nil : group.players.map { |p| {
+          "Login" => p.login,
+          "Password" => p.password,
           "Id" => self.has_student?(p.user) ? p.user_id : nil,
           "UserId" => p.user_id,
           "StudentGroupId" => p.student_group_id
-          } 
+          }
         },
-        # I haven't significantly tested this Variables section.
-        # I'm not sure why "Instances > Type/Value" only accepted .type
-        #   while "Player > Type/Value" only accepted [:type]
-        # Both are accessing a Variable (lib/variable.rb)
-        # That might be a section of future issues.
-        "Variables" => group.variables.empty? ? nil : {"Instance" => group.variables[:instance].map { |i| {
-             "Name" => i.at(0),
-             "Type" => i.at(1).type,
-             "Value" => i.at(1).val
-          }}}.merge!({"Player" => group.variables[:player][:info].map { |p| {
-            "Name" => p.at(0),
-            "Type" => p.at(1)[:type],
-            "Value" => p.at(1)[:val]
-            }}})
+
+        "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map { |v| {
+          "Name"  => v.name,
+          "Type"  => v.type,
+          "Value" => v.value
+        }}
       }
     }
 
     yml["Clouds"] = self.clouds.empty? ? nil : self.clouds.map { |cloud|
-      { 
-      "Name" => cloud.name, 
+      {
+      "Name" => cloud.name,
       "CIDR_Block" => cloud.cidr_block,
-      "Subnets" => cloud.subnets.empty? ? nil : cloud.subnets.map { |subnet| 
+      "Subnets" => cloud.subnets.empty? ? nil : cloud.subnets.map { |subnet|
         {
-        "Name" => subnet.name, 
-        "CIDR_Block" => subnet.cidr_block, 
+        "Name" => subnet.name,
+        "CIDR_Block" => subnet.cidr_block,
         "Internet_Accessible" => subnet.internet_accessible,
-        "Instances" => subnet.instances.empty? ? nil : subnet.instances.map { |instance| 
+        "Instances" => subnet.instances.empty? ? nil : subnet.instances.map { |instance|
           {
-          "Name" => instance.name, 
+          "Name" => instance.name,
           "OS" => instance.os,
           "IP_Address" => instance.ip_address,
           "IP_Address_Dynamic" => instance.has_dynamic_ip? ? instance.ip_address_dynamic.str : nil,
@@ -499,8 +502,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def nat_instance
-    nat = self.instances.select{|i| i.internet_accessible and i.os == "nat" }
-    (nat.any? ? nat.first : nil)
+    self.instances.select{|i| i.internet_accessible and i.os == "nat" }.first
   end
 
   def data_path
@@ -513,6 +515,10 @@ class Scenario < ActiveRecord::Base
     path = "#{self.data_path}/boot"
     FileUtils.mkdir_p(path) if not File.exists?(path)
     path
+  end
+
+  def instantiate_variable template
+    self.variables << template.instantiate
   end
 
 end

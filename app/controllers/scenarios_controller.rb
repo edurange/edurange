@@ -1,19 +1,18 @@
 require 'dynamic_ip'
 
 class ScenariosController < ApplicationController
-  before_action :authenticate_admin_or_instructor
-  before_action :set_user
+  before_action :authenticate_admin_or_instructor!
 
   # Scenario
   before_action :set_scenario, only: [
     :clone, :destroyme, :edit, :modify, :show, :update, :save, :save_as, :log_get,
     :boot, :status, :unboot, :pause, :start,
-    :cloud_add,
-    :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
-    :role_recipe_add, :role_add,
-    :recipe_custom_add, :recipe_global_add, :recipe_global_get, :recipe_remove, :recipe_update, :recipe_update_view, :recipe_view,
+    :instances, :cloud_add,
+    :users, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
+    :roles, :role_recipe_add, :role_add,
+    :recipes, :recipe_custom_add, :recipe_global_add, :recipe_global_get, :recipe_remove, :recipe_update, :recipe_update_view, :recipe_view,
     :group_add, :group_instructions_get, :group_instructions_modify,
-    :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
+    :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
     :scoring_answer_essay_grade_delete,
     :instructions_get, :instructions_modify, :instructions_student_get, :instructions_student_modify
@@ -97,17 +96,17 @@ class ScenariosController < ApplicationController
     @scenario = Scenario.new
     @templates = []
     if Rails.env == 'production'
-      @templates << {title: 'Production', headers: YmlRecord.yml_headers('production', @user)}
-      @templates << {title: 'Local', headers: YmlRecord.yml_headers('local', @user)}
+      @templates << {title: 'Production', headers: YmlRecord.yml_headers('production', current_user)}
+      @templates << {title: 'Local', headers: YmlRecord.yml_headers('local', current_user)}
     elsif Rails.env == 'development'
-      @templates << {title: 'Development', headers: YmlRecord.yml_headers('development', @user)}
-      @templates << {title: 'Production', headers: YmlRecord.yml_headers('production', @user)}
-      @templates << {title: 'Local', headers: YmlRecord.yml_headers('local', @user)}
-      @templates << {title: 'Test', headers: YmlRecord.yml_headers('test', @user)}
+      @templates << {title: 'Development', headers: YmlRecord.yml_headers('development', current_user)}
+      @templates << {title: 'Production', headers: YmlRecord.yml_headers('production', current_user)}
+      @templates << {title: 'Local', headers: YmlRecord.yml_headers('local', current_user)}
+      @templates << {title: 'Test', headers: YmlRecord.yml_headers('test', current_user)}
     elsif Rails.env == 'test'
-      @templates << {title: 'Test', headers: YmlRecord.yml_headers('test', @user)}
+      @templates << {title: 'Test', headers: YmlRecord.yml_headers('test', current_user)}
     end
-    @templates << {title: 'Custom', headers: YmlRecord.yml_headers('custom', @user)}
+    @templates << {title: 'Custom', headers: YmlRecord.yml_headers('custom', current_user)}
   end
 
   def edit
@@ -116,7 +115,7 @@ class ScenariosController < ApplicationController
 
   def create
     # Curious where ScenarioLoader lives? lib/scenario_loader.rb
-    @scenario = ScenarioLoader.new(user: @user,
+    @scenario = ScenarioLoader.new(user: current_user,
                                    name: scenario_params[:name],
                                    location: scenario_params[:location])
                               .fire!
@@ -161,14 +160,14 @@ class ScenariosController < ApplicationController
   end
 
   def create_custom
-    @scenario = ScenarioManagement.new.custom_create(params[:name], @user)
+    @scenario = ScenarioManagement.new.custom_create(params[:name], current_user)
     respond_to do |format|
       format.js { render "scenarios/js/scenario/create_custom.js.erb", layout: false }
     end
   end
 
   def obliterate_custom
-    @name, path_graveyard_scenario = ScenarioManagement.new.obliterate_custom(params[:filename], @user)
+    @name, path_graveyard_scenario = ScenarioManagement.new.obliterate_custom(params[:filename], current_user)
 
     respond_to do |format|
       format.js { render "scenarios/js/scenario/obliterate_custom.js.erb", layout: false }
@@ -229,7 +228,7 @@ class ScenariosController < ApplicationController
   end
 
   def clone_new
-    @clone = ScenarioManagement.new.clone_from_name(params[:name], params[:location], params[:newname], @user)
+    @clone = ScenarioManagement.new.clone_from_name(params[:name], params[:location], params[:newname], current_user)
     respond_to do |format|
       format.js { render "scenarios/js/scenario/clone_new.js.erb", layout: false }
     end
@@ -863,15 +862,12 @@ class ScenariosController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @user = User.find(current_user.id)
-    end
 
     def set_scenario
       if not @scenario = Scenario.find_by_id(params[:id])
         redirect_to '/scenarios/'
       end
-      if not @user.owns? @scenario
+      if not current_user.owns? @scenario
         head :ok, content_type: "text/html"
         return
       end
@@ -879,7 +875,7 @@ class ScenariosController < ApplicationController
 
     def set_cloud
       @cloud = Cloud.find(params[:cloud_id])
-      if not @user.owns? @cloud
+      if not current_user.owns? @cloud
         head :ok, content_type: "text/html"
         return
       end
@@ -887,7 +883,7 @@ class ScenariosController < ApplicationController
 
     def set_subnet
       @subnet = Subnet.find(params[:subnet_id])
-      if not @user.owns? @subnet
+      if not current_user.owns? @subnet
         head :ok, content_type: "text/html"
         return
       end
@@ -895,7 +891,7 @@ class ScenariosController < ApplicationController
 
     def set_instance
       @instance = Instance.find(params[:instance_id])
-      if not @user.owns? @instance
+      if not current_user.owns? @instance
         head :ok, content_type: "text/html"
         return
       end
@@ -903,7 +899,7 @@ class ScenariosController < ApplicationController
 
     def set_group
       @group = Group.find(params[:group_id])
-      if not @user.owns? @group
+      if not current_user.owns? @group
         head :ok, content_type: "text/html"
         return
       end
@@ -911,7 +907,7 @@ class ScenariosController < ApplicationController
 
     def set_instance_role
       @instance_role = InstanceRole.find(params[:instance_role_id])
-      if not @user.owns? @instance_role
+      if not current_user.owns? @instance_role
         head :ok, content_type: "text/html"
         return
       end
@@ -919,7 +915,7 @@ class ScenariosController < ApplicationController
 
     def set_role
       @role = Role.find(params[:role_id])
-      if not @user.owns? @role
+      if not current_user.owns? @role
         head :ok, content_type: "text/html"
         return
       end
@@ -927,7 +923,7 @@ class ScenariosController < ApplicationController
 
     def set_role_recipe
       @role_recipe = RoleRecipe.find(params[:role_recipe_id])
-      if not @user.owns? @role_recipe
+      if not current_user.owns? @role_recipe
         head :ok, content_type: "text/html"
         return
       end
@@ -935,7 +931,7 @@ class ScenariosController < ApplicationController
 
     def set_recipe
       @recipe = Recipe.find(params[:recipe_id])
-      if not @user.owns? @recipe
+      if not current_user.owns? @recipe
         head :ok, content_type: "text/html"
         return
       end
@@ -943,7 +939,7 @@ class ScenariosController < ApplicationController
 
     def set_player
       @player = Player.find(params[:player_id])
-      if not @user.owns? @player
+      if not current_user.owns? @player
         head :ok, content_type: "text/html"
         return
       end
@@ -951,7 +947,7 @@ class ScenariosController < ApplicationController
 
     def set_instance_group
       @instance_group = InstanceGroup.find(params[:instance_group_id])
-      if not @user.owns? @instance_group
+      if not current_user.owns? @instance_group
         head :ok, content_type: "text/html"
         return
       end
@@ -959,7 +955,7 @@ class ScenariosController < ApplicationController
 
     def set_question
       @question = Question.find(params[:question_id])
-      if not @user.owns? @question
+      if not current_user.owns? @question
         head :ok, content_type: "text/html"
         return
       end
