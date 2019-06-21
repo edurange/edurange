@@ -77,4 +77,8 @@
           %td
             %div.btn-group.btn-group-xs
               = link_to 'Show', scenario, class: 'btn btn-default'
+              - if scenario.stopped?
+                = form_for scenario, action: :update, html: {class: 'btn-group btn-group-xs'} do |form|
+                  = form.hidden_field :archived, value: !scenario.archived?
+                  = form.submit (scenario.archived? ? 'Una': 'A') + 'rchive', class: 'btn btn-default'
               = link_to 'Destroy', destroyme_scenario_path(scenario), method: :post, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger'

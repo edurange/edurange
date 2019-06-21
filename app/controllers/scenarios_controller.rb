@@ -67,7 +67,7 @@ class ScenariosController < ApplicationController
     :scoring_answers_show
   ]
   before_action :set_answer, only: [
-    :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show, 
+    :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit_show, :scoring_answer_comment_edit, :scoring_answer_essay_grade,
     :scoring_answer_essay_grade_edit, :scoring_answer_essay_grade_delete
   ]
@@ -75,11 +75,14 @@ class ScenariosController < ApplicationController
   # GET /scenarios
   # GET /scenarios.json
   def index
-    @scenarios = []
-    if @user.is_admin?
-      @scenarios = Scenario.all
-    else
-      @scenarios = Scenario.where(user_id: current_user.id)
+    @scenarios = Scenario.all.order(updated_at: :desc)
+
+    if params.has_key? :archived
+      @scenarios = @scenarios.where(archived: params[:archived])
+    end
+
+    if not current_user.is_admin?
+      @scenarios = @scenarios.where(user_id: current_user.id)
     end
   end
 
@@ -108,13 +111,10 @@ class ScenariosController < ApplicationController
     @templates << {title: 'Custom', headers: YmlRecord.yml_headers('custom', @user)}
   end
 
-  # GET /scenarios/1/edit
   def edit
     @templates = []
   end
 
-  # POST /scenarios
-  # POST /scenarios.json
   def create
     # Curious where ScenarioLoader lives? lib/scenario_loader.rb
     @scenario = ScenarioLoader.new(user: @user,
@@ -136,12 +136,24 @@ class ScenariosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /scenarios/1
-  # PATCH/PUT /scenarios/1.json
+  def previous_action
+    previous = Rails.application.routes.recognize_path(request.referrer)
+    "#{previous[:controller]}\##{previous[:action]}"
+  end
+
+
   def update
     respond_to do |format|
       if @scenario.update(scenario_params)
-        format.html { redirect_to @scenario, notice: 'Scenario was successfully updated.' }
+        format.html do
+          message = 'Scenario was successfully updated.'
+          location = if previous_action == 'scenarios#index' then
+            scenarios_path
+          else
+            scenario_path @scenario
+          end
+          redirect_to location, notice: message
+        end
         format.json { render :show, status: :ok, location: @scenario }
       else
         format.html { render :edit }
@@ -973,6 +985,6 @@ class ScenariosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def scenario_params
-      params.require(:scenario).permit(:game_type, :name, :template, :location)
+      params.require(:scenario).permit(:name, :template, :location, :archived)
     end
 end

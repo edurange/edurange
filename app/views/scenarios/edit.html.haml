@@ -1,7 +1,28 @@
-%h1 Editing scenario
-
-= render 'form'
-
-= link_to 'Show', @scenario
-\|
-= link_to 'Back', scenarios_path
+%div.panel.panel-default
+  %div.panel-heading
+    %h4 Editing scenario
+  %div.panel-body
+    - if @scenario.errors.any? then
+      %div.panel.panel-danger
+        %div.panel-body
+          %ul
+            - @scenario.errors.full_messages.each do |err|
+              %li= err
+    = form_for @scenario, action: :update do |form|
+      %div.form-group
+        = form.label :name
+        = form.text_field :name, class: 'form-control'
+      %div.form-group
+        = form.label :description, 'Description', class: 'form-check-label'
+        = form.text_area :description, class: 'form-control', rows: 3
+      %div.form-check
+        = form.check_box :archived, class: 'form-check-input'
+        = form.label :archived, 'Archived', class: 'form-check-label'
+      %div.form-group
+        = form.label :instructions_student, 'Student Instructions', class: 'form-check-label'
+        = form.text_area :instructions_student, class: 'form-control', rows: 3
+      %div.form-group
+        = form.label :instructions, 'Instructor Instructions', class: 'form-check-label'
+        = form.text_area :instructions, class: 'form-control', rows: 3
+      %div.form-group
+        = form.submit 'Update', class: 'form-control btn-primary'

@@ -38,9 +38,14 @@ class Scenario < ActiveRecord::Base
   end
 
   def validate_stopped
-    errors.add(:running, "can only modify scenario if it is stopped") unless stopped?
+    errors.add(:base, 'You can only update a scenario when it is stopped.') unless stopped? or not changed?
   end
 
+  validate do
+    if changed? and archived? and not archived_changed? then
+      errors.add(:base, "You can not update an archived scenario.")
+    end
+  end
 
   # Callbacks
   # http://guides.rubyonrails.org/active_record_callbacks.html

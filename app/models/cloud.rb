@@ -13,20 +13,17 @@ class Cloud < ActiveRecord::Base
 
   validates_presence_of :cidr_block, :scenario
   validate :cidr_validate, :validate_stopped
+  after_update :update_scenario_modified
+
 
   after_destroy :update_scenario_modified
   before_destroy :validate_stopped, prepend: true
 
   # validates that the scenario which this cloud corresponds to is stopped prior to enabling modification of the scenario
   def validate_stopped
-    if not self.stopped?
+    if not self.stopped? and changed?
       errors.add(:running, "can not modify while scenario is not stopped")
-      return false
     end
-    if self.scenario.modifiable?
-      self.scenario.update_attribute(:modified, true)
-    end
-    true
   end
 
   # checks the number of subnets this cloud contains is 0 prior to destroying the cloud
@@ -43,7 +40,6 @@ class Cloud < ActiveRecord::Base
     if self.scenario.modifiable?
       self.scenario.update_attribute(:modified, true)
     end
-    true
   end
 
   def owner?(id)
