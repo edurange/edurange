@@ -39,22 +39,19 @@
   %div.panel-heading.nav.nav-pills
     %li
       %h4
-        Scenarios:
-    %li
-      &nbsp;&nbsp;
-    %li
+        Scenarios
+    %li.pull-right
       = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
-    %li
-      &nbsp;&nbsp;
-    %li
+    %li.pull-right
       = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-default'
 
   %div.panel-body
-    %dl
-    %h4
-      %b
-        Current Scenarios:
-    %br
+    = form_tag '', method: :get, class: 'form-inline filter-controls' do
+      %div.form-group
+        = label_tag 'archived' , 'Archived', class: 'control-label'
+        = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
+      %div.pull-right
+        = submit_tag 'Filter', class: 'btn btn-default'
     %table.table
       %tr
         %th Name
@@ -62,8 +59,7 @@
         %th Status
         - if @user.is_admin?
           %th Instructor
-        %th
-
+        %th Actions
       - @scenarios.each do |scenario|
         %tr
           %td= scenario.name

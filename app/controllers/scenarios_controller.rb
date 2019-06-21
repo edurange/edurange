@@ -72,13 +72,14 @@ class ScenariosController < ApplicationController
     :scoring_answer_essay_grade_edit, :scoring_answer_essay_grade_delete
   ]
 
-  # GET /scenarios
-  # GET /scenarios.json
   def index
     @scenarios = Scenario.all.order(updated_at: :desc)
 
-    if params.has_key? :archived
-      @scenarios = @scenarios.where(archived: params[:archived])
+    case params[:archived] || 'No'
+    when 'Yes'
+      @scenarios = @scenarios.where(archived: true)
+    when 'No'
+      @scenarios = @scenarios.where(archived: false)
     end
 
     if not current_user.is_admin?
@@ -86,8 +87,6 @@ class ScenariosController < ApplicationController
     end
   end
 
-  # GET /scenarios/1
-  # GET /scenarios/1.json
   def show
     # @clone = params[:clone]
     #@scenario.check_status
@@ -141,16 +140,15 @@ class ScenariosController < ApplicationController
     "#{previous[:controller]}\##{previous[:action]}"
   end
 
-
   def update
     respond_to do |format|
       if @scenario.update(scenario_params)
         format.html do
           message = 'Scenario was successfully updated.'
-          location = if previous_action == 'scenarios#index' then
-            scenarios_path
-          else
+          location = if previous_action == 'scenarios#edit' then
             scenario_path @scenario
+          else
+            :back
           end
           redirect_to location, notice: message
         end
