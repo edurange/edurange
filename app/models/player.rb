@@ -15,6 +15,16 @@ class Player < ActiveRecord::Base
   after_destroy :update_scenario_modified
   after_create :create_variables
 
+  before_validation do
+    if password.blank?
+      self.password = Player.random_password
+    end
+  end
+
+  def self.random_password
+    SecureRandom.hex(4)
+  end
+
   def update_scenario_modified
     if self.group.scenario.modifiable?
       if self.group.scenario
