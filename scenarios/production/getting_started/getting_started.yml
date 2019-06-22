@@ -28,8 +28,7 @@ Groups:
     Administrator: false
     IP_Visible: true
   Users:
-  - Login: james
-    Password: password
+  - Login: student
   Variables:
   - Name: super_secret
     Type: random
