@@ -25,7 +25,7 @@ class InstructorController < ApplicationController
   def student_group_user_add
     users = User.find(params[:user_id])
 
-    if @student_group = @user.student_groups.find_by_name(params[:student_group_name])
+    if @student_group = current_user.student_groups.find_by_name(params[:student_group_name])
       @student_group_users = @student_group.user_add(users)
     end
 
