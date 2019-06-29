@@ -56,6 +56,13 @@ In the edurange-server directory, yank and update all the gem dependencies:
 bundle install
 ```
 
+If you are getting an error on the gem "pg", it can likely be fixed by installing "libpq-dev":
+```
+sudo apt-get install libpq-dev
+```
+
+If errors persist, skip to step IV. Install postgresql, and create the edurange user, then try running the bundle install again before proceeding to edit secrets.yml and rake db:setup.  
+
 ####  III. Contact the project aws administrator to get the credentials to place in your ENV variables.
 
 Get your AWS\_ACCESS\_KEY_ID, AWS\_SECRET\_ACCESS\_KEY, and AWS\_REGION from your projects AWS administrator. Add the fields to your environment variables. A common way to do this is add the line below in ~/.bashrc and then reload the environment variables by running: ```source ~/.bashrc``` or by opening up a new terminal.
