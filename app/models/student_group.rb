@@ -3,7 +3,7 @@ class StudentGroup < ActiveRecord::Base
   has_many   :student_group_users, dependent: :destroy
   has_many :users, through: :student_group_users
 
-  validates :name, presence: true, uniqueness: { scope: :user, message: "Name taken" } 
+  validates :name, presence: true, uniqueness: { scope: :user, message: "Name taken" }
   before_save :make_registration_code
 
   # before_destroy :check_if_all
