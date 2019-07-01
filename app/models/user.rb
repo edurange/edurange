@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable
 
+  REGISTRATION_CODE_LENGTH = 8
+
   enum role: {
     admin: 2,
     instructor: 3,
@@ -15,24 +17,55 @@ class User < ActiveRecord::Base
   has_many :student_group_users, dependent: :destroy
 
   after_initialize :set_defaults, :if => :new_record?
-  validates :email, uniqueness: true
-  validates :name, presence: true
-  validate :validate_name, :validate_running
+  validates :registration_code, uniqueness: true, allow_blank: true
 
-  def validate_name
-    return if not self.name
-    self.name = self.name.strip
-    if self.name == ""
-      errors.add(:name, "can not be blank")
-      return false
-    elsif /\W/.match(self.name)
-      errors.add(:name, "can only contain alphanumeric and underscore")
-      return false
-    elsif /^_*_$/.match(self.name)
-      errors.add(:name, "not allowed")
-      return false
+  before_validation do
+    self.name = self.name.strip unless self.name.blank?
+  end
+
+  validates :name, presence: true
+  validates :name, format: {
+    with: /\A[a-zA-Z0-9_]+\z/,
+  }
+
+  validate :validate_running
+
+  attr_accessor :invitee_registration_code
+
+  validates :invitee_registration_code, presence: true, on: :create
+  validates :invitee_registration_code, length: { is: REGISTRATION_CODE_LENGTH }, on: :create
+  validate :validate_invitee_registration_code, on: :create
+
+  def invited_to_student_group
+    StudentGroup.find_by_registration_code(self.invitee_registration_code) if invitee_registration_code.present?
+  end
+
+  def invited_by_instructor_or_admin
+    User.instructors_and_admins.find_by_registration_code(self.invitee_registration_code) if invitee_registration_code.present?
+  end
+
+  def validate_invitee_registration_code
+    if self.invitee_registration_code.present?
+      unless invited_to_student_group || invited_by_instructor_or_admin
+        self.errors.add :invitee_registration_code, :invalid
+      end
     end
-    true
+  end
+
+  after_create def add_to_student_groups
+    if invited_to_student_group
+      logger.debug("Adding #{self.email} to #{invited_to_student_group.name} and All")
+      invited_to_student_group.users << self
+      invited_by = invited_to_student_group.user
+      all_student_group = invited_by.student_groups.find_by(name: 'All')
+      all_student_group.users << self
+    end
+
+    if invited_by_instructor_or_admin
+      logger.debug("Adding #{self.email} to All")
+      all_student_group = invited_by_instructor_or_admin.student_groups.find_by(name: 'All')
+      all_student_group.users << self
+    end
   end
 
   def validate_running
@@ -76,7 +109,7 @@ class User < ActiveRecord::Base
 
   def set_instructor_role
     if not self.registration_code
-      self.update(registration_code: SecureRandom.hex[0..7])
+      self.update(registration_code: SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2))
     end
     if not File.exists? "#{Rails.root}/scenarios/custom/#{self.id}"
       FileUtils.mkdir "#{Rails.root}/scenarios/custom/#{self.id}"
@@ -140,6 +173,10 @@ class User < ActiveRecord::Base
     end
     self.set_student_role
     return sg, sgu
+  end
+
+  def User.instructors_and_admins
+    where(role: User.roles.fetch_values('admin', 'instructor'))
   end
 
 end
