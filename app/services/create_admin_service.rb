@@ -1,16 +1,12 @@
 class CreateAdminService
   def call
-  	user = nil
-  	if not user = User.find_by_email(Rails.application.secrets.admin_email)
-  		user = User.new(email: Rails.application.secrets.admin_email, name: Rails.application.secrets.admin_name)
-  	end
-  	user.password = Rails.application.secrets.admin_password
-  	user.password_confirmation = Rails.application.secrets.admin_password
-	if not user.save
-		puts "FAILED TO CREATE USER: #{user.errors.messages}"
-		return false
-        end
-  	user.set_admin_role
+	  user = nil
+    if not user = User.find_by_email(Rails.application.secrets.admin_email)
+      user = User.new(email: Rails.application.secrets.admin_email, name: Rails.application.secrets.admin_name)
+    end
+    user.password = Rails.application.secrets.admin_password
+    user.password_confirmation = Rails.application.secrets.admin_password
+    user.set_admin_role
     user
   end
 end
