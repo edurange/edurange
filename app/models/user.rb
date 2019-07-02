@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   has_many :student_groups, dependent: :destroy
   has_many :student_group_users, dependent: :destroy
 
-  after_initialize :set_defaults, :if => :new_record?
+  after_initialize :set_defaults, if: :new_record?
   validates :registration_code, uniqueness: true, allow_blank: true
 
   before_validation do
@@ -32,9 +32,9 @@ class User < ActiveRecord::Base
 
   attr_accessor :invitee_registration_code
 
-  validates :invitee_registration_code, presence: true, on: :create
-  validates :invitee_registration_code, length: { is: REGISTRATION_CODE_LENGTH }, on: :create
-  validate :validate_invitee_registration_code, on: :create
+  validates :invitee_registration_code, presence: true, on: :create, if: :is_student?
+  validates :invitee_registration_code, length: { is: REGISTRATION_CODE_LENGTH }, on: :create, if: :is_student?
+  validate :validate_invitee_registration_code, on: :create, if: :is_student?
 
   def invited_to_student_group
     StudentGroup.find_by_registration_code(self.invitee_registration_code) if invitee_registration_code.present?
@@ -95,30 +95,33 @@ class User < ActiveRecord::Base
     self.role ||= :student
   end
 
-  def is_admin?
-    return self.role == 'admin'
+  alias is_admin?      admin?
+  alias is_instructor? instructor?
+  alias is_student?    student?
+
+  def set_instructor_or_admin_role(role)
+    self.transaction do
+      self.registration_code ||= SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2)
+      self.role = role
+      self.save!
+      if not File.exists? "#{Rails.root}/scenarios/custom"
+        FileUtils.mkdir "#{Rails.root}/scenarios/custom"
+      end
+      if not File.exists? "#{Rails.root}/scenarios/custom/#{self.id}"
+        FileUtils.mkdir "#{Rails.root}/scenarios/custom/#{self.id}"
+      end
+      if not self.student_groups.find_by_name("All")
+        self.student_groups.create!(name: "All")
+      end
+    end
   end
 
-  def is_instructor?
-    return self.role == 'instructor'
-  end
-
-  def is_student?
-    return self.role == 'student'
+  def set_admin_role
+    set_instructor_or_admin_role(:admin)
   end
 
   def set_instructor_role
-    if not self.registration_code
-      self.update(registration_code: SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2))
-    end
-    if not File.exists? "#{Rails.root}/scenarios/custom/#{self.id}"
-      FileUtils.mkdir "#{Rails.root}/scenarios/custom/#{self.id}"
-    end
-    if not self.student_groups.find_by_name("All")
-      sg = self.student_groups.new(name: "All")
-      sg.save
-    end
-    self.update(role: :instructor)
+    set_instructor_or_admin_role(:instructor)
   end
 
   def set_student_role
@@ -127,23 +130,6 @@ class User < ActiveRecord::Base
     end
     self.student_groups.destroy_all
     self.update_attribute :role, :student
-  end
-
-  def set_admin_role
-    if not self.registration_code
-      self.update(registration_code: SecureRandom.hex[0..7])
-    end
-    if not File.exists? "#{Rails.root}/scenarios/custom"
-      FileUtils.mkdir "#{Rails.root}/scenarios/custom"
-    end
-    if not File.exists? "#{Rails.root}/scenarios/custom/#{self.id}"
-      FileUtils.mkdir "#{Rails.root}/scenarios/custom/#{self.id}"
-    end
-    if not self.student_groups.find_by_name("All")
-      sg = self.student_groups.new(name: "All")
-      sg.save
-    end
-    self.update(role: :admin)
   end
 
   def email_credentials(password)
