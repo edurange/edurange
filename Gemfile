@@ -17,7 +17,14 @@ gem 'underscore-rails'
 gem 'thin'
 gem 'jquery-turbolinks'
 gem 'therubyracer'
-gem 'aws-sdk', '~> 1.67'
+# Both versions of the aws-sdk can be used simultaneously.
+# We should migrate to the latest version.
+# Version 1 of aws-sdk
+gem 'aws-sdk-v1', '~> 1.67'
+# Version 3 of aws-sdk
+gem 'aws-sdk-s3', '~> 1'
+gem 'aws-sdk-ec2', '~> 1'
+
 gem 'erubis'
 gem 'unix-crypt'
 gem 'ipaddress'

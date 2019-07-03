@@ -2,8 +2,6 @@ class Scenario < ActiveRecord::Base
   include Provider
   require 'open-uri'
 
-  serialize :aws_prefixes
-  # 'serialize' stores a native Ruby object such as a Hash or Array to the database
   #  as a string
   enum location: [:development, :production, :local, :custom, :test]
 
@@ -52,15 +50,11 @@ class Scenario < ActiveRecord::Base
 
   # Callbacks
   # http://guides.rubyonrails.org/active_record_callbacks.html
-  after_create :get_aws_prefixes, :modifiable_check
+  after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
-  def get_aws_prefixes
-    content = open('https://ip-ranges.amazonaws.com/ip-ranges.json').read
-    arr = JSON.parse(content)["prefixes"]
-            .select { |p| p["service"] == "AMAZON" }
-            .map { |p| p["ip_prefix"] }
-    self.update_attribute(:aws_prefixes, arr)
+  def aws_prefixes
+    Aws::EC2::Client.new.describe_prefix_lists.prefix_lists.flat_map{ |x| x.cidrs }
   end
 
   # File structure
