@@ -18,16 +18,9 @@ class AdminController < ApplicationController
 
   # Creates a new instuctor.
   def instructor_create
-    name = params[:name] == '' ? nil : params[:name]
-    @user = User.new(email: params[:email], name: name, organization: params[:organization])
-    password = SecureRandom.hex[0..15]
-    @user.password = password
-    @user.save
-
-    if not @user.errors.any?
-      @user.set_instructor_role
-      @user.email_credentials(password)
-    end
+    new_instructor_params = params.permit(:email, :name, :organization)
+    @user = User.create_instructor(new_instructor_params)
+    @user.email_credentials(@user.password)
 
     respond_to do |format|
       format.js { render 'admin/js/instructor_create.js.erb', :layout => false }
@@ -63,7 +56,7 @@ class AdminController < ApplicationController
     end
   end
 
-  # Promote a student to an instructor 
+  # Promote a student to an instructor
   def student_to_instructor
     if @user = User.find(params[:id])
       if not @user.is_student?

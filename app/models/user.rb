@@ -132,6 +132,13 @@ class User < ActiveRecord::Base
     self.update_attribute :role, :student
   end
 
+  def User.create_instructor(params)
+    user = User.new(params.slice(:email, :name, :organization))
+    user.password = SecureRandom.hex(16)
+    user.set_instructor_role
+    user
+  end
+
   def email_credentials(password)
     UserMailer.email_credentials(self, password).deliver_now
   end
