@@ -257,7 +257,7 @@ class Instance < ActiveRecord::Base
       return
     end
   end
-  
+
   # Marked for refactoring
   def generate_cookbook
     begin
