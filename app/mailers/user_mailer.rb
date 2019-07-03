@@ -1,6 +1,5 @@
 class UserMailer < ApplicationMailer
     layout false
-    default from: 'no-reply@' + `hostname`
 
     def email_credentials(user, password)
         @user = user
