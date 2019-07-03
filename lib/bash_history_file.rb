@@ -91,13 +91,12 @@ module BashHistoryFile
     # download exit_statuses and correlate them with the command
     BashHistoryFile.parse_exit_statuses(contents).each do |record|
       player = instance.players.find_by(login: record.player_login)
-       if player then
-        # WARNING: this uses postgresql specific syntax
-        history = BashHistory.where("performed_at::time = :time", time: record.time).find_by(
-          instance: instance,
-          player: player,
-        )
-        history.update_attribute(:exit_status, record.exit_status) if history
+      if player then
+        BashHistory
+          # WARNING: this uses postgresql specific syntax
+          .where("performed_at::time = :time", time: record.time)
+          .where(instance: instance, player: player)
+          .update_all(exit_status: record.exit_status)
       end
     end
   end
