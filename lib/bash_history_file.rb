@@ -93,7 +93,6 @@ module BashHistoryFile
       player = instance.players.find_by(login: record.player_login)
       if player then
         BashHistory
-          # WARNING: this uses postgresql specific syntax
           .where("performed_at::time = :time", time: record.time)
           .where(instance: instance, player: player)
           .update_all(exit_status: record.exit_status)
