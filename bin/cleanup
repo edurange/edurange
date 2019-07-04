@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk-ec2'
+#require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
+require 'pg'
+
+ec2 = Aws::EC2::Resource.new(region: 'us-east-1')
+$con = PG.connect :dbname => 'edurange', :user => 'admin'
+
+def cleanup(vpc)
+
+  vpc.instances.each do |inst|
+
+    id = inst.id
+    puts "Stopping instance #{id}"
+    inst.stop
+    $con.exec "UPDATE public.instances SET status = 0 WHERE driver_id='%s'" % id
+    # status 0 is stopped according to /app/models/concerns/provider.rb
+  end
+
+end
+
+"""
+Define threshhold (amount of time up before auto shutdown)
+For each Virtual Private Cloud (VPC):
+	For each instance in the VPC:
+		If time meets threshhold then count toward shutdown counter
+	If shutdown counter is equal to number of instances in VPC:
+		Delete VPC
+
+"""
+
+vpc_collect = ec2.vpcs 
+# convert threshhold from HMS to seconds
+threshhold = "48:00:00".split(':').map { |a| a.to_i }.inject(0) { |a, b| a * 60 + b} 
+
+vpc_collect.each do |vpc|
+	c = 0
+	now = Time.now
+	inst_count = vpc.instances.count
+	vpc.instances.each do |inst|
+		lt = inst.launch_time
+		diff = now - lt
+		diffstring = Time.at(diff).strftime("%H:%M:%S")
+		puts "Instance #{inst.id} has been up for #{diffstring}"
+		if diff > threshhold then
+			c += 1
+		end
+	end
+	if c >= inst_count then
+		puts "All instances in #{vpc} exceed time threshhold, vpc will now be shutdown"
+		cleanup(vpc)
+	else
+		puts "The instances in #{vpc} do not all meet the threshhold, vpc will remain up"
+	end
+end
+
+
