@@ -1,4 +1,6 @@
 class StudentGroup < ActiveRecord::Base
+  self.primary_key = "id"
+  
   belongs_to :user
   has_many   :student_group_users, dependent: :destroy
   has_many :users, through: :student_group_users

@@ -3,6 +3,8 @@ class Instance < ActiveRecord::Base
   require 'open-uri'
   require 'dynamic_ip'
 
+  self.primary_key = "id"
+
   belongs_to :subnet
   has_many :instance_groups, dependent: :destroy
   has_many :instance_roles, dependent: :destroy

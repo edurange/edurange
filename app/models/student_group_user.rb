@@ -1,4 +1,6 @@
 class StudentGroupUser < ActiveRecord::Base
+  self.primary_key = "id"
+  
   belongs_to :student_group
   belongs_to :user
 

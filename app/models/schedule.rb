@@ -1,4 +1,6 @@
 class Schedule < ActiveRecord::Base
+  self.primary_key = "id"
+  
   belongs_to :user
 
   before_validation :set_scenario_location, :set_uuid
