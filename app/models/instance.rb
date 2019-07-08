@@ -2,6 +2,7 @@ class Instance < ActiveRecord::Base
   include Provider # This is where the AWS stuff is coming from
   require 'open-uri'
   require 'dynamic_ip'
+  require 'csv'
 
   belongs_to :subnet
   has_many :instance_groups, dependent: :destroy
@@ -325,7 +326,7 @@ class Instance < ActiveRecord::Base
   end
 
   def schedule_bash_history_download!
-    DownloadBashHistoryFromS3.set(wait: 1.minute).perform_later(self)
+    DownloadBashHistory.set(wait: 1.minute).perform_later(self)
   end
 
   def download_bash_history!

@@ -377,7 +377,7 @@ module ProviderAws
 
   # collect instance related data from S3
   def aws_instance_S3_files_save
-    DownloadBashHistoryFromS3.perform_now(self)
+    DownloadBashHistory.perform_now(self)
   end
 
   def aws_instance_S3_files_create
