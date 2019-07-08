@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class SchedulesControllerTest < ActionController::TestCase
+  include Devise::TestHelpers
+  
   setup do
     @schedule = schedules(:two)
   end

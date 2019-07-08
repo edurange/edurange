@@ -1,5 +1,6 @@
 class Subnet < ActiveRecord::Base
   include Provider
+  self.primary_key = "id"
 
   belongs_to :cloud
   has_many :instances, dependent: :destroy

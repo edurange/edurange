@@ -2,6 +2,8 @@ class Scenario < ActiveRecord::Base
   include Provider
   require 'open-uri'
 
+  self.primary_key = "id"
+
   #  as a string
   enum location: [:development, :production, :local, :custom, :test]
 
