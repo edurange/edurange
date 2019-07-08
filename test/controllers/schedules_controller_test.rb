@@ -2,7 +2,7 @@ require 'test_helper'
 
 class SchedulesControllerTest < ActionController::TestCase
   setup do
-    @schedule = schedules(:one)
+    @schedule = schedules(:two)
   end
 
   test "should get index" do

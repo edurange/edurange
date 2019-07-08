@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190703232805) do
+ActiveRecord::Schema.define(version: 20190708200753) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 20190703232805) do
 
   add_index "answers", ["question_id"], name: "index_answers_on_question_id", using: :btree
 
-  create_table "bash_histories", id: false, force: :cascade do |t|
+  create_table "bash_histories", force: :cascade do |t|
     t.integer  "player_id",    null: false
     t.integer  "instance_id",  null: false
     t.datetime "performed_at", null: false

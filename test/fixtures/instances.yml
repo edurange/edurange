@@ -1,7 +1,7 @@
-
-s3test:
-  name: 's3test'
-  os: 'ubuntu'
+#s3test is incomplete
+#s3test: 
+#  name: 's3test'
+#  os: 'ubuntu'
 
 ip_test_instance:
   id: 333
