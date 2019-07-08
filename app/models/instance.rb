@@ -155,10 +155,6 @@ class Instance < ActiveRecord::Base
     provider_get_bash_history
   end
 
-  def get_exit_status
-    provider_get_exit_status
-  end
-
   def get_chef_error
     provider_get_chef_error
   end
@@ -278,10 +274,8 @@ class Instance < ActiveRecord::Base
         end
       end
 
-      # This recipe signals the com page and also gets the bash histories
-      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/com_page_and_bash_histories.rb.erb")).result(instance: self) + "\n"
       # This recipe changes /etc/bash.bashrc so that the bash history is written to file with every command
-      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/write_bash_histories.rb.erb")).result(instance: self) + "\n"
+      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/bash_history.rb.erb")).result(instance: self) + "\n"
 
       # do iptables rules
       routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
@@ -291,6 +285,9 @@ class Instance < ActiveRecord::Base
         s3_routing_rules += "iptables -A INPUT -d #{aws_prefix} -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT\n"
       end
       cookbook += routing_rules.gsub("<s3_routing_rules>", s3_routing_rules)
+
+      # This recipe signals the com page and also gets the bash histories
+      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/com_page.rb.erb")).result(instance: self) + "\n"
 
       cookbook
     rescue
@@ -325,6 +322,27 @@ class Instance < ActiveRecord::Base
 
   def add_user(group, ip_visible)
     InstanceGroup.create(group: group, instance: self, administrator: false, ip_visible: ip_visible)
+  end
+
+  def schedule_bash_history_download!
+    DownloadBashHistoryFromS3.set(wait: 1.minute).perform_later(self)
+  end
+
+  def download_bash_history!
+    csv = CSV.new(self.get_bash_history)
+
+    csv.each do |row|
+      begin
+        self.bash_histories.find_or_create_by!(
+          player: self.players.find_by(login: row[2]),
+          exit_status: row[0].to_i,
+          performed_at: Time.iso8601(row[1]),
+          command: row[4]
+        )
+      rescue ActiveRecord::RecordInvalid
+        logger.warn("could not save bash history record: #{$!}")
+      end
+    end
   end
 
 end

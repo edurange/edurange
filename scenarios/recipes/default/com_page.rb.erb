@@ -1,7 +1,5 @@
-
 ruby_block "finish" do
   block do
-
       put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
       put.body = "finished"
       # send the PUT request
@@ -12,7 +10,6 @@ ruby_block "finish" do
       resp = http.request(put)
       resp = [resp.code.to_i, resp.to_hash, resp.body]
       http.finish
-   
   end
   action :run
 end
