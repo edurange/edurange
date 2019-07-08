@@ -29,7 +29,7 @@ class Question < ActiveRecord::Base
     end
 
     # check string type
-    if self.type_of == "String"
+    if self.type_of == "String" && self.options != nil 
       # check for valid options
       if self.options.select{ |opt| OPTIONS_STRING.include? opt }.size != self.options.size
         errors.add(:options, 'invalid option')
