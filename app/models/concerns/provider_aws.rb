@@ -225,7 +225,7 @@ module ProviderAws
 
     aws_instance_wait_till_initialized
 
-    aws_instance_schedule_bash_history_download
+    schedule_bash_history_download!
   end
 
   def aws_instance_unboot
@@ -351,21 +351,9 @@ module ProviderAws
     end
   end
 
-  def aws_instance_schedule_bash_history_download
-    DownloadBashHistoryFromS3.set(wait: 1.minute).perform_later(self)
-  end
-
   def aws_get_bash_history
     if aws_s3_bash_history_object.exists?
       aws_s3_bash_history_object.read
-    else
-      ''
-    end
-  end
-
-  def aws_get_exit_status
-    if aws_s3_exit_status_object.exists?
-      aws_s3_exit_status_object.read
     else
       ''
     end
@@ -439,13 +427,9 @@ module ProviderAws
     aws_s3_instance_object('com')
   end
 
-  def aws_s3_exit_status_object
-    aws_s3_instance_object('exit_status')
-  end
-
-  def aws_s3_script_log_object
-    aws_s3_instance_object('script_log')
-  end
+#  def aws_s3_script_log_object
+#    aws_s3_instance_object('script_log')
+#  end
 
   def aws_s3_instance_object suffix
     aws_s3_bucket.objects[aws_S3_object_name(suffix)]
@@ -459,17 +443,13 @@ module ProviderAws
     aws_s3_com_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
   end
 
-  def exit_status_page
-    aws_s3_exit_status_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
-  end
-
   def bash_history_page
     aws_s3_bash_history_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
   end
 
-  def script_log_page
-    aws_s3_script_log_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
-  end
+#  def script_log_page
+#    aws_s3_script_log_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+#  end
 
   def aws_s3_instance_object_prefix
     "#{iam_user_name}_#{scenario.user.name}_#{scenario.name}_#{scenario.id.to_s}_#{name}_#{id.to_s}_#{self.uuid[0..5]}_"
@@ -632,9 +612,8 @@ module ProviderAws
     AWS::EC2::InstanceCollection.new.create(
       image_id: Rails.configuration.x.aws[Rails.configuration.x.aws['region']]["ami_#{self.os}"], 
       private_ip_address: self.ip_address,
-#      key_name: Rails.configuration.x.aws['ec2_key_pair_name'],
       user_data: self.generate_init,
-      instance_type: "t2.small",
+      instance_type: "t2.micro",
       subnet: self.subnet.driver_id
     )
   end
