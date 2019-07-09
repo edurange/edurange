@@ -8,7 +8,7 @@ class Answer < ActiveRecord::Base
 
   # ensure that text is not blank in an answer
   def validate_text
-    if self.question.type_of == "Essay" and self.text_essay == ""
+    if self.question.type_of == "Essay" and self.text_essay == "" #problem here, question isn't linking correctly to answer. do a SQL query...
       errors.add(:text_essay, 'must not be blank')
       return false
     else

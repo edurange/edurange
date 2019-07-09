@@ -1,5 +1,7 @@
 class Question < ActiveRecord::Base
 
+  self.primary_key = "id"
+
   belongs_to :scenario
   has_many :answers, dependent: :destroy
   serialize :options
@@ -177,7 +179,7 @@ class Question < ActiveRecord::Base
     true
   end
 
-  def set_order
+  def set_order #what do we do for 0 questions? 
     if not self.order
       if self.scenario.questions.size == 1
         self.update_attribute(:order, 1)
@@ -345,7 +347,7 @@ class Question < ActiveRecord::Base
     answer.question_id = self.id
     answer.correct = correct
     answer.value_index = index
-    answer.save
+    answer.save 
     answer
   end
 
@@ -358,7 +360,7 @@ class Question < ActiveRecord::Base
       answer.errors.add(:type_of, "must be type Number")
       return answer
     end
-
+   # debugger
     answer.question_id = self.id
     answer.save
     answer

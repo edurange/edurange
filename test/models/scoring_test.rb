@@ -12,7 +12,7 @@ class ScoringTest < ActiveSupport::TestCase
 
 	test 'type presence' do
 		s = scenarios(:two)
-		q = Question.new(text: "foo", order: 1, values: [{value: "foo", points: 1}], scenario_id: s.id)
+		q = Question.new(text: "foo", type_of: "String", order: 1, values: [{value: "foo", points: 1}], scenario_id: s.id)
 		q.save
 		assert_not q.valid?
 		assert_equal [:type_of], q.errors.keys
@@ -469,7 +469,8 @@ class ScoringTest < ActiveSupport::TestCase
 		assert q1.valid?
 
 		# no blank answers
-		a = q1.answer_essay("", st.id)
+		a = q1.answer_essay("", st.id) #not getting linked properly 
+		a.question = q1
 		assert_equal [:text_essay], a.errors.keys
 
 		a = q1.answer_essay("      ", st.id)
