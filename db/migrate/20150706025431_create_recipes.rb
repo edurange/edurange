@@ -1,4 +1,4 @@
-class CreateRecipes < ActiveRecord::Migration
+class CreateRecipes < ActiveRecord::Migration[4.2]
   def change
     create_table :recipes do |t|
       t.belongs_to  :scenario

@@ -1,4 +1,4 @@
-class AddForeignKeyRelations < ActiveRecord::Migration
+class AddForeignKeyRelations < ActiveRecord::Migration[4.2]
   def up
     fks = [
       ['clouds',          'scenario_id', 'scenarios', 'id'],

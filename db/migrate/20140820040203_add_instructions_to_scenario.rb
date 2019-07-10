@@ -1,4 +1,4 @@
-class AddInstructionsToScenario < ActiveRecord::Migration
+class AddInstructionsToScenario < ActiveRecord::Migration[4.2]
     def up
     add_column :scenarios, :instructions, :string
   end

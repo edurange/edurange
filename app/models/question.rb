@@ -1,7 +1,4 @@
 class Question < ActiveRecord::Base
-
-  self.primary_key = "id"
-
   belongs_to :scenario
   has_many :answers, dependent: :destroy
   serialize :options
@@ -31,7 +28,7 @@ class Question < ActiveRecord::Base
     end
 
     # check string type
-    if self.type_of == "String" && self.options != nil 
+    if self.type_of == "String" && self.options != nil
       # check for valid options
       if self.options.select{ |opt| OPTIONS_STRING.include? opt }.size != self.options.size
         errors.add(:options, 'invalid option')
@@ -179,7 +176,7 @@ class Question < ActiveRecord::Base
     true
   end
 
-  def set_order #what do we do for 0 questions? 
+  def set_order #what do we do for 0 questions?
     if not self.order
       if self.scenario.questions.size == 1
         self.update_attribute(:order, 1)
@@ -208,7 +205,7 @@ class Question < ActiveRecord::Base
   end
 
   def move_down
-    if below = self.scenario.questions.find_by_order(self.order - 1) 
+    if below = self.scenario.questions.find_by_order(self.order - 1)
       below_order = below.order
       below.update_attribute(:order, self.order)
       self.update_attribute(:order, below_order)
@@ -347,7 +344,7 @@ class Question < ActiveRecord::Base
     answer.question_id = self.id
     answer.correct = correct
     answer.value_index = index
-    answer.save 
+    answer.save
     answer
   end
 
@@ -360,7 +357,6 @@ class Question < ActiveRecord::Base
       answer.errors.add(:type_of, "must be type Number")
       return answer
     end
-   # debugger
     answer.question_id = self.id
     answer.save
     answer

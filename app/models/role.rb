@@ -1,6 +1,4 @@
 class Role < ActiveRecord::Base
-  self.primary_key = "id"
-  
   belongs_to :scenario
   has_many :role_recipes, dependent: :destroy
   has_many :recipes, through: :role_recipes

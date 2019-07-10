@@ -1,4 +1,4 @@
-class CreateSubnets < ActiveRecord::Migration
+class CreateSubnets < ActiveRecord::Migration[4.2]
   def change
     create_table :subnets do |t|
       t.string :name, required: true

@@ -1,4 +1,4 @@
-class CreateClouds < ActiveRecord::Migration
+class CreateClouds < ActiveRecord::Migration[4.2]
   def change
     create_table :clouds do |t|
       t.string :name, required: true

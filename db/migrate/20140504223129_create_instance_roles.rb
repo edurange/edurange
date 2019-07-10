@@ -1,4 +1,4 @@
-class CreateInstanceRoles < ActiveRecord::Migration
+class CreateInstanceRoles < ActiveRecord::Migration[4.2]
   def change
     create_table :instance_roles do |t|
       t.references :instance, index: true

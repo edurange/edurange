@@ -1,5 +1,5 @@
 
-development:
+development: &development
   adapter: postgresql
   encoding: unicode
   pool: 50
@@ -12,10 +12,8 @@ development:
   password: 'edurange_rocks!'
 
 test:
-  adapter: sqlite3
-  pool: 5
-  timeout: 5000
-  database: db/test.sqlite3
+  <<: *development
+  database: edurange_test
 
 production:
   adapter: postgresql

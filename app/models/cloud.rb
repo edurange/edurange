@@ -4,8 +4,6 @@
 class Cloud < ActiveRecord::Base
   include Provider
 
-  self.primary_key = "id"
-
   belongs_to :scenario
   has_many :subnets, dependent: :destroy
   has_one :user, through: :scenario
