@@ -1,4 +1,4 @@
-class UpdateQuestionAndAnswers < ActiveRecord::Migration
+class UpdateQuestionAndAnswers < ActiveRecord::Migration[4.2]
   def change
   	# update questions
   	remove_column :questions, :answer_id
@@ -9,7 +9,7 @@ class UpdateQuestionAndAnswers < ActiveRecord::Migration
   	add_column :questions, :order, :integer
   	add_column :questions, :text, :string
   	add_column :questions, :type_of, :string
-  	add_column :questions, :options, :string, default: []
+  	add_column :questions, :options, :string, default: [].to_yaml
   	add_column :questions, :values, :string
   	add_column :questions, :points, :integer
   	add_column :questions, :points_penalty, :integer

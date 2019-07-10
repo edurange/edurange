@@ -1,6 +1,4 @@
 class Group < ActiveRecord::Base
-  self.primary_key = "id"
-  
   belongs_to :scenario
   has_many :instance_groups, dependent: :destroy
   has_many :instances, through: :instance_groups

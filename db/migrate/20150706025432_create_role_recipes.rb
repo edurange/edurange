@@ -1,4 +1,4 @@
-class CreateRoleRecipes < ActiveRecord::Migration
+class CreateRoleRecipes < ActiveRecord::Migration[4.2]
   def change
     create_table :role_recipes do |t|
       t.references :role, index: true

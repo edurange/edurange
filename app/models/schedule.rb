@@ -1,12 +1,10 @@
 class Schedule < ActiveRecord::Base
-  self.primary_key = "id"
-  
   belongs_to :user
 
   before_validation :set_scenario_location, :set_uuid
   before_save :available_resources, :not_past
   after_destroy :remove_resources
-  
+
   def set_uuid
     self.uuid = `uuidgen`[0..7]
   end

@@ -1,20 +1,33 @@
 #!/usr/bin/env ruby
 
 require 'aws-sdk-ec2'
-#require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 require 'pg'
 
-ec2 = Aws::EC2::Resource.new(region: 'us-east-1')
-$con = PG.connect :dbname => 'edurange', :user => 'admin'
+#require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
+
+ec2 = Aws::EC2::Resource.new #(region: 'us-east-1')
+uri = URI.parse(ENV['DATABASE_URL'])
+$con = PG.connect({
+  user:     uri.user,
+  password: uri.password,
+  host:     uri.hostname,
+  port:     uri.port,
+  dbname:   uri.path[1..-1]
+})
+$dry = ARGV.include?('--dry')
+
 
 def cleanup(vpc)
 
   vpc.instances.each do |inst|
 
     id = inst.id
-    puts "Stopping instance #{id}"
-    inst.stop
-    $con.exec "UPDATE public.instances SET status = 0 WHERE driver_id='%s'" % id
+    name = inst.tags.select{|tag| tag.key == 'Name'}.map{|tag| tag.value}.first
+    puts "Stopping instance #{id}, #{name}"
+    unless $dry
+      inst.stop
+      $con.exec "UPDATE public.instances SET status = 0 WHERE driver_id='%s'" % id
+    end
     # status 0 is stopped according to /app/models/concerns/provider.rb
   end
 
@@ -30,9 +43,9 @@ For each Virtual Private Cloud (VPC):
 
 """
 
-vpc_collect = ec2.vpcs 
+vpc_collect = ec2.vpcs
 # convert threshhold from HMS to seconds
-threshhold = "48:00:00".split(':').map { |a| a.to_i }.inject(0) { |a, b| a * 60 + b} 
+threshhold = "48:00:00".split(':').map { |a| a.to_i }.inject(0) { |a, b| a * 60 + b}
 
 vpc_collect.each do |vpc|
 	c = 0
@@ -48,11 +61,9 @@ vpc_collect.each do |vpc|
 		end
 	end
 	if c >= inst_count then
-		puts "All instances in #{vpc} exceed time threshhold, vpc will now be shutdown"
+		puts "All instances in #{vpc.id} exceed time threshhold, vpc will now be shutdown"
 		cleanup(vpc)
 	else
-		puts "The instances in #{vpc} do not all meet the threshhold, vpc will remain up"
+		puts "The instances in #{vpc.id} do not all meet the threshhold, vpc will remain up"
 	end
 end
-
-

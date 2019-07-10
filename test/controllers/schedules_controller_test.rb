@@ -1,8 +1,8 @@
 require 'test_helper'
 
 class SchedulesControllerTest < ActionController::TestCase
-  include Devise::TestHelpers
-  
+  include Devise::Test::ControllerHelpers
+
   setup do
     @schedule = schedules(:two)
   end
@@ -20,30 +20,36 @@ class SchedulesControllerTest < ActionController::TestCase
 
   test "should create schedule" do
     assert_difference('Schedule.count') do
-      post :create, schedule: { end_time: @schedule.end_time, scenario: @schedule.scenario, scenario_location: @schedule.scenario_location, start_time: @schedule.start_time, user_id: @schedule.user_id }
+      post :create, params: {schedule: {
+        end_time: @schedule.end_time,
+        scenario: @schedule.scenario,
+        scenario_location: @schedule.scenario_location,
+        start_time: @schedule.start_time,
+        user_id: @schedule.user_id
+      }}
     end
 
     assert_redirected_to schedule_path(assigns(:schedule))
   end
 
   test "should show schedule" do
-    get :show, id: @schedule
+    get :show, params: {id: @schedule.id}
     assert_response :success
   end
 
   test "should get edit" do
-    get :edit, id: @schedule
+    get :edit, params: { id: @schedule }
     assert_response :success
   end
 
   test "should update schedule" do
-    patch :update, id: @schedule, schedule: { end_time: @schedule.end_time, scenario: @schedule.scenario, scenario_location: @schedule.scenario_location, start_time: @schedule.start_time, user_id: @schedule.user_id }
+    patch :update, params: { id: @schedule, schedule: { end_time: @schedule.end_time, scenario: @schedule.scenario, scenario_location: @schedule.scenario_location, start_time: @schedule.start_time, user_id: @schedule.user_id }}
     assert_redirected_to schedule_path(assigns(:schedule))
   end
 
   test "should destroy schedule" do
     assert_difference('Schedule.count', -1) do
-      delete :destroy, id: @schedule
+      delete :destroy, params: { id: @schedule }
     end
 
     assert_redirected_to schedules_path

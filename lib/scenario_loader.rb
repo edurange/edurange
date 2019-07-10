@@ -33,7 +33,7 @@ class ScenarioLoader
       @scenario.reload
       build_questions
     rescue => e
-      binding.pry if Rails.env.development? || Rails.env.test?
+      binding.pry if Rails.env.development?
       @scenario.errors.add(:load, "Exception caught during loading: #{e}. "\
                                   "See log for details.")
       Rails.logger.error(e.message)

@@ -1,4 +1,4 @@
-class CreateVariablesTables < ActiveRecord::Migration
+class CreateVariablesTables < ActiveRecord::Migration[4.2]
   def change
     create_table :variable_templates do |table|
       table.references :group,    foreign_key: { on_delete: :cascade }

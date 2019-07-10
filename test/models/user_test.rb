@@ -6,7 +6,8 @@ class UserTest < ActiveSupport::TestCase
     user = User.new
     user.save
     assert_not user.valid?
-    assert_equal [:email, :password, :name], user.errors.keys
+    expected = [:email, :password, :name]
+    assert expected & user.errors.keys == expected
   end
 
   test 'should not save user with unallowed name' do

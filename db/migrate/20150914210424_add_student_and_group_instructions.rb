@@ -1,4 +1,4 @@
-class AddStudentAndGroupInstructions < ActiveRecord::Migration
+class AddStudentAndGroupInstructions < ActiveRecord::Migration[4.2]
   def change
   	remove_column :scenarios, :instructions
   	add_column :scenarios, :instructions, :text, default: ""

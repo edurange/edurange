@@ -1,4 +1,4 @@
-class ChangeExitStatusPageDefault < ActiveRecord::Migration
+class ChangeExitStatusPageDefault < ActiveRecord::Migration[4.2]
   def up
     change_column_default :instances, :exit_status_page, ""
   end

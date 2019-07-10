@@ -19,7 +19,7 @@ class Analytics::CommandsController < ApplicationController
     end
   end
 
-  def filter_params
+  helper_method def filter_params
     params.permit(CommandHistoryQuery::PARAMETERS)
   end
 

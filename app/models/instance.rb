@@ -4,8 +4,6 @@ class Instance < ActiveRecord::Base
   require 'dynamic_ip'
   require 'csv'
 
-  self.primary_key = "id"
-
   belongs_to :subnet
   has_many :instance_groups, dependent: :destroy
   has_many :instance_roles, dependent: :destroy

@@ -1,4 +1,4 @@
-class CreateInstances < ActiveRecord::Migration
+class CreateInstances < ActiveRecord::Migration[4.2]
   def change
     create_table :instances do |t|
       t.string :name, required: true

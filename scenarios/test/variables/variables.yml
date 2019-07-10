@@ -1,11 +1,19 @@
 ---
 Name: Variables
-Description: test variables 
+Description: test variables
 Instructions: none
 Roles:
+Variables:
+- Name: var1
+  Type: string
+  Value: foobar
+- Name: var2
+  Type: random
+- Name: var3
+  Type: openssl_pkey_rsa
 Groups:
-- Name: Group0 
-  Description: 
+- Name: Group0
+  Description:
   Access:
   - Instance: Instance0
     Administrator: false
@@ -14,35 +22,12 @@ Groups:
   - Login: student
     Password: sWfwkNGblfv
   Variables:
-    Instance:
-    - Name: var1 
-      Type: string
-      Value: foobar
-    - Name: var2
-      Type: random
-    - Name: var3
-      Type: openssl_pkey_rsa
-    Player:
-    - Name: vara
-      Type: random
-    - Name: varb
-      Type: random
-    - Name: varc
-      Type: openssl_pkey_rsa
-- Name: Group1 
-  Description: 
-  Access:
-  - Instance: Instance0
-    Administrator: false
-    IP_Visible: true
-  Users:
-  - Login: student
-    Password: sWfwkNGblfv
-  Variables:
-    Instance:
-    - Name: var4 
-      Type: string
-      Value: foobar
+  - Name: vara
+    Type: random
+  - Name: varb
+    Type: random
+  - Name: varc
+    Type: openssl_pkey_rsa
 Clouds:
 - Name: Cloud0
   CIDR_Block: 10.0.0.0/16

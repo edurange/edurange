@@ -108,8 +108,8 @@ class ScenarioTest < ActiveSupport::TestCase
     assert_not scenario.errors.any?, scenario.errors.messages
 
     instance = scenario.instances.first
-    ip = scenario.instances.first.ip_address
-    dip = scenario.instances.first.ip_address_dynamic
+    ip = instance.ip_address
+    dip = instance.ip_address_dynamic
 
     # ip address should be assigned
     assert ip
