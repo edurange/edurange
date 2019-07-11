@@ -19,8 +19,12 @@ class AdminController < ApplicationController
   # Creates a new instuctor.
   def instructor_create
     new_instructor_params = params.permit(:email, :name, :organization)
-    @user = User.create_instructor(new_instructor_params)
-    @user.email_credentials(@user.password)
+    @user = User.new_instructor(new_instructor_params)
+
+    if @user.valid?
+      @user.save
+      @user.email_credentials(@user.password)
+    end
 
     respond_to do |format|
       format.js { render 'admin/js/instructor_create.js.erb', :layout => false }
@@ -96,14 +100,13 @@ class AdminController < ApplicationController
   def instructor_to_student
     if @user = User.find(params[:id])
       if not @user.is_instructor?
-        @user.errors.add(:email, "User is not a student")
+        @user.errors.add(:email, "User is not an instructor")
       else
-        @student_group, @student_group_user = @user.instructor_to_student(User.find(current_user.id))
+        @student_group, @student_group_user = @user.instructor_to_student(current_user)
       end
     end
 
     respond_to do |format|
-
       format.js { render 'admin/js/instructor_to_student.js.erb', :layout => false }
     end
   end

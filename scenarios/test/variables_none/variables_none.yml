@@ -1,11 +1,10 @@
 ---
 Name: Variables_None
-Description: no variables 
+Description: no variables
 Instructions: none
 Roles:
 Groups:
-- Name: Group0 
-  Description: 
+- Name: Group0
   Access:
   - Instance: Instance0
     Administrator: false
@@ -25,4 +24,3 @@ Clouds:
       OS: ubuntu
       IP_Address: 10.0.129.5
       Internet_Accessible: true
-      Roles:

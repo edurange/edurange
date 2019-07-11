@@ -1,17 +1,17 @@
-<% if current_user.errors.any? %>
-    <% if current_user.errors[:email].any? %>
+<% if @user.errors.any? %>
+    <% if @user.errors[:email].any? %>
         $('#modal-create-instructor').find('#email-div').addClass('has-error');
-        $('#modal-create-instructor').find('#email-help').text('<%= current_user.errors[:email][0] %>');
+        $('#modal-create-instructor').find('#email-help').text("<%== @user.errors[:email][0] %>");
     <% end %>
-    <% if current_user.errors[:name].any? %>
+    <% if @user.errors[:name].any? %>
         $('#modal-create-instructor').find('#name-div').addClass('has-error');
-        $('#modal-create-instructor').find('#name-help').text('<%= current_user.errors[:name][0] %>');
+        $('#modal-create-instructor').find('#name-help').text("<%== @user.errors[:name][0] %>");
     <% end %>
-    <% if current_user.errors[:organization].any? %>
+    <% if @user.errors[:organization].any? %>
         $('#modal-create-instructor').find('#organization-div').addClass('has-error');
-        $('#modal-create-instructor').find('#organization-help').text('<%= current_user.errors[:organization][0] %>');
+        $('#modal-create-instructor').find('#organization-help').text("<%== @user.errors[:organization][0].html_safe %>");
     <% end %>
 <% else %>
-    $('#instructors-table').append('<%= escape_javascript(render("/admin/instructor", user: current_user)) %>'); 
+    $('#instructors-table').append('<%= escape_javascript(render("/admin/instructor", user: @user)) %>');
     $('#modal-create-instructor').modal('toggle');
 <% end %>

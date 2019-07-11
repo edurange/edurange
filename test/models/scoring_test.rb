@@ -12,8 +12,7 @@ class ScoringTest < ActiveSupport::TestCase
 
 	test 'type presence' do
 		s = scenarios(:two)
-		q = Question.new(text: "foo", type_of: "String", order: 1, values: [{value: "foo", points: 1}], scenario_id: s.id)
-		q.save
+		q = Question.new(text: "foo", order: 1, values: [{value: "foo", points: 1}], scenario_id: s.id)
 		assert_not q.valid?
 		assert_equal [:type_of], q.errors.keys
 	end

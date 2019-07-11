@@ -14,36 +14,26 @@ class UserTest < ActiveSupport::TestCase
     user = users(:test1)
 
     user.name = ""
-    user.save
     assert_not user.valid?
     assert_equal [:name], user.errors.keys
 
     user.name = "   "
-    user.save
     assert_not user.valid?
     assert_equal [:name], user.errors.keys
 
     user.name = "abs$$$$"
-    user.save
-    assert_not user.valid?
-    assert_equal [:name], user.errors.keys
-
-    user.name = "____"
-    user.save
     assert_not user.valid?
     assert_equal [:name], user.errors.keys
 
     user.name = "foo_bar"
-    user.save
     assert user.valid?
     assert_equal [], user.errors.keys
   end
 
   test 'should have default student role' do
-    user = User.new(name: "foo", email: "foo@edurange.org", password: "nothing8")
-    user.save
+    user = User.new(name: "foo", email: "foo@edurange.org", password: "nothing8", invitee_registration_code: users(:admin1).registration_code)
     assert user.valid?
-    assert user.role == "student"
+    assert user.student?
   end
 
   test 'should not allow name update while scenario is running' do

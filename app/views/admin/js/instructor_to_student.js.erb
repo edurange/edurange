@@ -1,4 +1,4 @@
-$('#user-<%= current_user.id %>').remove();
-$('#students-table #foot').before('<%= escape_javascript(render("/admin/student", user: current_user)) %>');
+$('#user-<%= @user.id %>').remove();
+$('#students-table #foot').before('<%= escape_javascript(render("/admin/student", user: @user)) %>');
 $('#student-group-<%= @student_group.id %>-table #foot').before(
     '<%= escape_javascript(render("/admin/student_group_student", student_group: @student_group, student: @student_group_user)) %>');
