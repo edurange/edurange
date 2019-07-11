@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :authenticate_admin!
+  before_action :authenticate_admin!
   after_action :verify_authorized, except: [:show]
 
   def index
