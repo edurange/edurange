@@ -1,4 +1,4 @@
-%tr{ id: "user-#{student.user.id}", class: "student-group-user-#{student.id}" }
+%tr{ class: "student-group-user-#{student.user.id}" }
   %td= check_box_tag "student_group_user_id[]", student.id
   %td= student.user.name
   %td= student.user.email
