@@ -5,6 +5,8 @@ class InstanceGroup < ActiveRecord::Base
   has_one :scenario, through: :group
 
   validate :validate
+  validates :instance, presence: true
+  validates :group, presence: true
 
   after_save :update_scenario_modified
   after_destroy :update_scenario_modified
