@@ -54,22 +54,20 @@ class UserTest < ActiveSupport::TestCase
     assert_equal [], user.errors.keys
 
     scenario.set_booting
-    user.name = "testchange"
-    user.save
-    assert_equal [:running], user.errors.keys
+    user.name = "a_new_name"
+    assert_not(user.valid?)
+    assert(user.errors.keys.include? :running)
 
-    [:paused, :pausing, :starting, :queued_boot,
-      :queued_unboot, :booting, :booted, :failure, :boot_failed,
-      :unboot_failed, :unbooting, :stopping, :partially_booted,
-      :partially_booted_with_failure, :partially_unbooted,
-      :partially_unbooted_with_failure].each do |status|
+
+    not_stopped_statuses = Scenario.statuses.keys - ['stopped']
+
+    not_stopped_statuses.each do |status|
         scenario.status = status
         scenario.save
 
-        user.name = "testchange"
-        user.save
+        user.name = "another_new_name"
         assert_not user.valid?
-        assert_equal [:running], user.errors.keys
+        assert(user.errors.keys.include? :running)
     end
   end
 
