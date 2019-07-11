@@ -10,7 +10,8 @@ admin1:
   name: admin1
   email: admin1@edurange.org
   encrypted_password: <%= User.new.send(:password_digest, 'passwordfoo') %>
-  role: 2
+  registration_code: <%= User.generate_registration_code %>
+  role: 'admin'
 
 student1:
   id: 3
@@ -31,7 +32,8 @@ instructor1:
   name: instructor1
   email: instructor1@edurange.org
   encrypted_password: <%= User.new.send(:password_digest, 'passwordfoo') %>
-  role: 3
+  role: 'instructor'
+  registration_code: <%= User.generate_registration_code %>
 
 instructor999999999:
   id: 999999999
@@ -39,6 +41,7 @@ instructor999999999:
   email: instructor999999999@edurange.org
   encrypted_password: <%= User.new.send(:password_digest, 'passwordfoo') %>
   role: 3
+  registration_code: 'abcdefgh'
 
 # student groups
 student_group_instructor:
@@ -46,7 +49,8 @@ student_group_instructor:
   name: student_group_instructor
   email: student_group_instructor@edurange.org
   encrypted_password: <%= User.new.send(:password_digest, 'passwordfoo') %>
-  role: 3
+  role: 'instructor'
+  registration_code: '12345678'
 
 student_group_user_1:
   id: 7

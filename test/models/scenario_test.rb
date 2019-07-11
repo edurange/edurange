@@ -10,7 +10,8 @@ class ScenarioTest < ActiveSupport::TestCase
     scenario = student.scenarios.new(location: :test, name: 'test1')
     scenario.save
     assert_not scenario.valid?
-    assert_equal [:user], scenario.errors.keys
+
+    assert(scenario.errors.keys.include? :user)
 
     scenario = instructor.scenarios.new(location: :test, name: 'test1')
     scenario.save
@@ -102,8 +103,7 @@ class ScenarioTest < ActiveSupport::TestCase
 
   test 'ip address should be valid' do
     instructor = users(:instructor999999999)
-    scenario = instructor.scenarios.new(location: :test, name: 'dynamicip')
-    scenario.save
+    scenario = Scenario.load(location: :test, name: 'dynamicip', user: instructor)
 
     assert_not scenario.errors.any?, scenario.errors.messages
 
@@ -135,20 +135,19 @@ class ScenarioTest < ActiveSupport::TestCase
   end
 
   test 'special question values' do
-    instructor = users(:instructor999999999)
-    scenario = instructor.scenarios.new(location: :test, name: 'special_question_values')
-    scenario.save
+    scenario = Scenario.load(location: :test, name: 'special_question_values', user:  users(:instructor999999999))
+
     assert scenario.valid?, scenario.errors.messages
 
     question = scenario.questions.first
     assert_equal(
-      question.values.first[:value], 
+      question.values.first[:value],
       scenario.instances.first.ip_address,
       "#{question.values.first[:value]} != #{scenario.instances.first.ip_address}"
     )
     assert_equal question.values.first[:special], "$Instance_1$"
     assert_equal(
-      question.values.second[:value], 
+      question.values.second[:value],
       scenario.instances.second.ip_address,
       "#{question.values.second[:value]} != #{scenario.instances.second.ip_address}"
     )
