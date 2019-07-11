@@ -283,7 +283,7 @@ module ProviderAws
   # Before this commit an instance could be booted, but not initialized, so wherever statuses were dealt with there are special conditionals for dealing with that case.
   def aws_instance_initialized?
     if aws_s3_com_object.exists? then
-      text = aws_s3_com_object.read()
+      text = aws_s3_com_object.get.body.read
       status = text.split("\n")[0]
       if status == 'error' then
         raise RuntimeError.new "Error in chef script:\n#{text}"
@@ -353,7 +353,7 @@ module ProviderAws
 
   def aws_get_bash_history
     if aws_s3_bash_history_object.exists?
-      aws_s3_bash_history_object.read
+      aws_s3_bash_history_object.get.body.read
     else
       ''
     end
@@ -361,7 +361,7 @@ module ProviderAws
 
   def aws_get_chef_error
     if aws_s3_com_object.exists?
-      aws_s3_com_object.read
+      aws_s3_com_object.get.body.read
     else
       ''
     end
@@ -384,22 +384,22 @@ module ProviderAws
     create_aws_s3_bucket! if not aws_s3_bucket.exists?
 
     log "AWS: writing to S3Object '#{aws_s3_com_object.key}'"
-    aws_s3_com_object.write('waiting')
+    aws_s3_com_object.put(body: 'waiting')
 
     log "AWS: writing to S3Object '#{aws_s3_cookbook_object.key}'"
-    aws_s3_cookbook_object.write(generate_cookbook)
+    aws_s3_cookbook_object.put(body: generate_cookbook)
   end
 
   # delete all s3 instance files
   def aws_instance_S3_files_delete
     log "AWS: deleting instance S3 objects"
     if aws_s3_bucket.exists?
-      aws_s3_bucket.objects.with_prefix(aws_s3_instance_object_prefix).delete_all
+      aws_s3_bucket.objects(prefix: aws_s3_instance_object_prefix).batch_delete!
     end
   end
 
   def aws_s3
-    @aws_s3 ||= AWS::S3.new
+    @aws_s3 ||= Aws::S3::Resource.new
   end
 
   def aws_s3_bucket_name
@@ -407,12 +407,12 @@ module ProviderAws
   end
 
   def aws_s3_bucket
-    aws_s3.buckets[aws_s3_bucket_name]
+    aws_s3.bucket(aws_s3_bucket_name)
   end
 
   def create_aws_s3_bucket!
     log "AWS: creating S3 Bucket '#{aws_s3_bucket_name}'"
-    aws_s3.buckets.create(aws_s3_bucket_name)
+    aws_s3_bucket.create()
   end
 
   def aws_s3_bash_history_object
@@ -432,19 +432,19 @@ module ProviderAws
 #  end
 
   def aws_s3_instance_object suffix
-    aws_s3_bucket.objects[aws_S3_object_name(suffix)]
+    aws_s3_bucket.object(aws_S3_object_name(suffix))
   end
 
   def cookbook_url
-    aws_s3_cookbook_object.url_for(:read, expires: 30.days)
+    aws_s3_cookbook_object.presigned_url(:get, expires_in: 1.week.to_i)
   end
 
   def com_page
-    aws_s3_com_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+    aws_s3_com_object.presigned_url(:put, expires_in: 1.week.to_i, content_type: 'text/plain')
   end
 
   def bash_history_page
-    aws_s3_bash_history_object.url_for(:write, expires: 30.days, content_type: 'text/plain')
+    aws_s3_bash_history_object.presigned_url(:put, expires_in: 1.week.to_i, content_type: 'text/plain')
   end
 
 #  def script_log_page

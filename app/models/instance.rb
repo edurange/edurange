@@ -166,9 +166,8 @@ class Instance < ActiveRecord::Base
   # Where it is used, needs to be replaced with sensible code.
   def initialized?
     begin
-      com_page = AWS::S3.new.buckets[Rails.configuration.x.aws['s3_bucket_name']].objects[self.aws_S3_object_name('com')]
-      if com_page.exists?
-        text = com_page.read()
+      if aws_s3_com_object.exists?
+        text = aws_s3_com_object.get.body.read
         status = text.split("\n")[0]
         if status == "error"
           return "chef script error"
