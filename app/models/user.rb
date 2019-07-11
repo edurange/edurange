@@ -78,13 +78,9 @@ class User < ActiveRecord::Base
   end
 
   def validate_running
-    # TODO: this was on production, evaluate if this is the correct behavior
-    return true
-    if self.scenarios.select{ |s| not s.stopped? }.size > 0
+    if self.changed? and self.scenarios.select{ |s| not s.stopped? }.size > 0
       errors.add(:running, "can not modify while a scenario is running")
-      return false
     end
-    true
   end
 
   def owns?(obj)
@@ -108,6 +104,10 @@ class User < ActiveRecord::Base
   alias is_instructor? instructor?
   alias is_student?    student?
 
+  def self.generate_registration_code
+    SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2)
+  end
+
   def role=(role)
     case role
     when 'student'
@@ -117,7 +117,7 @@ class User < ActiveRecord::Base
         student_group.mark_for_destruction
       end
     when 'admin', 'instructor'
-      self.registration_code ||= SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2)
+      self.registration_code ||= self.class.generate_registration_code
       self.create_custom_scenario_path!
       # admins and instructors should not be in any student groups
       self.student_group_users.each do |student_group_user|

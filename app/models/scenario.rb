@@ -27,7 +27,7 @@ class Scenario < ActiveRecord::Base
   validates :name, presence: true, format: { without: /\A_*_\z/ }
   validates :name, format: { with: /\A\w*\z/,
                              message: "can only contain alphanumeric and underscore" }
-  validate :paths_exist, :validate_stopped
+  validate :paths_exist, :validate_stopped, :owner_is_instructor_or_admin
 
   # Custom validations methods
   # http://guides.rubyonrails.org/active_record_validations.html#custom-methods
@@ -40,6 +40,12 @@ class Scenario < ActiveRecord::Base
 
   def validate_stopped
     errors.add(:base, 'You can only update a scenario when it is stopped.') unless stopped? or not changed?
+  end
+
+  def owner_is_instructor_or_admin
+    unless self.user.admin? or self.user.instructor?
+      errors.add(:user, 'Only admins and instructors create scenarios.')
+    end
   end
 
   validate do
@@ -513,6 +519,10 @@ class Scenario < ActiveRecord::Base
 
   def instantiate_variable template
     self.variables << template.instantiate
+  end
+
+  def self.load(**args)
+    ScenarioLoader.new(args).fire!
   end
 
 end

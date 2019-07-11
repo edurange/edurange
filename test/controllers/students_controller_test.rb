@@ -10,7 +10,7 @@ class StudentsControllerTest < ActionController::TestCase
 
 	test 'should redirect to home if not logged in' do
 		get :index
-		assert_redirected_to controller: "home", action: "index"
+		assert_redirected_to new_user_session_path
 	end
 
 	test 'should go to index if logged in' do
@@ -26,7 +26,6 @@ class StudentsControllerTest < ActionController::TestCase
 
 		get :index
 		assert_response :success
-		assert_not_nil assigns(:user)
 		assert_not_nil assigns(:scenarios)
 
 		assert assigns(:scenarios).size == 1

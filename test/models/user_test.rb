@@ -58,10 +58,10 @@ class UserTest < ActiveSupport::TestCase
     user.save
     assert_equal [:running], user.errors.keys
 
-    [:paused, :pausing, :starting, :queued_boot, 
-      :queued_unboot, :booting, :booted, :failure, :boot_failed, 
-      :unboot_failed, :unbooting, :stopping, :partially_booted, 
-      :partially_booted_with_failure, :partially_unbooted, 
+    [:paused, :pausing, :starting, :queued_boot,
+      :queued_unboot, :booting, :booted, :failure, :boot_failed,
+      :unboot_failed, :unbooting, :stopping, :partially_booted,
+      :partially_booted_with_failure, :partially_unbooted,
       :partially_unbooted_with_failure].each do |status|
         scenario.status = status
         scenario.save
@@ -73,28 +73,28 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  test 'should email credentials' do 
+  test 'should email credentials' do
     user = users(:test1)
     email = user.email_credentials('thisisnewpass')
     assert_not ActionMailer::Base.deliveries.empty?
   end
 
-  test 'should set correct roles' do 
+  test 'should set correct roles' do
     user = users(:test1)
-    user.set_student_role
-    assert_match("student", user.role)
+    user.role = 'student'
+    assert_equal('student', user.role)
     assert user.is_student?
     assert_not user.is_instructor?
     assert_not user.is_admin?
 
-    user.set_instructor_role
-    assert_match("instructor", user.role)
+    user.role = 'instructor'
+    assert_equal('instructor', user.role)
     assert_not user.is_student?
     assert user.is_instructor?
     assert_not user.is_admin?
 
-    user.set_admin_role
-    assert_match("admin", user.role)
+    user.role = 'admin'
+    assert_equal('admin', user.role)
     assert_not user.is_student?
     assert_not user.is_instructor?
     assert user.is_admin?
@@ -106,7 +106,8 @@ class UserTest < ActiveSupport::TestCase
     scenario = user.scenarios.new(location: :test, name: 'test1')
 
     # test instructor role
-    user.set_instructor_role
+    user.role = 'instructor'
+    user.save
 
     # make sure the user has student group named All
     assert user.student_groups.size == 1
@@ -119,7 +120,7 @@ class UserTest < ActiveSupport::TestCase
 
     assert allsg.student_group_users.size == 1
     assert allsg.student_group_users.find_by_user_id(student.id).valid?
-    
+
     # make sure user can not become student with a scenario that is running
     assert scenario.valid?
     assert scenario.user_id = user.id
@@ -127,12 +128,15 @@ class UserTest < ActiveSupport::TestCase
     user.reload
     assert user.owns? scenario
 
-    assert user.validate_running
+    assert user.valid?
     scenario.set_booted
 
     user.reload
 
-    user.set_student_role
+    user.role = 'student'
+    user.save
+
+    assert_not(user.valid?)
     assert_equal [:running], user.errors.keys
     user.errors.clear
 
@@ -141,8 +145,9 @@ class UserTest < ActiveSupport::TestCase
     user.reload
 
     # make sure when user becomes student they have no student groups or student group users
-    user.set_student_role
-    assert_equal [], user.errors.keys
+    user.role = 'student'
+    assert user.valid?
+    user.save
 
     assert_not user.student_groups.any?
     assert_not user.student_group_users.any?
@@ -150,7 +155,8 @@ class UserTest < ActiveSupport::TestCase
     # Do the same tests for admin
     user.reload
     scenario.reload
-    user.set_admin_role
+    user.role = 'admin'
+    user.save
 
     # make sure the user has student group named All
     assert user.student_groups.size > 0
@@ -164,7 +170,7 @@ class UserTest < ActiveSupport::TestCase
 
     assert allsg.student_group_users.size == 1
     assert allsg.student_group_users.find_by_user_id(student.id).valid?
-    
+
     # make sure user can not become student with a scenario that is running
     scenario.user_id = user.id
     scenario.save
@@ -174,13 +180,14 @@ class UserTest < ActiveSupport::TestCase
     user.reload
     assert user.owns? scenario
 
-    assert user.validate_running
+    assert user.valid?
     scenario.set_booted
 
     user.reload
 
-    user.set_student_role
-    assert_equal [:running], user.errors.keys
+    user.role = 'student'
+    assert_not user.valid?
+    assert(user.errors.keys.include? :running)
     user.errors.clear
 
     scenario.set_stopped
@@ -188,8 +195,9 @@ class UserTest < ActiveSupport::TestCase
     user.reload
 
     # make sure when user becomes student they have no student groups or student group users
-    user.set_student_role
-    assert_equal [], user.errors.keys
+    user.role = 'student'
+    user.save
+    assert(user.valid?, user.errors.full_messages.join(' '))
 
     assert_not user.student_groups.any?
     assert_not user.student_group_users.any?
@@ -201,7 +209,8 @@ class UserTest < ActiveSupport::TestCase
     student2 = users(:student2)
 
     # make user instructor
-    user.set_instructor_role
+    user.role = 'instructor'
+    user.save
 
     # add student to users student group "All"
     sgu = user.student_groups.find_by_name("All").student_group_users.new(user_id: student.id)
@@ -226,7 +235,7 @@ class UserTest < ActiveSupport::TestCase
 
   test 'should own all resources belonging to scenario and student groups' do
     user = users(:test1)
-    user.set_admin_role
+    user.role = 'admin'
 
     # test ownership of student groups
     sg = user.student_groups.new(name: 'test')

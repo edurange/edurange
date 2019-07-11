@@ -73,6 +73,7 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'selenium-webdriver'
+  gem 'rails-controller-testing'
   # gem 'launchy'
   # gem 'plymouth'
   # gem 'pry'
