@@ -272,27 +272,63 @@ module ProviderAws
   end
 
   def aws_instance_wait_till_initialized
-    Timeout.timeout(600) do
-      sleep 5 while not aws_instance_initialized?
+    interval = 5.seconds.to_i
+    time_remaining = 5.minutes.to_i
+    while time_remaining > 0 and com.initializing?
+      sleep interval
+      time_remaining -= interval
     end
+    com.raise_errors!
   end
 
-  # return true if initialized, false if initializing, throw an exception otherwise.
-  # TODO: figure out a way to safely remove the similar method `initilized?` in the Instance model, and all the views that method is used.
-  # "initialized" is like a quasi-status of an instance.
-  # Before this commit an instance could be booted, but not initialized, so wherever statuses were dealt with there are special conditionals for dealing with that case.
-  def aws_instance_initialized?
-    if aws_s3_com_object.exists? then
-      text = aws_s3_com_object.get.body.read
-      status = text.split("\n")[0]
-      if status == 'error' then
-        raise RuntimeError.new "Error in chef script:\n#{text}"
-      else
-        return status == 'finished'
-      end
-    else
-      return false
+  class Com
+
+    attr_accessor :status, :backtrace, :s3_object
+
+    def initialize s3_object
+      @s3_object = s3_object
+      self.reload!
     end
+
+    def reload!
+      if s3_object.exists? then
+        parse_body! s3_object.get.body.read
+      else
+        @status = :waiting
+      end
+    end
+
+    def parse_body! body
+      parts = body.split("\n")
+      @status = parts[0].to_sym
+      unless [:error, :finished, :waiting].include? @status
+        raise RuntimeError.new("unknown com page status #{@status}")
+      end
+      if @status == :error
+        @backtrace = parts[2..-1]
+      end
+    end
+
+    def initialized?
+      status == :finished
+    end
+
+    def initializing?
+      status == :waiting
+    end
+
+    def error?
+      status == :error
+    end
+
+    def raise_errors!
+      raise RuntimeError.new("Error running chef: #{backtrace.join("\n")}") if error?
+    end
+
+  end
+
+  def com
+    Com.new(aws_s3_com_object)
   end
 
   # helper fn to wait a predetermined amount of time or until an aws resource's status is the one desired
@@ -354,14 +390,6 @@ module ProviderAws
   def aws_get_bash_history
     if aws_s3_bash_history_object.exists?
       aws_s3_bash_history_object.get.body.read
-    else
-      ''
-    end
-  end
-
-  def aws_get_chef_error
-    if aws_s3_com_object.exists?
-      aws_s3_com_object.get.body.read
     else
       ''
     end

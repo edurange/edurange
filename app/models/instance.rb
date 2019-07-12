@@ -142,7 +142,7 @@ class Instance < ActiveRecord::Base
   def status_check
     puts "\nstatus check\n"
     if self.driver_id
-      if AWS::EC2.new.instances[self.driver_id].exists? 
+      if AWS::EC2.new.instances[self.driver_id].exists?
         # check if it is running
       else
         self.driver_id = nil
@@ -157,28 +157,7 @@ class Instance < ActiveRecord::Base
   end
 
   def get_chef_error
-    provider_get_chef_error
-  end
-
-  # Check if the instance is initialized
-  # duplicated code in provider_aws::instance_initialized?
-  # needs to be removed.
-  # Where it is used, needs to be replaced with sensible code.
-  def initialized?
-    begin
-      if aws_s3_com_object.exists?
-        text = aws_s3_com_object.get.body.read
-        status = text.split("\n")[0]
-        if status == "error"
-          return "chef script error"
-        elsif status == "finished"
-          return "true"
-        end
-      end
-    rescue AWS::S3::Errors::NoSuchKey
-      return false
-    end
-    "initializing"
+    self.com.backtrace.join("\n")
   end
 
   def port_open?(ip, port)

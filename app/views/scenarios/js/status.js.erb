@@ -53,7 +53,7 @@ update_status('scenario', '<%= @scenario.status %>')
 
       update_status('instance-<%= instance.id %>', '<%= instance.status %>');
 
-      <% if instance.initialized? == "chef script error" %>
+      <% if instance.com.error? %>
         $("#instance-<%= instance.id %>-initialized-error").removeClass('hidden');
       <% else %>
         $("#instance-<%= instance.id %>-initialized-error").addClass('hidden');

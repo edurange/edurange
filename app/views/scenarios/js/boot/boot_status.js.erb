@@ -119,8 +119,8 @@ update_status('scenario', '<%= @scenario.status %>')
       <% end %>
       $("#instance-<%= instance.id %>-driver").text('<%= instance.driver_id ? instance.driver_id : "not set" %>');
       $("#instance-<%= instance.id %>-ssh-ready").text('<%= instance.ssh_ready? ? "true" : "-" %>');
-      $("#instance-<%= instance.id %>-initialized").text('<%= instance.initialized? %>');
-      <% if instance.initialized? == "chef script error" %>
+      $("#instance-<%= instance.id %>-initialized").text('<%= instance.com.status %>');
+      <% if instance.com.error? %>
         $("#instance-<%= instance.id %>-initialized-error").removeClass('hidden');
       <% else %>
         $("#instance-<%= instance.id %>-initialized-error").addClass('hidden');

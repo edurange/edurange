@@ -29,7 +29,7 @@
     &#9679;
   %div{ id: "instance-#{instance.id}-spinner", class: "inline-block #{(instance.booting? or instance.unbooting?) ? 'spin' : ''}" }
   %br
-  - hidden = (instance.initialized? == "chef script error") ? '' : 'hidden'
+  - hidden = instance.com.error? ? '' : 'hidden'
   %span{id: "instance-#{instance.id}-initialized-error", class: hidden }
     Chef Error
     = link_to 'view', instance_chef_error_scenario_path(id: instance.scenario, instance_id: instance), remote: true, method: :post
