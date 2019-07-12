@@ -27,18 +27,22 @@ EOF
 cat << EOF > /root/chef/cheferror.rb
 require 'net/http'
 
-if File.exists? "/root/chef/chef-stacktrace.out"
-	put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
-  put.body = "error\n" + File.read("/root/chef/chef-stacktrace.out")
-
-  # send the PUT request
-  http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-  http.use_ssl = true
-  http.start
-  resp = http.request(put)
-  resp = [resp.code.to_i, resp.to_hash, resp.body]
-  http.finish
+body = if File.exists? "/root/chef/chef-stacktrace.out"
+  "error\n" + File.read("/root/chef/chef-stacktrace.out")
+else
+  "finished"
 end
+
+put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
+put.body = body
+
+# send the PUT request
+http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
+http.use_ssl = true
+http.start
+resp = http.request(put)
+resp = [resp.code.to_i, resp.to_hash, resp.body]
+http.finish
 EOF
 
 apt-get -y install ruby

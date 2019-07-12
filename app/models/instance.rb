@@ -261,8 +261,10 @@ class Instance < ActiveRecord::Base
       scenario_path = "#{Rails.root}/scenarios/user/#{self.scenario.user.name.filename_safe}/#{self.scenario.name.filename_safe}"
       scenario_path = "#{Rails.root}/scenarios/local/#{self.scenario.name.filename_safe}" if not File.exists? scenario_path
 
+      cookbook = ''
+
       # This recipe sets up packages and users and is run for every instance
-      cookbook = Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/packages_and_users.rb.erb")).result(instance: self) + "\n"
+      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/packages_and_users.rb.erb")).result(instance: self) + "\n"
 
       self.roles.each do |role|
         role.recipes.each do |recipe|
@@ -285,9 +287,6 @@ class Instance < ActiveRecord::Base
         s3_routing_rules += "iptables -A INPUT -d #{aws_prefix} -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT\n"
       end
       cookbook += routing_rules.gsub("<s3_routing_rules>", s3_routing_rules)
-
-      # This recipe signals the com page and also gets the bash histories
-      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/com_page.rb.erb")).result(instance: self) + "\n"
 
       cookbook
     rescue
