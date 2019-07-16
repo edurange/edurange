@@ -261,7 +261,7 @@ class Instance < ActiveRecord::Base
       # do iptables rules
       routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
       s3_routing_rules = ''
-      self.scenario.aws_prefixes.each do |aws_prefix|
+      self.aws_prefixes.each do |aws_prefix|
         s3_routing_rules += "iptables -A OUTPUT -d #{aws_prefix} -p tcp --dport 443 -m state --state NEW,ESTABLISHED -j ACCEPT\n"
         s3_routing_rules += "iptables -A INPUT -d #{aws_prefix} -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT\n"
       end
