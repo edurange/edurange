@@ -59,10 +59,6 @@ class Scenario < ActiveRecord::Base
   after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
-  def aws_prefixes
-    Aws::EC2::Client.new.describe_prefix_lists.prefix_lists.flat_map{ |x| x.cidrs }
-  end
-
   # File structure
 
   def update_yml

@@ -277,8 +277,19 @@ module ProviderAws
     while time_remaining > 0 and com.initializing?
       sleep interval
       time_remaining -= interval
+      com.reload!
     end
-    com.raise_errors!
+
+    case com.status
+    when :waiting
+      raise RuntimeError.new("Instance took longer than #{5.minutes} seconds to initialize.")
+    when :error
+      com.raise_errors!
+    when :finished
+    else
+      raise RuntimeError.new("Unknown com status #{com.status}")
+    end
+
   end
 
   class Com
@@ -331,7 +342,7 @@ module ProviderAws
   end
 
   def com
-    ProviderAws::Com.new(aws_s3_com_object)
+    @com ||= ProviderAws::Com.new(aws_s3_com_object)
   end
 
   # helper fn to wait a predetermined amount of time or until an aws resource's status is the one desired
@@ -741,6 +752,14 @@ module ProviderAws
   # open up security group outbound traffic to subnet 10.0.0.0/16
   def aws_security_group_enable_outbound_to_subnets(opts)
     opts[:security_group].authorize_egress('10.0.0.0/16')
+  end
+
+  def aws_prefixes
+    #Aws::EC2::Client.new.describe_prefix_lists.prefix_lists.flat_map{ |x| x.cidrs }
+    content = JSON.parse(open('https://ip-ranges.amazonaws.com/ip-ranges.json').read)
+    content["prefixes"]
+      .select { |p| p["service"] == "AMAZON" }
+      .map { |p| p["ip_prefix"] }
   end
 
 end
