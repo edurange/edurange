@@ -296,6 +296,9 @@ module ProviderAws
       else
         @status = :waiting
       end
+    rescue
+      Rails.logger.error("Error loading com object: #{$!.class} #{$!}")
+      raise
     end
 
     def parse_body! body
@@ -328,7 +331,7 @@ module ProviderAws
   end
 
   def com
-    Com.new(aws_s3_com_object)
+    ProviderAws::Com.new(aws_s3_com_object)
   end
 
   # helper fn to wait a predetermined amount of time or until an aws resource's status is the one desired
@@ -427,7 +430,7 @@ module ProviderAws
   end
 
   def aws_s3
-    @aws_s3 ||= Aws::S3::Resource.new
+    @aws_s3 ||= Aws::S3::Resource.new(signature_version:"s3")
   end
 
   def aws_s3_bucket_name
