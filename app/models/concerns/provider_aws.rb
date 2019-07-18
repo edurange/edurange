@@ -441,7 +441,7 @@ module ProviderAws
   end
 
   def aws_s3
-    @aws_s3 ||= Aws::S3::Resource.new(signature_version:"s3")
+    @aws_s3 ||= Aws::S3::Resource.new
   end
 
   def aws_s3_bucket_name
