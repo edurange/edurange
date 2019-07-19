@@ -12,4 +12,8 @@ class Variable < ActiveRecord::Base
     variable_template.type
   end
 
+  def self.find_by_name name
+    joins(:variable_template).find_by(variable_templates: { name: name })
+  end
+
 end
