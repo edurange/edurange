@@ -1,21 +1,4 @@
-%nav.navbar.navbar-default
-  %a.navbar-brand
-    Help Documentation 
-
-  %ul.nav.nav-tabs
-
-    %li{role: 'presentation' }
-      = link_to 'Help Docs', tutorials_path
-
-    %li{role: 'presentation' }
-      = link_to 'SSH Inception Help', tutorials_ssh_inception_path
-     
-    %li{role: 'presentation', class: params[:controller] == 'tutorials' ? "active" : "" }
-      = link_to 'Total Recon Help', tutorials_total_recon_path
-
-    %li{role: 'presentation'}
-      = link_to 'Student Manual', tutorials_student_manual_path, style: "font-weight: bold"
-
+= render 'tabs', current_page: 'total_recon_help'
 
 %article{:role => "article", :class => "span9"}
 
