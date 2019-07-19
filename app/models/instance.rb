@@ -307,7 +307,7 @@ class Instance < ActiveRecord::Base
   end
 
   def download_bash_history!
-    csv = CSV.new(self.get_bash_history)
+    csv = CSV.new(self.get_bash_history, col_sep: "\t", row_sep: "\n", quote_char: "\0")
 
     csv.each do |row|
       begin
