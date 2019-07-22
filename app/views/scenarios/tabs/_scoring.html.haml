@@ -7,9 +7,9 @@
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-scoring'}
         %li{ id: 'scoring-add-button-li' }
           = link_to 'Add Question', "#modal-scoring-question-add", :data => {:toggle=>"modal"}, onclick: "scoring_question_modal_add_question_setup();", id: 'scoring-add-button'
-%ul
+%div
   %label Questions:
-  %ul#questions
+  %ol#questions
     - @scenario.questions.order(:order).each_with_index do |question, index| 
       = render '/scenarios/show/question', question: question, index: index
   %br
