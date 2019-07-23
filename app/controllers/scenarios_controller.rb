@@ -144,12 +144,11 @@ class ScenariosController < ApplicationController
       if @scenario.update(scenario_params)
         format.html do
           message = 'Scenario was successfully updated.'
-          location = if previous_action == 'scenarios#edit' then
-            scenario_path @scenario
+          if previous_action == 'scenarios#edit' then
+            redirect_to(@scenario, notice: message)
           else
-            :back
+            redirect_back(fallback_location: @scenario, notice: message)
           end
-          redirect_to location, notice: message
         end
         format.json { render :show, status: :ok, location: @scenario }
       else

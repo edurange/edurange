@@ -42,4 +42,8 @@ class VariableTemplate < ActiveRecord::Base
     entity.instantiate_variable self
   end
 
+  def scenario
+    super || group.scenario
+  end
+
 end

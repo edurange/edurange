@@ -1,12 +1,10 @@
-
 class VariablesController < ApplicationController
   before_action :authenticate_admin_or_instructor!
 
   def destroy
     v = VariableTemplate.find(params.require(:id))
     v.destroy!
-    flash[:notice] = "Variable '#{v.name}' removed"
-    redirect_to :back
+    redirect_back(fallback_location: v.scenario, notice: "Variable '#{v.name}' removed")
   end
 
   private
@@ -16,4 +14,3 @@ class VariablesController < ApplicationController
   end
 
 end
-
