@@ -136,7 +136,7 @@ Scoring:
     Points: '1'
   Order: 10
   Points: 1
-- Text: What is the flag you discovered by running sudo python manflag.py in the manipulate directory?
+- Text: What is the flag you discovered by running sudo python manflag.pyc in the manipulate directory?
   Type: String
   Options:
   - variable-group-player
@@ -145,7 +145,7 @@ Scoring:
     Points: '10'
   Order: 11
   Points: 10
-- Text: What is the flag you discovered by running sudo python perflag.py in the permissions directory?
+- Text: What is the flag you discovered by running sudo python perflag.pyc in the permissions directory?
   Type: String
   Options:
   - variable-group-player
