@@ -44,21 +44,24 @@
   %div.indent.panel-body
     %label Instructor:
     = @scenario.user.name
-    %br
-    %label Organization:
-    = @scenario.user.organization
-    %br
-    %label Scenario Instructions:
-    = @scenario.instructions_student
+    - if @scenario.user.organization
+      %br
+      %label Organization:
+      = @scenario.user.organization
+    - if @scenario.instructions_student
+      %br
+      %label Scenario Instructions:
+      = @scenario.instructions_student
     %br
     %label Groups:
     %ul
       - @scenario.students_groups(current_user).each do |group|
         %li
           %label= group.name
-          %br
-          %label Instructions:
-          = group.instructions
+          - if group.instructions
+            %br
+            %label Instructions:
+            = group.instructions
           %br
           %label Credentials:
           %ul
