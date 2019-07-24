@@ -323,4 +323,8 @@ class Instance < ActiveRecord::Base
     end
   end
 
+  def hostname
+    self.name.gsub('_', '-')
+  end
+
 end
