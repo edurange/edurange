@@ -222,7 +222,7 @@ Roles:
   - nmap
   Recipes: 
 Scoring:
-- Text: Contents of the file '~/secret' on Starting Line?
+- Text: Contents of the file '~/flag' on Starting Line?
   Type: String
   Options:
   - variable-group-player
@@ -231,7 +231,7 @@ Scoring:
     Points: '1'
   Order: 1
   Points: 1
-- Text: Contents of the file '~/secret' on First Stop?
+- Text: Contents of the file '~/flag' on First Stop?
   Type: String
   Options:
   - variable-group-player
@@ -240,7 +240,7 @@ Scoring:
     Points: '1'
   Order: 2
   Points: 1
-- Text: Contents of the file '~/secret' on Second Stop?
+- Text: Contents of the file '~/flag' on Second Stop?
   Type: String
   Options:
   - variable-group-player
@@ -249,7 +249,7 @@ Scoring:
     Points: '1'
   Order: 3
   Points: 1
-- Text: Contents of the file '~/secret' on Third Stop?
+- Text: Contents of the file '~/flag' on Third Stop?
   Type: String
   Options:
   - variable-group-player
@@ -258,7 +258,7 @@ Scoring:
     Points: '1'
   Order: 4
   Points: 1
-- Text: Contents of the file '~/secret' on Fourth Stop?
+- Text: Contents of the file '~/flag' on Fourth Stop?
   Type: String
   Options:
   - variable-group-player
@@ -267,7 +267,7 @@ Scoring:
     Points: '1'
   Order: 5
   Points: 1
-- Text: Contents of the file '~/secret' on Fifth Stop?
+- Text: Contents of the file '~/flag' on Fifth Stop?
   Type: String
   Options:
   - variable-group-player
