@@ -1,0 +1,10 @@
+Welcome to SSH Inception. The goal is to answer all questions by exploring the local network at 10.0.0.0/27
+Your are currently at the NAT Instance your journey will begin when you login into the following address.
+
+Unless otherwise noted, you will be using the same password that brought you here.
+
+To begin: ssh 10.0.0.5
+
+For every instance you login to you will be greeted with instructions. Each machine will give you a list of 
+useful commands to solve each challenge. Use man pages to help find useful options for commands. For example
+if the instructions say to use the command 'ssh' entering 'man ssh' will print the man page.

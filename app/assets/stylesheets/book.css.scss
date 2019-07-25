@@ -1,0 +1,25 @@
+#notebook{
+    #textContain {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 16px;
+        line-height: 26px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+
+        font-family: 'Merriweather', serif;
+    }
+
+    #bNext {
+        float: right;
+    }
+}

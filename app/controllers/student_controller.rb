@@ -1,6 +1,6 @@
 class StudentController < ApplicationController
   before_action :authenticate_student!
-  before_action :set_scenario, only: [:show, :answer_string, :answer_number, :answer_essay]
+  before_action :set_scenario, only: [:show, :term, :answer_string, :answer_number, :answer_essay]
   before_action :set_question, only: [:answer_string, :answer_number, :answer_essay]
   before_action :set_answer, only: [:answer_essay_delete, :answer_essay_show, :answer_comment_show]
 
@@ -12,6 +12,9 @@ class StudentController < ApplicationController
   end
 
   def show
+  end
+
+  def term
   end
 
   def answer_string

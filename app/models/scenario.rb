@@ -61,7 +61,7 @@ class Scenario < ActiveRecord::Base
 
   # File structure
 
-  def update_yml
+  def update_yml #can req another file here...
     if not self.modifiable?
       self.errors.add(:customizable, "Scenario is not modifiable.")
       return false

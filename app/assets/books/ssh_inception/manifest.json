@@ -1,0 +1,10 @@
+{
+	"chapters" : [
+		{"sectionTitle": "NAT", "fileName": "0.txt"},
+		{"sectionTitle": "First Stop", "fileName": "1.txt"},
+		{"sectionTitle": "Second Stop", "fileName": "2.txt"},
+		{"sectionTitle": "Third Stop", "fileName": "3.txt"},
+		{"sectionTitle": "Fourth Stop", "fileName": "4.txt"},
+		{"sectionTitle": "Satan's Palace", "fileName": "5.txt"}
+	]
+}

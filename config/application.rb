@@ -40,5 +40,11 @@ module Edurange
     config.x.aws = config_for(:aws) if config.x.provider == 'aws'
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.assets.enabled = true
+
+    config.assets.precompile =  ['*.txt', '*.json'] 
+
+    config.assets.paths << Rails.root.join("books", "ssh_inception")
   end
 end

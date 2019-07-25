@@ -167,6 +167,7 @@ Edurange::Application.routes.draw do
 
   get 'student', to: 'student#index'
   get 'student/:id', to: 'student#show'
+  get 'term/:id', to: 'student#term'
   post 'student/:id/answer_string', to: 'student#answer_string', as: 'answer_string_student'
   post 'student/:id/answer_number', to: 'student#answer_number', as: 'answer_number_student'
   post 'student/:id/answer_essay', to: 'student#answer_essay', as: 'answer_essay_student'

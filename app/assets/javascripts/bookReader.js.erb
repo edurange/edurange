@@ -1,0 +1,71 @@
+var manifest = {};
+var c = 0;
+
+function loadChapter() {
+    var target = document.getElementById("textContain");
+    target.style.visibility = "hidden";
+    target.innerHTML = "";
+
+    var mt = document.createElement("h1");
+    mt.innerHTML = "SSH Inception";
+    target.appendChild(mt);
+
+    var t = document.createElement("h4");
+    t.innerHTML = manifest.chapters[c].sectionTitle;
+    target.appendChild(t);
+
+    fetch("http://localhost:3000/assets/ssh_inception/" + manifest.chapters[c].fileName)
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(text) {
+            text.split('\n\n').map(function(item) {
+                var p = document.createElement("p");
+                p.innerHTML = item;
+                target.appendChild(p);
+                return;
+            })
+            return;
+        })
+
+    if (c < manifest.chapters.length - 1) { //button control case 1
+        document.getElementById("bNext").classList.remove("hidden");
+        document.getElementById("bNext").innerHTML = "Next: " + manifest.chapters[c + 1].sectionTitle;
+    } else {
+        document.getElementById("bNext").classList.add("hidden");
+    }
+
+    if (c > 0) { //button control case 2
+        document.getElementById("bPrev").classList.remove("hidden");
+        document.getElementById("bPrev").innerHTML = "Back: " + manifest.chapters[c - 1].sectionTitle;
+    } else {
+        document.getElementById("bPrev").classList.add("hidden");
+    }
+
+    target.style.visibility = "visible";
+}
+
+function bookReady() {
+	console.log("hello")
+
+    fetch("http://localhost:3000/assets/ssh_inception/manifest.json") //auto asset path doesnt work :(
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(myJson) {
+            manifest = myJson; //save off 
+            loadChapter();
+            return;
+        });
+
+    document.getElementById("bPrev").onclick = function() { //prev button click
+        c--;
+        loadChapter();
+    }
+
+    document.getElementById("bNext").onclick = function() { //next button click 
+        c++;
+        loadChapter();
+    }
+    //add network map fetch here
+}
