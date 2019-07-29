@@ -5,6 +5,7 @@ Instructions: Follow the instructions in EDURange to log in and then follow the 
 Roles:
   - Name: File_Wrangler
     Packages:
+    - git
     - vim
     Recipes:
     - setup_file_wrangler
