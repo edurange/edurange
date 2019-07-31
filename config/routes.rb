@@ -12,9 +12,6 @@ Edurange::Application.routes.draw do
   get 'tutorials/ssh_inception'
   get 'tutorials/total_recon'
 
-  get 'management/clean'
-  get 'management/status'
-  get 'management/purge'
 
   resources :instance_groups
   resources :players
