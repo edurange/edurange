@@ -1,41 +1,31 @@
-// Instructions
-%label Instructor Instructions:
-- if @scenario.modifiable?
-  %div.inline-block
-    %div.dropdown{id:'dropdown-instructions'}
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-button-instructions', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-        %span.caret
-      %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-instructions'}
-        %li{ id: 'instructions-modify-button-li' }
-          = link_to 'Modify', instructions_get_scenario_path(@scenario), method: :post, remote: true
-%div.indent#instructor-instructions
-  = @scenario.instructions
-%br
+%dl.dl-horizontal
+  %dt Description
+  %dd=  @scenario.description || 'N/A'
 
-%label Student Instructions:
-- if @scenario.modifiable?
-  %div.inline-block
-    %div.dropdown{id:'dropdown-instructions-student'}
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-button-instructions-student', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-        %span.caret
-      %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-instructions-student'}
-        %li{ id: 'instructions-student-modify-button-li' }
-          = link_to 'Modify', instructions_student_get_scenario_path(@scenario), method: :post, remote: true
-%div.indent#instructor-instructions-student
-  = @scenario.instructions_student
-%hr
-
-// Scenario
-%label Scenario:
-
-%div.indent
-  Status:
-  %span#scenario-status= @scenario.status
-  %div{ id: "scenario-status-dot", class: "inline-block #{@scenario.status} #{(@scenario.booting? or @scenario.unbooting?) ? 'hidden' : ''}" }
+  %dt Status
+  %dd
+    %span#scenario-status= @scenario.status
+    %div{ id: "scenario-status-dot", class: "inline-block #{@scenario.status} #{(@scenario.booting? or @scenario.unbooting?) ? 'hidden' : ''}" }
     &#9679;
-  %div{ id: "scenario-spinner", class: "inline-block #{(@scenario.booting? or @scenario.unbooting?) ? 'spin' : ''}" }
+    %div{ id: "scenario-spinner", class: "inline-block #{(@scenario.booting? or @scenario.unbooting?) ? 'spin' : ''}" }
+  %dt Actions
+  %dd= render('actions', scenario: @scenario)
 
-  %br
-  Created at:
-  = @scenario.created_at
-  %br
+  %dt Created by
+  %dd= @scenario.user.name
+
+  %dt Created at
+  %dd= @scenario.created_at
+
+  %dt Instructor Instructions
+  %dd
+    = @scenario.instructions || 'N/A'
+    - if @scenario.modifiable?
+      = link_to '[edit]', instructions_get_scenario_path(@scenario), method: :post, remote: true
+
+  %dt Student Instructions
+  %dd#instructor-instructions-student
+    = @scenario.instructions_student
+    - if @scenario.modifiable?
+      = link_to '[edit]', instructions_student_get_scenario_path(@scenario), method: :post, remote: true
+
