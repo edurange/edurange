@@ -6,21 +6,18 @@ defaults: &defaults
     instance_limit: 60
     ami_nat: ami-fc85c096
     ami_ubuntu: ami-f485c09e
-    s3_endpoint: s3.amazonaws.com
 
   us-west-1:
     vpc_limit: 5
     instance_limit: 20
     ami_nat: ami-e4a7cf84
     ami_ubuntu: ami-02a5cd62
-    s3_endpoint: s3-us-west-1.amazonaws.com
 
   us-west-2:
     vpc_limit: 5
     instance_limit: 20
     ami_nat: ami-0f9d863f
     ami_ubuntu: ami-d8aa47eb
-    s3_endpoint: s3-us-west-2.amazonaws.com
 
 development:
   <<: *defaults

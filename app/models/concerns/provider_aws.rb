@@ -413,10 +413,6 @@ module ProviderAws
     @iam_user_name ||= AWS::IAM::Client.new.get_user.user.user_name
   end
 
-  def s3_bucket_name
-    "edurange-#{iam_user_name}"
-  end
-
   # collect instance related data from S3
   def aws_instance_S3_files_save
     DownloadBashHistory.perform_now(self)
@@ -445,7 +441,7 @@ module ProviderAws
   end
 
   def aws_s3_bucket_name
-    Rails.configuration.x.aws['s3_bucket_name']
+    "edurange-#{iam_user_name}"
   end
 
   def aws_s3_bucket

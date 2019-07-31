@@ -1,32 +1,21 @@
 %div.row
   %div.col-sm-6
-    %b Access Key ID:
-    = ENV["AWS_ACCESS_KEY_ID"].sub(/^.............../, "...............")
-    %br
-    %b Access Key:
-    = ENV["AWS_SECRET_ACCESS_KEY"].sub(/^.................................../,
-        "...................................")
-    %br
-    %b Region:
-    = ENV["AWS_REGION"]
-    %br
-    %b EC2 Key:
-    = Rails.configuration.x.aws['ec2_key_pair_name']
+    %dl.dl-horizontal
+      %dt Access Key ID
+      %dd= ENV["AWS_ACCESS_KEY_ID"].sub(/^.............../, "...............")
+      %dt Access Key
+      %dd= ENV["AWS_SECRET_ACCESS_KEY"].sub(/^.................................../, "...................................")
+      %dt Region
+      %dd= ENV["AWS_REGION"]
   %div.col-sm-6
-    %b S3 Bucket Name:
-    = Rails.configuration.x.aws['s3_bucket_name']
-    %br
-    %b S3 End Point:
-    = Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint']
-    %br
-    %b VPC Used/Limit:
-    = "#{@aws_vpc_cnt.to_s}/#{Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['vpc_limit']}"
-    %br
-    %b Instance Used/Limit:
-    = "#{@aws_instance_cnt}/#{Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['instance_limit']}"
-    %br
-    %b AMI NAT:
-    = Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['ami_nat']
-    %br
-    %b AMI Ubuntu:
-    = Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['ami_ubuntu']
+    %dl.dl-horizontal
+      %dt S3 Bucket Name
+      %dd= @aws_s3_bucket
+      %dt VPC Used/Limit
+      %dd= "#{@aws_vpc_cnt.to_s}/#{Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['vpc_limit']}"
+      %dt Instance Used/Limit
+      %dd= "#{@aws_instance_cnt}/#{Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['instance_limit']}"
+      %dt AMI NAT
+      %dd= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['ami_nat']
+      %dt AMI Ubuntu
+      %dd= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['ami_ubuntu']

@@ -170,4 +170,13 @@ class User < ActiveRecord::Base
     where(role: User.roles.fetch_values('admin', 'instructor'))
   end
 
+
+  def User.students
+    where(role: 'student')
+  end
+
+  def User.instructors
+    where(role: 'student')
+  end
+
 end
