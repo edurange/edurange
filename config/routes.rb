@@ -26,9 +26,7 @@ Edurange::Application.routes.draw do
   resources :tutorials
   resources :variables, only: [:destroy]
 
-  namespace 'analytics' do
-    resources :commands, only: [:index]
-  end
+  resources :commands, only: [:index]
 
   resources :scenarios do
 

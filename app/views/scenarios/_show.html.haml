@@ -38,7 +38,8 @@
       %li{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))
       %li{class: (request.path == recipes_scenario_path(@scenario)   ? 'active' : '')}= link_to('Recipes',   recipes_scenario_path(@scenario))
       %li{class: (request.path == scenario_variables_path(@scenario) ? 'active' : '')}= link_to('Variables', scenario_variables_path(@scenario))
-      %li= link_to('Analytics', analytics_commands_path(scenario_id: @scenario.id))
+      %li= link_to('Command History', commands_path(scenario_id: @scenario.id))
+  %div.indent.panel-body
     %br
     %div
       = yield

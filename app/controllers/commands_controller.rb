@@ -1,4 +1,4 @@
-class Analytics::CommandsController < ApplicationController
+class CommandsController < ApplicationController
   include Pagy::Backend
   helper Pagy::Frontend
 

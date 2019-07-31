@@ -20,7 +20,7 @@
             = link_to 'Delete', instance_delete_scenario_path(id: instance.scenario, instance_id: instance), method: :post, remote: true, id: "instance-#{instance.id}-delete-button"
           %li.divider
           %li
-            = link_to "Show Bash History", analytics_commands_path(instance_id: instance.id, scenario_id: instance.scenario.id)
+            = link_to "Show Command History", commands_path(instance_id: instance.id, scenario_id: instance.scenario.id)
   %br
   Status:
   %span{id: "instance-#{instance.id}-status" }
