@@ -1,20 +1,17 @@
 - if defined? current_user
-  %label Account Information: 
+  %label
+    Account Information
+    = link_to '[edit]', edit_user_registration_path
   %div.row
     %div.col-sm-6
-      %b Name:
-      = current_user.name
-      %br
-      %b Email:
-      = current_user.email
-      %br
-      %b Password:
-      ********
-      %br
-      = link_to 'edit', edit_user_registration_path
+      %dl.dl-horizontal
+        %dt Name
+        %dd= current_user.name
+        %dt Email
+        %dd= current_user.email
     %div.col-sm-6
-      %b Last Sign In:
-      = current_user.last_sign_in_at
-      %br
-      %b From:
-      = current_user.last_sign_in_ip
+      %dl.dl-horizontal
+        %dt Last Sign In
+        %dd= current_user.last_sign_in_at
+        %dt From
+        %dd= current_user.last_sign_in_ip
