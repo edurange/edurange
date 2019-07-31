@@ -3,13 +3,14 @@ class AdminController < ApplicationController
   before_action :set_student_group, only: [:student_group_destroy]
 
   def index
-    @instructors = User.where role: 3
-    @students = User.where role: 4
+    @instructors = User.instructors
+    @students = User.students
 
     # Mark for refactoring
     begin
       @aws_vpc_cnt = AWS::EC2.new.vpcs.count
       @aws_instance_cnt = AWS::EC2.new.instances.count
+      @aws_s3_bucket = "edurange-#{AWS::IAM::Client.new.get_user.user.user_name}"
     rescue => e
       @aws_vpc_cnt = nil
       @aws_instance_cnt = nil

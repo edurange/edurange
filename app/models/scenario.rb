@@ -521,4 +521,56 @@ class Scenario < ActiveRecord::Base
     ScenarioLoader.new(args).fire!
   end
 
+  def guide_exists?
+    guide_path.exist?
+  end
+
+  def guide
+    guide_path.read
+  end
+
+  def guide_path
+    documentation_path + "#{self.name.downcase}.md"
+  end
+
+  def solution
+    solution_path.read
+  end
+
+  def solution_path
+    documentation_path + "#{self.name.downcase}_solution.md"
+  end
+
+  def solution_exists?
+    solution_path.exist?
+  end
+
+  def documentation_path
+    Rails.root.join('app', 'views', 'tutorials', 'documentation', 'scenarios')
+  end
+
+  def can_boot?
+    stopped?
+  end
+
+  def can_unboot?
+    booted?
+  end
+
+  def can_save?
+    modified? and modifiable
+  end
+
+  def can_destroy?
+    stopped?
+  end
+
+  def can_archive?
+    stopped?
+  end
+
+  def can_unarchive?
+    archived?
+  end
+
 end
