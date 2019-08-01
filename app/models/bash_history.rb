@@ -23,4 +23,12 @@ class BashHistory < ActiveRecord::Base
     where(instance_id: instance_id)
   end
 
+  def self.with_scenario_owner user
+    joins(:scenario).where(scenarios: {user_id: user.id})
+  end
+
+  def self.with_user user
+    joins(:player).where(players: { user_id: user.id })
+  end
+
 end
