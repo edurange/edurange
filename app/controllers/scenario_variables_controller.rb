@@ -1,5 +1,5 @@
-
 class ScenarioVariablesController < VariablesController
+  layout 'scenarios'
   before_action :authenticate_admin_or_instructor!
 
   def new

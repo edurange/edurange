@@ -32,6 +32,8 @@ Edurange::Application.routes.draw do
 
     resources :variables, only: [:index, :new, :create], controller: 'scenario_variables'
 
+    resources :commands, only: [:index], controller: 'scenario_commands'
+
     member do
       post 'destroyme'
 
