@@ -6,7 +6,7 @@
   %dd
     %span#scenario-status= @scenario.status
     %div{ id: "scenario-status-dot", class: "inline-block #{@scenario.status} #{(@scenario.booting? or @scenario.unbooting?) ? 'hidden' : ''}" }
-    &#9679;
+      &#9679;
     %div{ id: "scenario-spinner", class: "inline-block #{(@scenario.booting? or @scenario.unbooting?) ? 'spin' : ''}" }
   %dt Actions
   %dd= render('actions', scenario: @scenario)
