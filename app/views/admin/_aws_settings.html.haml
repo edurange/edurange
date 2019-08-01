@@ -7,10 +7,10 @@
       %dd= ENV["AWS_SECRET_ACCESS_KEY"].sub(/^.................................../, "...................................")
       %dt Region
       %dd= ENV["AWS_REGION"]
-  %div.col-sm-6
-    %dl.dl-horizontal
       %dt S3 Bucket Name
       %dd= @aws_s3_bucket
+  %div.col-sm-6
+    %dl.dl-horizontal
       %dt VPC Used/Limit
       %dd= "#{@aws_vpc_cnt.to_s}/#{Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['vpc_limit']}"
       %dt Instance Used/Limit
