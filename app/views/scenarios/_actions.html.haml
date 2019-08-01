@@ -4,18 +4,38 @@
     = link_to(boot_scenario_path(scenario), method: :post, remote:true, id: 'boot-button', class: 'btn btn-default') do
       = render 'icon', name: 'play'
       Boot
+  - if scenario.can_pause?
+    = link_to(pause_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
+      = render 'icon', name: 'pause'
+      Pause
+  - if scenario.can_resume?
+    = link_to(start_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
+      = render 'icon', name: 'resume'
+      Resume
   - if scenario.can_unboot?
-    = link_to('Unboot', unboot_scenario_path(scenario), method: :post, remote:true, id: 'unboot-button', class: 'btn btn-default')
+    = link_to(unboot_scenario_path(scenario), method: :post, remote:true, id: 'unboot-button', class: 'btn btn-default') do
+      = render 'icon', name: 'stop'
+      Unboot
   - if scenario.can_save?
-    = link_to('Save', save_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default')
+    = link_to(save_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
+      = render 'icon', name: 'floppy-disk'
+      Save
   - if scenario.can_archive?
     = form_for scenario, action: :update, html: {class: 'btn-group btn-group-xs'} do |form|
       = form.hidden_field :archived, value: !scenario.archived?
-      = form.submit (scenario.archived? ? 'Una': 'A') + 'rchive', class: 'btn btn-default'
+      = button_tag(type: 'submit', class: 'btn btn-default') do
+        - if scenario.archived?
+          = render 'icon', name: 'eye-open'
+          Unarchive
+        - else
+          = render 'icon', name: 'eye-close'
+          Archive
   - if request.path == scenario_path(scenario) # this is an ugly hack to prevent the clone button from appearing in the scenario index because cloning current only works from show.
     = link_to "#modal-scenario-clone", :data => {:toggle=>"modal"}, :onclick => "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#name').val(''); $('#modal-scenario-clone').find('#name-help').html('');", class: 'btn btn-default' do
       = render 'icon', name: 'duplicate'
       Clone
+  = link_to('Show Boot Log', log_get_scenario_path(scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-default')
+
   - if scenario.can_destroy?
     = link_to destroyme_scenario_path(scenario), method: :post, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
       = render 'icon', name: 'trash'

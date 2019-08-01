@@ -550,11 +550,11 @@ class Scenario < ActiveRecord::Base
   end
 
   def can_boot?
-    stopped?
+    bootable?
   end
 
   def can_unboot?
-    booted?
+    unbootable?
   end
 
   def can_save?
@@ -571,6 +571,15 @@ class Scenario < ActiveRecord::Base
 
   def can_unarchive?
     archived?
+  end
+
+  # pausing/resuming does not work so disable in the UI
+  def can_pause?
+    false
+  end
+
+  def can_resume?
+    false
   end
 
 end
