@@ -1,0 +1,25 @@
+- content_for :main do
+  = render '/scenarios/show/modals'
+  %div.panel.panel-default
+    %div.panel-heading.panel-heading-with-tabs
+      %span#scenario-name=@scenario.name
+      %ul.nav.nav-tabs
+        %li{class: (request.path == scenario_path(@scenario)           ? 'active' : '')}= link_to('Scenario',  scenario_path(@scenario))
+        %li{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Users',     users_scenario_path(@scenario))
+        %li{class: (request.path == scoring_scenario_path(@scenario)   ? 'active' : '')}= link_to('Scoring',   scoring_scenario_path(@scenario))
+        %li{class: (request.path == instances_scenario_path(@scenario) ? 'active' : '')}= link_to('Instances', instances_scenario_path(@scenario))
+        %li{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))
+        %li{class: (request.path == recipes_scenario_path(@scenario)   ? 'active' : '')}= link_to('Recipes',   recipes_scenario_path(@scenario))
+        %li{class: (request.path == scenario_variables_path(@scenario) ? 'active' : '')}= link_to('Variables', scenario_variables_path(@scenario))
+        %li{class: ('active' if request.path == scenario_commands_path(@scenario))}= link_to('Command History', scenario_commands_path(@scenario))
+    %div.indent.panel-body
+      %br
+      %div
+        = yield
+  = link_to 'Back', scenarios_path, class: 'btn btn-default'
+  %script
+    - if @clone
+      update_flash("Scenario successfully cloned");
+  :javascript
+    get_scenario_status('#{@scenario.id}');
+= render template: 'layouts/application'

@@ -1,6 +1,7 @@
 require 'dynamic_ip'
 
 class ScenariosController < ApplicationController
+  layout 'application', only: :index
   before_action :authenticate_admin_or_instructor!
 
   # Scenario
@@ -291,7 +292,7 @@ class ScenariosController < ApplicationController
   end
 
   def boot_subnet
-    UnbootJob.perform_later(@subnet, background: true)
+    BootJob.perform_later(@subnet, background: true)
     respond_to do |format|
       format.js { render template: 'scenarios/js/boot/boot_subnet.js.erb', layout: false }
     end
@@ -846,8 +847,6 @@ class ScenariosController < ApplicationController
       format.js { render template: 'scenarios/js/scoring/answer/comment_edit_show.js.erb', layout: false }
     end
   end
-
-
 
   ###############################################################
   #  Helpers
