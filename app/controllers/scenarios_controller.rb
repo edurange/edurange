@@ -1,7 +1,7 @@
 require 'dynamic_ip'
 
 class ScenariosController < ApplicationController
-  layout 'application', only: :index
+  layout 'application', only: [:index, :new]
   before_action :authenticate_admin_or_instructor!
 
   # Scenario
