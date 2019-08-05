@@ -49,7 +49,9 @@
         = label_tag 'archived' , 'Archived', class: 'control-label'
         = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
       %div.pull-right
-        = submit_tag 'Filter', class: 'btn btn-default'
+        = button_tag(class: 'btn btn-primary') do
+          = render('icon', name: 'filter')
+          Filter
     %table.table
       %thead
         %tr

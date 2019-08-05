@@ -34,7 +34,7 @@
             Close
   %div.panel.panel-default
     %div.panel-heading.panel-heading-with-tabs
-      %span.panel-title#scenario-name=@scenario.name
+      %h4.panel-title#scenario-name=@scenario.name
       %ul.nav.nav-tabs
         %li{class: ('active' if request.path == student_scenario_path(@scenario))}= link_to('Scenario', student_scenario_path(@scenario))
         %li{class: ('active' if request.path == student_scenario_guide_path(@scenario))}= link_to('Guide', student_scenario_guide_path(@scenario) )
