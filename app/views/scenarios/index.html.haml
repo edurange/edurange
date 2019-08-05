@@ -36,13 +36,11 @@
           Close
 
 %div.panel.panel-default
-  %div.panel-heading.nav.nav-pills
-    %li
-      %h4
-        Scenarios
-    %li.pull-right
+  %div.panel-heading
+    %h3.panel-title
+      Scenarios
+    %div.pull-right
       = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
-    %li.pull-right
       = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-default'
 
   %div.panel-body
@@ -53,22 +51,24 @@
       %div.pull-right
         = submit_tag 'Filter', class: 'btn btn-default'
     %table.table
-      %tr
-        %th Name
-        %th Date Created
-        %th Status
-        - if current_user.is_admin?
-          %th Instructor
-        %th Actions
-      - @scenarios.each do |scenario|
+      %thead
         %tr
-          %td= scenario.name
-          %td= scenario.created_at
-          %td= scenario.status
+          %th Name
+          %th Date Created
+          %th Status
           - if current_user.is_admin?
-            - if not scenario.user.nil?
-              %td= scenario.user.name
-            - else
-              %td.text-muted None
-          %td
-            = render('actions', scenario: scenario)
+            %th Instructor
+          %th Actions
+      %tbody
+        - @scenarios.each do |scenario|
+          %tr
+            %td= scenario.name
+            %td= scenario.created_at
+            %td= scenario.status
+            - if current_user.is_admin?
+              - if scenario.user
+                %td= scenario.user.name
+              - else
+                %td.text-muted None
+            %td
+              = render('actions', scenario: scenario)

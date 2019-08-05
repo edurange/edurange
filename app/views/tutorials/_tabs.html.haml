@@ -1,37 +1,15 @@
-%nav.navbar.navbar-default
-  %a.navbar-brand
-    Help Documentation
-
-  %ul.nav.nav-tabs
-
-    %li{role: 'presentation', class: current_page == 'help_doc' ? "active" : ""}
-      = link_to 'Help Docs', tutorials_path
-
-    // Only display relevant docs for admin or instructor
-    - if current_user.is_admin? or current_user.is_instructor?
-
-      %li{role: 'presentation', class: current_page == 'quick_start' ? "active" : ""}
-        = link_to 'Quick Start', tutorials_quick_start_guide_path
-
-      %li{role: 'presentation', class: current_page == 'making_scenarios' ? "active" : ""}
-        = link_to 'Making Scenarios', tutorials_making_scenarios_path
-
-      %li{role: 'presentation'}
-        = link_to 'Instructor Manual', tutorials_instructor_manual_path, style: "font-weight: bold"
-
-      %li{role: 'presentation', class: current_page == 'ssh_inception_instructor_guide' ? "active" : ""}
-        = link_to 'ssh Inception Guide', tutorials_instr_ssh_inception_path
-
-
-    // Only display student docs
-    - if current_user.is_student?
-
-      %li{role: 'presentation', class: current_page == 'ssh_inception_help' ? "active" : ""}
-        = link_to 'SSH Inception Help', tutorials_ssh_inception_path
-
-      %li{role: 'presentation', class: current_page == 'total_recon_help' ? "active" : ""}
-        = link_to 'Total Recon Help', tutorials_total_recon_path
-        
-    %li{role: 'presentation'}
-      = link_to 'Student Manual', tutorials_student_manual_path, style: "font-weight: bold"
-
+%ul.nav.nav-tabs
+  %li{class: ('active' if request.path == tutorials_introduction_path)}
+    = link_to 'Introduction', tutorials_path
+  %li{class: ('active' if request.path == tutorials_using_edurange_path)}
+    = link_to('Using Edurange', tutorials_using_edurange_path)
+  - if current_user.is_admin? or current_user.is_instructor?
+    %li.pull-right
+      = link_to tutorials_instructor_manual_path(format: 'pdf') do
+        = render('icon', name: 'book')
+        Instructor Manual
+  - else
+    %li.pull-right
+      = link_to tutorials_student_manual_path(format: 'pdf') do
+        = render('icon', name: 'book')
+        Student Manual
