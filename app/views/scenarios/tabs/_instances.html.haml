@@ -1,14 +1,10 @@
-// Actions
-%label Actions:
-%div.inline-block
-  %dd= render('actions', scenario: @scenario)
+%h4 Actions
+%div.inline-block= render('actions', scenario: @scenario)
 
-%div
-// Clouds
-%label Clouds:
-%div.inline-block
+%h4
+  Clouds
   - if @scenario.modifiable?
-    %div.dropdown
+    %div.inline-block.dropdown
       %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-clouds', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
         %span.caret
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-clouds'}
