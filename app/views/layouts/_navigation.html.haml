@@ -1,24 +1,21 @@
-
 %nav.navbar.navbar-default
-  %a.navbar-brand
-    EDURange
-
-  %ul.nav.nav-tabs
-
-    - if current_user
-      %li{role: 'presentation', class: (params[:controller] == 'instructor' or params[:controller] == 'admin') ? "active" : "" }
-        = link_to 'Home', root_path
-
-      - if User.find(current_user.id).is_instructor? or User.find(current_user.id).is_admin?
-
+  %div.container-fluid
+    %div.navbar-header
+      = link_to('EDURange', root_path, class: 'navbar-brand')
+    %ul.nav.navbar-nav
+      //- if current_user
+      //  %li{role: 'presentation', class: (params[:controller] == 'instructor' or params[:controller] == 'admin') ? "active" : "" }
+      //   = link_to 'Home', root_path
+      - if current_user.instructor? or current_user.admin?
         %li{role: 'presentation', class: params[:controller] == 'scenarios' ? "active" : "" }
           = link_to 'Scenarios', scenarios_path
-
-        //%li{role: 'presentation', class: params[:controller] == 'schedules' ? "active" : "" }
-        //  = link_to 'Scheduler', schedules_path
-
+          //%li{role: 'presentation', class: params[:controller] == 'schedules' ? "active" : "" }
+          //  = link_to 'Scheduler', schedules_path
       %li{role: 'presentation', class: params[:controller] == 'tutorials' ? "active" : "" }
         = link_to 'Help Docs', tutorials_path
-
-      %li{role: 'presentation'}
-        = link_to 'Sign Out', destroy_user_session_path, :method => :delete
+    %ul.nav.navbar-nav.navbar-right
+      - if current_user
+        %li{role: 'presentation'}
+          = link_to destroy_user_session_path, :method => :delete do
+            = render('icon', name: 'log-out')
+            Log Out

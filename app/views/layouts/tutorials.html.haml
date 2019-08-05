@@ -1,0 +1,8 @@
+- content_for :main do
+  %div.panel.panel-default
+    %div.panel-heading.panel-heading-with-tabs
+      %h3.panel-title Documentation
+      = render 'tutorials/tabs'
+    %div.panel-body
+      = yield
+= render template: 'layouts/application'

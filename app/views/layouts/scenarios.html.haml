@@ -2,10 +2,10 @@
   = render '/scenarios/show/modals'
   %div.panel.panel-default
     %div.panel-heading.panel-heading-with-tabs
-      %span#scenario-name=@scenario.name
+      %h3.panel-title#scenario-name=@scenario.name
       %ul.nav.nav-tabs
         %li{class: (request.path == scenario_path(@scenario)           ? 'active' : '')}= link_to('Scenario',  scenario_path(@scenario))
-        %li{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Users',     users_scenario_path(@scenario))
+        %li{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Players',     users_scenario_path(@scenario))
         %li{class: (request.path == scoring_scenario_path(@scenario)   ? 'active' : '')}= link_to('Scoring',   scoring_scenario_path(@scenario))
         %li{class: (request.path == instances_scenario_path(@scenario) ? 'active' : '')}= link_to('Instances', instances_scenario_path(@scenario))
         %li{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))

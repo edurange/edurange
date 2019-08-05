@@ -41,6 +41,7 @@ gem 'momentjs-rails'
 gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
 gem 'pagy'
+gem 'redcarpet'
 
 group :development do
   gem 'better_errors'

@@ -15,4 +15,14 @@ module ApplicationHelper
     content_for(:head) { javascript_include_tag(*files) }
   end
 
+  def markdown(content)
+    renderer = Redcarpet::Render::HTML
+    parser = Redcarpet::Markdown.new(
+      renderer,
+      fenced_code_blocks: true,
+#      disable_indented_code_blocks: false
+    )
+    raw(parser.render(content))
+  end
+
 end

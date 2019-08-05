@@ -2,16 +2,14 @@ Edurange::Application.routes.draw do
 
   resources :schedules
   #Static tutorial routes
-  get 'tutorials/index'
-  get 'tutorials/making_scenarios'
-  get 'tutorials/student_manual'
-  get 'tutorials/instructor_manual'
-  get 'tutorials/quick_start_guide'
-  get 'tutorials/instr_ssh_inception'
 
-  get 'tutorials/ssh_inception'
-  get 'tutorials/total_recon'
-
+  namespace 'tutorials' do
+    get '/' => redirect('tutorials/introduction')
+    get 'introduction'
+    get 'using_edurange'
+    get 'student_manual'
+    get 'instructor_manual'
+  end
 
   resources :instance_groups
   resources :players
@@ -23,7 +21,6 @@ Edurange::Application.routes.draw do
   resources :instances
   resources :subnets
   resources :clouds
-  resources :tutorials
   resources :variables, only: [:destroy]
 
   resources :commands, only: [:index]
@@ -137,6 +134,8 @@ Edurange::Application.routes.draw do
       post 'scoring_answer_comment_edit'
       post 'scoring_answer_comment_edit_show'
 
+      get  'guide'
+      get  'solution'
     end
   end
 
@@ -162,14 +161,17 @@ Edurange::Application.routes.draw do
   post 'instructor/student_group_user_add'
   post 'instructor/student_group_user_remove'
 
-  get 'student', to: 'student#index'
-  get 'student/:id', to: 'student#show'
-  post 'student/:id/answer_string', to: 'student#answer_string', as: 'answer_string_student'
-  post 'student/:id/answer_number', to: 'student#answer_number', as: 'answer_number_student'
-  post 'student/:id/answer_essay', to: 'student#answer_essay', as: 'answer_essay_student'
-  post 'student/:id/answer_essay_delete', to: 'student#answer_essay_delete', as: 'answer_essay_delete_student'
-  post 'student/:id/answer_essay_show', to: 'student#answer_essay_show', as: 'answer_essay_show_student'
-  post 'student/:id/answer_comment_show', to: 'student#answer_comment_show', as: 'answer_comment_show_student'
+  get 'student', to: 'student#show'
+  get 'student/scenarios/:scenario_id', to: 'student_scenarios#show', as: 'student_scenario'
+  get 'student/scenarios/:scenario_id/guide', to: 'student_scenarios#show_scenario_guide', as: 'student_scenario_guide'
+  get 'student/scenarios/:scenario_id/commands', to: 'student_scenario_commands#index', as: 'student_scenario_commands'
+
+  post 'student/scenarios/:scenario_id/answer_string', to: 'student_scenarios#answer_string', as: 'answer_string_student'
+  post 'student/:scenario_id/answer_number', to: 'student_scenarios#answer_number', as: 'answer_number_student'
+  post 'student/:scenario_id/answer_essay', to: 'student_scenarios#answer_essay', as: 'answer_essay_student'
+  post 'student/:scenario_id/answer_essay_delete', to: 'student_scenarios#answer_essay_delete', as: 'answer_essay_delete_student'
+  post 'student/:scenario_id/answer_essay_show', to: 'student_scenarios#answer_essay_show', as: 'answer_essay_show_student'
+  post 'student/:scenario_id/answer_comment_show', to: 'student_scenarios#answer_comment_show', as: 'answer_comment_show_student'
 
   root :to => "home#index"
   devise_for :users, :controllers => {:registrations => "registrations"}

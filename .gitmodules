@@ -1,0 +1,4 @@
+
+[submodule "documentation"]
+	path = documentation
+	url = git@github.com:edurange/edurange-documentation

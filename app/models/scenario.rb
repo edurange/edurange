@@ -546,7 +546,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def documentation_path
-    Rails.root.join('app', 'views', 'tutorials', 'documentation', 'scenarios')
+    Rails.root.join('documentation', 'scenarios')
   end
 
   def can_boot?

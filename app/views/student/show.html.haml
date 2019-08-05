@@ -1,162 +1,23 @@
-%div.modal#modal-essay-answer-show{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
-  %div.modal-dialog
-    %div.modal-content
-      %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
-        %h3.modal-title.inline#title
-          Essay Answer
-      %div.modal-body#modalbody
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          Close
-
-%div.modal#modal-scoring-answer-comment-show{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
-  %div.modal-dialog
-    %div.modal-content
-      %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
-        %h3.modal-title.inline#title
-          Essay Answer:
-        %br
-        %b student:
-        %span#student-name
-        %br
-        %b question:
-        %span#question-index
-        %br
-        %b answer:
-        %span#answer-index
-      %div.modal-body#modalbody
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          Close
-
 %div.panel.panel-default
-  %div.panel-heading.nav.nav-pills
-    %li
-      %h4
-        %b
-          %span#scenario-name
-            = @scenario.name
-          \:
-  %div.indent.panel-body
-    %label Instructor:
-    = @scenario.user.name
-    - if @scenario.user.organization
-      %br
-      %label Organization:
-      = @scenario.user.organization
-    - if @scenario.instructions_student
-      %br
-      %label Scenario Instructions:
-      = @scenario.instructions_student
-    %br
-    %label Groups:
-    %ul
-      - @scenario.students_groups(current_user).each do |group|
-        %li
-          %label= group.name
-          - if group.instructions
-            %br
-            %label Instructions:
-            = group.instructions
-          %br
-          %label Credentials:
-          %ul
-            - if player = group.find_player_by_student_id(current_user.id)
-              login:
-              = player.login
-              %br
-              password:
-              = player.password
+  %div.panel-heading
+    %h3.panel-title Student Home
 
-          %label Instances:
-          %ul
-            - group.instance_groups.each do |instance_group|
-              %li
-                %label Name:
-                = instance_group.instance.name
-                - if instance_group.instance.internet_accessible
-                  %br
-                  %label Public IP Address:
-                  - if instance_group.instance.ip_address_public
-                    = instance_group.instance.ip_address_public
-                  - else
-                    %em.text-muted not set
-                %br
-                %label IP Address:
-                - if instance_group.ip_visible
-                  = instance_group.instance.ip_address
-                - else
-                  %em.text-muted hidden
-              %br
-
-    %label Questions:
-    %p
-
-    - @scenario.questions.order(:order).each_with_index do |question, question_index|
-      %dl{ id: "question.#{question.id}" }
-        %b= question.order.to_s + '.'
-        = question.text
-        %p
-        %dl
-          %div{ id: "question-#{question.id}-answers" }
-            %label Answer Type:
-            = question.type_of
-            %br
-            - if question.type_of == "String" or question.type_of == "Number"
-              - answers = question.answers.where("user_id = ?", current_user.id)
-              - if answers
-                %label My Answers:
-                %table.table{ id: "question-#{question.id}-answers-table" }
-                  %tr
-                    %th Answer
-                    %th Correct
-                    %th Points
-                    %th Comments
-                    %th Date
-                  - answers.each_with_index do |answer, answer_index|
-                    = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
-
-            - elsif question.type_of == "Essay"
-              %label My Answers:
-              %table.table{ id: "question-#{question.id}-answers-table" }
-                %tr
-                  %th Answer
-                  %th Graded
-                  %th Points Awarded
-                  %th Points Possible
-                  %th Comments
-                  %th Date
-                  %th
-                  - if answers = question.answers.where("user_id = ?", current_user.id)
-                    - answers.each do |answer|
-                      = render 'answer_essay', answer: answer
-            
-            - if question.type_of == "String"
-              = form_tag answer_string_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-                %div#help-div
-                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-                  %span.help-block#help-span
-                %br
-                = submit_tag "Submit", :class => 'btn btn-default'
-
-            - elsif question.type_of == "Number"
-              = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-                %div#help-div
-                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-                  %span.help-block#help-span
-                %br
-                = submit_tag "Submit", :class => 'btn btn-default'
-
-            - elsif question.type_of == "Essay"
-              = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-                %div#help-div
-                  = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
-                  %span.help-block#help-span
-                %br
-                = submit_tag "Submit", :class => 'btn btn-default'
-
-= link_to 'Back', '/student', class: 'btn btn-default'
+  %div.panel-body
+    = render 'partials/account_information.html.haml'
+    %h4 Scenarios
+    %table.table
+      %thead
+        %tr
+          %th Name
+          %th Status
+          %th Instructor
+          %th Actions
+      %tbody
+        - @scenarios.each do |scenario|
+          %tr
+            %td= scenario.name
+            %td= scenario.status
+            %td= scenario.user.name
+            %td
+              %div.btn-group.btn-group-xs
+                = link_to 'Show', student_scenario_path(scenario), class: 'btn btn-default'
