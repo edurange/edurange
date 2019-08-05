@@ -27,22 +27,11 @@ EOF
 cat << EOF > /root/chef/cheferror.rb
 require 'net/http'
 
-body = if File.exists? "/root/chef/chef-stacktrace.out"
-  "error\n" + File.read("/root/chef/chef-stacktrace.out")
+if File.exists? "/root/chef/chef-stacktrace.out"
+  puts "error\n" + File.read("/root/chef/chef-stacktrace.out")
 else
-  "finished"
+  puts "finished"
 end
-
-put = Net::HTTP::Put.new('<%= instance.com_page %>', 'content-type' => 'text/plain')
-put.body = body
-
-# send the PUT request
-http = Net::HTTP.new('<%= Rails.configuration.x.aws['s3_bucket_name'] %>.<%= Rails.configuration.x.aws[Rails.configuration.x.aws['region']]['s3_endpoint'] %>', 443)
-http.use_ssl = true
-http.start
-resp = http.request(put)
-resp = [resp.code.to_i, resp.to_hash, resp.body]
-http.finish
 EOF
 
 apt-get -y install ruby
@@ -50,6 +39,6 @@ apt-get -y install ruby
 wget -O /root/chef/cookbooks/op/recipes/default.rb '<%= instance.cookbook_url %>'
 chef-solo -c solo.rb -j solo.json
 
-ruby /root/chef/cheferror.rb
+ruby /root/chef/cheferror.rb | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.com_page %>"
 
 echo "finished - CLOUD INIT"
