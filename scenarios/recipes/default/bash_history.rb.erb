@@ -16,10 +16,12 @@ end
 ruby_block "bash_history_logging" do
     prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-)" >> ~/.bash_history.log'
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
+    start_loader = 'nohup /usr/bin/instantHistory/main.py &'
     block do
       if File.exist?('/etc/bash.bashrc')
         file = Chef::Util::FileEdit.new('/etc/bash.bashrc')
         file.insert_line_if_no_match(/#{set_prompt_command}/, set_prompt_command)
+        file.insert_line_if_no_match(/#{start_loader}/, start_loader)
         file.write_file
       else
         Chef::Log.warn('file \'/etc/bash.bashrc\' does not exist')

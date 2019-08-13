@@ -202,6 +202,9 @@ class Instance < ActiveRecord::Base
       # initiate chef
       init += Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/chef.sh.erb")).result(instance: self) + "\n"
 
+      # run autologger start 
+      init += Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/autohistory.sh.erb")).result(instance: self) + "\n"
+
       # do routing rules
       # routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
       # s3_routing_rules = ''

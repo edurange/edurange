@@ -10,22 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_08_200753) do
+ActiveRecord::Schema.define(version: 2019_08_11_071316) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "answers", id: :serial, force: :cascade do |t|
+  create_table "answers", force: :cascade do |t|
     t.boolean "correct"
-    t.integer "question_id"
+    t.bigint "question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "text"
+    t.text "text"
     t.text "text_essay"
     t.text "comment"
-    t.integer "value_index"
-    t.string "essay_points_earned"
-    t.integer "user_id"
+    t.bigint "value_index"
+    t.text "essay_points_earned"
+    t.bigint "user_id"
     t.index ["question_id"], name: "index_answers_on_question_id"
   end
 
@@ -37,30 +37,30 @@ ActiveRecord::Schema.define(version: 2019_07_08_200753) do
     t.integer "exit_status"
   end
 
-  create_table "clouds", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "cidr_block"
-    t.string "driver_id"
-    t.integer "scenario_id", null: false
+  create_table "clouds", force: :cascade do |t|
+    t.text "name"
+    t.text "cidr_block"
+    t.text "driver_id"
+    t.bigint "scenario_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "log", default: ""
-    t.string "boot_code", default: ""
+    t.bigint "status", default: 0
+    t.text "log", default: ""
+    t.text "boot_code", default: ""
     t.index ["scenario_id"], name: "index_clouds_on_scenario_id"
   end
 
-  create_table "groups", id: :serial, force: :cascade do |t|
-    t.string "name"
+  create_table "groups", force: :cascade do |t|
+    t.text "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "scenario_id", null: false
+    t.bigint "scenario_id", null: false
     t.text "instructions", default: ""
   end
 
-  create_table "instance_groups", id: :serial, force: :cascade do |t|
-    t.integer "group_id", null: false
-    t.integer "instance_id", null: false
+  create_table "instance_groups", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "instance_id", null: false
     t.boolean "administrator"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -69,186 +69,187 @@ ActiveRecord::Schema.define(version: 2019_07_08_200753) do
     t.index ["instance_id"], name: "index_instance_groups_on_instance_id"
   end
 
-  create_table "instance_roles", id: :serial, force: :cascade do |t|
-    t.integer "instance_id", null: false
-    t.integer "role_id", null: false
+  create_table "instance_roles", force: :cascade do |t|
+    t.bigint "instance_id", null: false
+    t.bigint "role_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["instance_id"], name: "index_instance_roles_on_instance_id"
     t.index ["role_id"], name: "index_instance_roles_on_role_id"
   end
 
-  create_table "instances", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "ip_address"
-    t.string "driver_id"
-    t.string "os"
+  create_table "instances", force: :cascade do |t|
+    t.text "name"
+    t.text "ip_address"
+    t.text "driver_id"
+    t.text "os"
     t.boolean "internet_accessible"
-    t.integer "subnet_id", null: false
+    t.bigint "subnet_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "scoring_url"
-    t.string "scoring_page"
-    t.string "uuid"
-    t.string "log", default: ""
-    t.string "ip_address_dynamic", default: ""
-    t.string "boot_code", default: ""
-    t.string "ip_address_public"
+    t.bigint "status", default: 0
+    t.text "scoring_url"
+    t.text "scoring_page"
+    t.text "uuid"
+    t.text "log", default: ""
+    t.text "ip_address_dynamic", default: ""
+    t.text "boot_code", default: ""
+    t.text "ip_address_public"
     t.index ["subnet_id"], name: "index_instances_on_subnet_id"
   end
 
-  create_table "players", id: :serial, force: :cascade do |t|
-    t.string "login"
-    t.string "password"
-    t.integer "group_id"
+  create_table "players", force: :cascade do |t|
+    t.text "login"
+    t.text "password"
+    t.bigint "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "user_id"
-    t.integer "student_group_id"
+    t.bigint "user_id"
+    t.bigint "student_group_id"
     t.index ["group_id"], name: "index_players_on_group_id"
   end
 
-  create_table "questions", id: :serial, force: :cascade do |t|
-    t.integer "scenario_id", null: false
+  create_table "questions", force: :cascade do |t|
+    t.bigint "scenario_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "order"
-    t.string "text"
-    t.string "type_of"
-    t.string "options", default: "--- []\n"
-    t.string "values"
-    t.integer "points"
-    t.integer "points_penalty"
+    t.bigint "order"
+    t.text "text"
+    t.text "type_of"
+    t.text "options"
+    t.text "values"
+    t.bigint "points"
+    t.bigint "points_penalty"
     t.index ["scenario_id"], name: "index_questions_on_scenario_id"
   end
 
-  create_table "recipes", id: :serial, force: :cascade do |t|
-    t.integer "scenario_id", null: false
-    t.string "name"
+  create_table "recipes", force: :cascade do |t|
+    t.bigint "scenario_id", null: false
+    t.text "name"
     t.boolean "custom"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "role_recipes", id: :serial, force: :cascade do |t|
-    t.integer "role_id"
-    t.integer "recipe_id", null: false
+  create_table "role_recipes", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "recipe_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_role_recipes_on_recipe_id"
     t.index ["role_id"], name: "index_role_recipes_on_role_id"
   end
 
-  create_table "roles", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "packages"
+  create_table "roles", force: :cascade do |t|
+    t.text "name"
+    t.text "packages"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "scenario_id"
+    t.bigint "scenario_id"
   end
 
-  create_table "scenarios", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "description"
+  create_table "scenarios", force: :cascade do |t|
+    t.text "name"
+    t.text "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "status", default: 0
+    t.bigint "status", default: 0
     t.text "log", default: ""
-    t.string "answers", default: ""
-    t.string "uuid"
-    t.string "scoring_pages"
-    t.string "answers_url"
+    t.text "answers", default: ""
+    t.text "uuid"
+    t.text "scoring_pages"
+    t.text "answers_url"
     t.text "scoring_pages_content", default: ""
-    t.integer "user_id"
-    t.string "com_page"
-    t.boolean "modified", default: true
+    t.bigint "user_id"
+    t.text "com_page"
+    t.boolean "modified", default: false
     t.text "instructions", default: ""
     t.text "instructions_student", default: ""
-    t.integer "location", default: 0
+    t.bigint "location", default: 0
     t.boolean "modifiable", default: false
-    t.string "boot_code", default: ""
+    t.text "boot_code", default: ""
     t.boolean "archived", default: false, null: false
+    t.string "secret"
   end
 
-  create_table "schedules", id: :serial, force: :cascade do |t|
-    t.integer "user_id"
-    t.string "scenario"
-    t.string "scenario_location"
-    t.string "uuid"
+  create_table "schedules", force: :cascade do |t|
+    t.bigint "user_id"
+    t.text "scenario"
+    t.text "scenario_location"
+    t.text "uuid"
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "statistics", id: :serial, force: :cascade do |t|
-    t.integer "user_id"
+  create_table "statistics", force: :cascade do |t|
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "bash_histories", default: ""
-    t.text "bash_analytics", default: "--- []\n"
-    t.string "scenario_name"
+    t.text "bash_histories", default: ""
+    t.text "bash_analytics"
+    t.text "scenario_name"
     t.datetime "scenario_created_at"
-    t.string "script_log", default: ""
-    t.string "exit_status", default: ""
-    t.integer "scenario_id"
-    t.string "resource_info"
+    t.text "script_log", default: ""
+    t.text "exit_status", default: ""
+    t.bigint "scenario_id"
+    t.text "resource_info"
   end
 
-  create_table "student_group_users", id: :serial, force: :cascade do |t|
-    t.integer "student_group_id"
-    t.integer "user_id"
+  create_table "student_group_users", force: :cascade do |t|
+    t.bigint "student_group_id"
+    t.bigint "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "student_groups", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "name", default: "", null: false
+  create_table "student_groups", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "name", default: "", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "registration_code"
+    t.text "registration_code"
   end
 
-  create_table "subnets", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "cidr_block"
-    t.string "driver_id"
+  create_table "subnets", force: :cascade do |t|
+    t.text "name"
+    t.text "cidr_block"
+    t.text "driver_id"
     t.boolean "internet_accessible", default: false
-    t.integer "cloud_id", null: false
+    t.bigint "cloud_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "log", default: ""
-    t.string "boot_code", default: ""
+    t.bigint "status", default: 0
+    t.text "log", default: ""
+    t.text "boot_code", default: ""
     t.index ["cloud_id"], name: "index_subnets_on_cloud_id"
   end
 
-  create_table "tutorials", id: :serial, force: :cascade do |t|
-    t.string "title"
+  create_table "tutorials", force: :cascade do |t|
+    t.text "title"
     t.text "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
+  create_table "users", force: :cascade do |t|
+    t.text "email", default: "", null: false
+    t.text "encrypted_password", default: "", null: false
+    t.text "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
+    t.bigint "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
+    t.text "current_sign_in_ip"
+    t.text "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "name", null: false
-    t.integer "role"
-    t.string "organization"
-    t.string "registration_code"
+    t.text "name", null: false
+    t.bigint "role"
+    t.text "organization"
+    t.text "registration_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
