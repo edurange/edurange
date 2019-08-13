@@ -14,7 +14,8 @@ cron 'schedule_upload_bash_history' do
 end
 
 ruby_block "bash_history_logging" do
-    prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-)" >> ~/.bash_history.log'
+    prompt_command = "history -a; histJSON=$(echo {\"user\": \"$(whoami)\", \"time\": $(date +%s), \"command\": \"$(tail -n 1 ~/.bash_history)\"}); curl -s -d "$histJSON" -H "Content-Type: application/json" -H "uuid: <%= instance.scenario.uuid %>" -H "secret: <%= instance.scenario.secret %>" -X POST [TARGET ADDRESS OF EDURANGE_SERVER] >> /dev/null"
+
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
     start_loader = 'nohup /usr/bin/instantHistory/main.py &'
     block do
