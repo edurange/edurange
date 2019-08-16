@@ -239,8 +239,6 @@ class Instance < ActiveRecord::Base
   # Marked for refactoring
   def generate_cookbook
     begin
-      #set secret first (0...8).map { (65 + rand(26)).chr }.join
-      self.secret = (0...8).map { (65 + rand(26)).chr }.join
       # Find out if this is a global or custom recipe
       scenario_path = "#{Rails.root}/scenarios/user/#{self.scenario.user.name.filename_safe}/#{self.scenario.name.filename_safe}"
       scenario_path = "#{Rails.root}/scenarios/local/#{self.scenario.name.filename_safe}" if not File.exists? scenario_path
@@ -259,6 +257,8 @@ class Instance < ActiveRecord::Base
           end
         end
       end
+
+      debugger
 
       # This recipe changes /etc/bash.bashrc so that the bash history is written to file with every command
       cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/bash_history.rb.erb")).result(instance: self) + "\n"

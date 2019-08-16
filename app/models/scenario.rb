@@ -54,6 +54,10 @@ class Scenario < ActiveRecord::Base
     end
   end
 
+  #before_create do
+  #  self.secret = "foobar"
+  #end
+
   # Callbacks
   # http://guides.rubyonrails.org/active_record_callbacks.html
   after_create :modifiable_check

@@ -106,6 +106,7 @@ Clouds:
       Internet_Accessible: true
       Roles:
       - NAT
+      - instanthistory
   - Name: PlayerSubnet
     CIDR_Block: 10.0.0.0/27
     Internet_Accessible: false

@@ -13,6 +13,8 @@ iptables -A INPUT -p tcp -d 10.0.0.0/16 --sport ssh -m state --state ESTABLISHED
 # allow dns
 iptables -A INPUT  -p udp --sport 53 -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A OUTPUT -p udp --dport 53 -m state --state NEW,ESTABLISHED     -j ACCEPT
+#allow curl req to box
+#iptables -A INPUT -p http -d --sport 80 -m state 
 # allow s3
 <s3_routing_rules>
 # allow all outgoing to local network
