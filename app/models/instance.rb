@@ -203,7 +203,7 @@ class Instance < ActiveRecord::Base
       init += Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/chef.sh.erb")).result(instance: self) + "\n"
 
       # run autologger start 
-      init += Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/autohistory.sh.erb")).result(instance: self) + "\n"
+      #init += Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/autohistory.sh.erb")).result(instance: self) + "\n"
 
       # do routing rules
       # routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
@@ -257,8 +257,6 @@ class Instance < ActiveRecord::Base
           end
         end
       end
-
-      debugger
 
       # This recipe changes /etc/bash.bashrc so that the bash history is written to file with every command
       cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/bash_history.rb.erb")).result(instance: self) + "\n"

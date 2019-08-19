@@ -14,17 +14,14 @@ cron 'schedule_upload_bash_history' do
 end
 
 ruby_block "bash_history_logging" do
-    definition_command = "export uuid = <%= instance.scenario.uuid %>"
-    prompt_command='history -a; histJSON=$(echo {\"user\": \"$(whoami)\", \"time\": $(date +%s), \"command\": \"$(tail -n 1 ~/.bash_history)\"}); curl -s -d "$histJSON" -H "Content-Type: application/json" -H "uuid: <%= instance.scenario.uuid %>" -X POST 10.0.129.5/logger >> /dev/null'
-
-    set_starter_command = "shopt -s histappend"
+    definition_command = "export uuid=<%= instance.scenario.uuid %>"
+    prompt_command='history -a; histJSON=$(echo {\"user\": \"$(whoami)\", \"time\": $(date +%s), \"command\": \"$(history 1 | cut -c 8-)\"}); curl -s -d "$histJSON" -H "Content-Type: application/json" -H "uuid: <%= instance.scenario.uuid %>" -X POST 10.0.129.5/logger >> /dev/null'
 
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
     block do
       if File.exist?('/etc/bash.bashrc')
         file = Chef::Util::FileEdit.new('/etc/bash.bashrc')
         file.insert_line_if_no_match(/#{definition_command}/, definition_command)
-        file.insert_line_if_no_match(/#{set_starter_command}/, set_starter_command)
         file.insert_line_if_no_match(/#{set_prompt_command}/, set_prompt_command)
         file.write_file
       else

@@ -32,6 +32,8 @@ if the instructions say to use the command 'ssh' entering 'man ssh' will print t
 
 This message is located in your home folder in a file called 'message'.
 
+this NAT is enabled for instant.......
+
 *************************************************************************************************************
 
 EOF
