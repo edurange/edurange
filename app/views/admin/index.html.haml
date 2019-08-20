@@ -2,21 +2,22 @@
 = render 'admin/modals/student_group_create'
 = render 'admin/modals/student_group_user_add'
 
+= render 'partials/account_information_panel'
+
 %div.panel.panel-default
   %div.panel-heading
-    %h3.panel-title Admin Home
-
+    %h3.panel-title AWS Settings
   %div.panel-body
-    = render 'partials/account_information.html.haml'
-    %hr
-
-    %label AWS Settings:
     - if not @aws_vpc_cnt
       %div.failure
         FAILED TO VALIDATE CREDENTIALS
     = render 'admin/aws_settings.html.haml'
-    %hr
 
+%div.panel.panel-default
+  %div.panel-heading
+    %h3.panel-title
+      Users
+  %div.panel-body
     %label Registration Code:
     %dl
       = current_user.registration_code

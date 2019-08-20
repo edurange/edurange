@@ -1,0 +1,13 @@
+%div.row
+  %div.col-sm-6
+    %dl.dl-horizontal
+      %dt Name
+      %dd= current_user.name
+      %dt Email
+      %dd= current_user.email
+  %div.col-sm-6
+    %dl.dl-horizontal
+      %dt Last Sign In
+      %dd= current_user.last_sign_in_at
+      %dt From
+      %dd= current_user.last_sign_in_ip
