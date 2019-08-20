@@ -176,7 +176,7 @@ class User < ActiveRecord::Base
   end
 
   def User.instructors
-    where(role: 'student')
+    where(role: 'instructor')
   end
 
 end
