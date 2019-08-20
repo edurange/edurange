@@ -1,0 +1,288 @@
+---
+Name: SSH_Test
+Description: Ssh Inception teaches students the basics of ssh, a secure a program
+  for logging into a remote machine.
+Instructions: Instruct students to connect to the first machine, and further login
+  instructions will appear onscreen once connected. They can also be found in /etc/motd
+InstructionsStudent: Login to the NAT_Instance. Further instructions will be found
+  there.
+Variables:
+- Name: fifth_stop_password_key
+  Type: string
+  Value: 8fddakjfds0s9f
+Groups:
+- Name: Instructor
+  Access:
+  - Instance: NAT
+    Administrator: false
+    IP_Visible: true
+  - Instance: StartingLine
+    Administrator: true
+    IP_Visible: true
+  - Instance: FirstStop
+    Administrator: true
+    IP_Visible: true
+  - Instance: SecondStop
+    Administrator: true
+    IP_Visible: true
+  - Instance: ThirdStop
+    Administrator: true
+    IP_Visible: true
+  - Instance: FourthStop
+    Administrator: true
+    IP_Visible: true
+  - Instance: FifthStop
+    Administrator: true
+    IP_Visible: true
+  - Instance: SatansPalace
+    Administrator: true
+    IP_Visible: true
+  - Instance: AnonFTP
+    Administrator: true
+    IP_Visible: false
+- Name: Students
+  Access:
+  - Instance: NAT
+    Administrator: false
+    IP_Visible: true
+  - Instance: StartingLine
+    Administrator: false
+    IP_Visible: false
+  - Instance: FirstStop
+    Administrator: false
+    IP_Visible: false
+  - Instance: SecondStop
+    Administrator: false
+    IP_Visible: false
+  - Instance: ThirdStop
+    Administrator: false
+    IP_Visible: false
+  - Instance: FourthStop
+    Administrator: false
+    IP_Visible: false
+  - Instance: FifthStop
+    Administrator: false
+    IP_Visible: false
+  - Instance: SatansPalace
+    Administrator: false
+    IP_Visible: false
+  Users:
+  - Login: student
+    Password: f26679f
+  Variables:
+  - Name: third_stop_private_key
+    Type: openssl_pkey_rsa
+  - Name: fourth_stop_password
+    Type: random
+  - Name: fifth_stop_password
+    Type: random
+  - Name: satans_palace_password
+    Type: random
+  - Name: secret_starting_line
+    Type: random
+  - Name: secret_first_stop
+    Type: random
+  - Name: secret_second_stop
+    Type: random
+  - Name: secret_third_stop
+    Type: random
+  - Name: secret_fourth_stop
+    Type: random
+  - Name: secret_fifth_stop
+    Type: random
+  - Name: master_string
+    Type: random
+Clouds:
+- Name: Cloud1
+  CIDR_Block: 10.0.0.0/16
+  Subnets:
+  - Name: SubnetNAT
+    CIDR_Block: 10.0.129.0/24
+    Internet_Accessible: true
+    Instances:
+    - Name: NAT
+      OS: nat
+      IP_Address: 10.0.129.5
+      Internet_Accessible: true
+      Roles:
+      - NAT
+  - Name: PlayerSubnet
+    CIDR_Block: 10.0.0.0/27
+    Internet_Accessible: false
+    Instances:
+    - Name: StartingLine
+      OS: ubuntu
+      IP_Address: 10.0.0.5
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - StartingLine
+      - NetTools
+    - Name: FirstStop
+      OS: ubuntu
+      IP_Address: 10.0.0.7
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - FirstStop
+      - NetTools
+    - Name: SecondStop
+      OS: ubuntu
+      IP_Address: 10.0.0.10
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - SecondStop
+      - NetTools
+    - Name: ThirdStop
+      OS: ubuntu
+      IP_Address: 10.0.0.13
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - ThirdStop
+      - NetTools
+    - Name: FourthStop
+      OS: ubuntu
+      IP_Address: 10.0.0.16
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - FourthStop
+      - NetTools
+    - Name: FifthStop
+      OS: ubuntu
+      IP_Address: 10.0.0.17
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - FifthStop
+      - NetTools
+    - Name: SatansPalace
+      OS: ubuntu
+      IP_Address: 10.0.0.19
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - SatansPalace
+    - Name: AnonFTP
+      OS: ubuntu
+      IP_Address: 10.0.0.14
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles:
+      - AnonFTP
+Subnets: 
+Instances: 
+Roles:
+- Name: NAT
+  Packages: 
+  Recipes:
+  - nat
+- Name: VariablePasswords
+  Packages: 
+  Recipes:
+  - variable_passwords
+- Name: StartingLine
+  Packages: 
+  Recipes:
+  - starting_line
+- Name: FirstStop
+  Packages: 
+  Recipes:
+  - ssh_port_123
+  - first_stop
+- Name: SecondStop
+  Packages: 
+  Recipes:
+  - second_stop
+- Name: ThirdStop
+  Packages: 
+  Recipes:
+  - third_stop
+- Name: FourthStop
+  Packages: 
+  Recipes:
+  - fourth_stop
+- Name: FifthStop
+  Packages: 
+  Recipes:
+  - fifth_stop
+- Name: SatansPalace
+  Packages: 
+  Recipes:
+  - ssh_port_666
+  - satans_palace
+- Name: AnonFTP
+  Packages: 
+  Recipes:
+  - anon_ftp
+- Name: NetTools
+  Packages:
+  - nmap
+  Recipes: 
+Scoring:
+- Text: Contents of the file '~/flag' on Starting Line?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_starting_line
+    Points: '1'
+  Order: 1
+  Points: 1
+- Text: Contents of the file '~/flag' on First Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_first_stop
+    Points: '1'
+  Order: 2
+  Points: 1
+- Text: Contents of the file '~/flag' on Second Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_second_stop
+    Points: '1'
+  Order: 3
+  Points: 1
+- Text: Contents of the file '~/flag' on Third Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_third_stop
+    Points: '1'
+  Order: 4
+  Points: 1
+- Text: Contents of the file '~/flag' on Fourth Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_fourth_stop
+    Points: '1'
+  Order: 5
+  Points: 1
+- Text: Contents of the file '~/flag' on Fifth Stop?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:secret_fifth_stop
+    Points: '1'
+  Order: 6
+  Points: 1
+- Text: Proof that your are a SSH Inception Master?
+  Type: String
+  Options:
+  - variable-group-player
+  Values:
+  - Value: Students:master_string
+    Points: '1'
+  Order: 7
+  Points: 1
+

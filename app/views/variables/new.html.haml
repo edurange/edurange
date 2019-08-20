@@ -1,27 +1,26 @@
-= render layout: 'scenarios/show' do
-  %h3 New Variable
-  = form_for @variable, url: {action: 'create'}, html: {class: 'form'} do |f|
-    = f.hidden_field :group_id
-    = f.hidden_field :scenario_id
+%h3 New Variable
+= form_for @variable, url: {action: 'create'}, html: {class: 'form'} do |f|
+  = f.hidden_field :group_id
+  = f.hidden_field :scenario_id
+  %div.row
+    %div.form-group.col-md-3{class: ('has-error' if @variable.errors[:name].any?)}
+      = f.label 'Name', class: 'control-label'
+      = f.text_field :name, class: 'form-control'
+      - if @variable.errors[:name].any? then
+        %span.help-block
+          = @variable.errors[:name].join(', ') 
+  %div.row
+    %div.form-group.col-md-3
+      = f.label 'Type', class: 'control-label'
+      = f.select :type, @variable.class.types.keys.map{|t| [t.humanize, t]}, {}, class: 'form-control'
+  - if @variable.string? then
     %div.row
-      %div.form-group.col-md-3{class: ('has-error' if @variable.errors[:name].any?)}
-        = f.label 'Name', class: 'control-label'
-        = f.text_field :name, class: 'form-control'
-        - if @variable.errors[:name].any? then
+      %div.form-group.col-md-3{class: ('has-error' if @variable.errors[:value].any?)}
+        = f.label 'Value', class: 'control-label'
+        = f.text_field :value, class: 'form-control' 
+        - if @variable.errors[:value].any? then
           %span.help-block
-            = @variable.errors[:name].join(', ')
-    %div.row
-      %div.form-group.col-md-3
-        = f.label 'Type', class: 'control-label'
-        = f.select :type, @variable.class.types.keys.map{|t| [t.humanize, t]}, {}, class: 'form-control'
-    - if @variable.string? then
-      %div.row
-        %div.form-group.col-md-3{class: ('has-error' if @variable.errors[:value].any?)}
-          = f.label 'Value', class: 'control-label'
-          = f.text_field :value, class: 'form-control'
-          - if @variable.errors[:value].any? then
-            %span.help-block
-              = @variable.errors[:value].join(', ')
-    %div.row
-      %div.form-group.col-md-3
-        = f.submit "Add", class: 'form-control btn-primary'
+            = @variable.errors[:value].join(', ')
+  %div.row
+    %div.form-group.col-md-3
+      = f.submit "Add", class: 'form-control btn-primary'
