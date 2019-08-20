@@ -179,7 +179,6 @@ Roles:
   Packages: 
   Recipes:
   - nat
-  - instant
 - Name: VariablePasswords
   Packages: 
   Recipes:

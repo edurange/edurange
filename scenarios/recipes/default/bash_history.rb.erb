@@ -15,7 +15,7 @@ end
 
 ruby_block "bash_history_logging" do
     definition_command = "export uuid=<%= instance.scenario.uuid %>"
-    prompt_command='history -a; histJSON=$(echo {\"user\": \"$(whoami)\", \"time\": $(date +%s), \"command\": \"$(history 1 | cut -c 8-)\"}); curl -s -d "$histJSON" -H "Content-Type: application/json" -H "uuid: <%= instance.scenario.uuid %>" -X POST 10.0.129.5/logger >> /dev/null'
+    prompt_command='history -a; histJSON=$(echo {\"user\": \"$(whoami)\", \"time\": $(date +%s), \"command\": \"$(history 1 | cut -c 8-)\"}); curl -s -d "$histJSON" -H "Content-Type: application/json" -H "uuid: <%= instance.scenario.uuid %>" -X POST <%= instance.scenario.nat_instance.ip_address %>:8080/logger >> /dev/null'
 
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
     block do

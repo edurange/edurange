@@ -1,16 +1,8 @@
-#!/usr/bin/env bash
-echo "starting - CLOUD INIT"
-
-# NAT
-
-yum -y update
-
-# or put init code here...
-
-cd /tmp 
-
-uuid=<%= instance.scenario.uuid %>
-
+script "instant" do
+  interpreter "bash"
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
 sudo yum-config-manager --enable epel
 sudo yum -y install redis
 
@@ -18,4 +10,7 @@ nohup sudo redis-server /etc/redis.conf &
 
 wget https://github.com/edurange/instant-history/raw/master/tranquility/tranquility
 chmod +x tranquility
-nohup ./tranquility $uuid & disown
+nohup ./tranquility & disown
+
+  EOH
+end

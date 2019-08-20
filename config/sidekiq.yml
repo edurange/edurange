@@ -1,5 +1,5 @@
 ---
-:concurrency: 10
+:concurrency: 15
 :queues:
   - emails
   - scenario

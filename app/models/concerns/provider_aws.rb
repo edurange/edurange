@@ -731,12 +731,16 @@ module ProviderAws
 
   # disable security group outbound traffic
   def aws_security_group_disable_outbound(opts)
-    opts[:security_group].revoke_egress('0.0.0.0/0')
+    #new lines....
+    #opts[:security_group].revoke_egress('0.0.0.0/0')
   end
 
   # open up security group inbound traffic
   def aws_security_group_enable_inbound(opts)
     opts[:security_group].authorize_ingress(:tcp, 20..8080)
+    #new lines....
+    opts[:security_group].authorize_ingress(:tcp, 80, '0.0.0.0/0')
+    #opts[:security_group].authorize_ingress(:tcp, 80)
   end
 
   # open up security group outbound port 443

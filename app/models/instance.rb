@@ -193,6 +193,8 @@ class Instance < ActiveRecord::Base
   def generate_init
     begin
       # Returns the bash code to initialize an instance with chef-solo
+      #debugger this gets run twice for nat!!!
+
       init = ""
       os_bootstrap_path = "#{Rails.root}/scenarios/bootstrap/os_#{self.os.filename_safe}.sh.erb"
       if File.exists? os_bootstrap_path
