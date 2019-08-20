@@ -62,15 +62,20 @@
             %th Instructor
           %th Actions
       %tbody
-        - @scenarios.each do |scenario|
+        - if @scenarios.size > 0
+          - @scenarios.each do |scenario|
+            %tr
+              %td= scenario.name
+              %td= scenario.created_at
+              %td= scenario.status
+              - if current_user.is_admin?
+                - if scenario.user
+                  %td= scenario.user.name
+                - else
+                  %td.text-muted None
+              %td
+                = render('actions', scenario: scenario)
+        - else
           %tr
-            %td= scenario.name
-            %td= scenario.created_at
-            %td= scenario.status
-            - if current_user.is_admin?
-              - if scenario.user
-                %td= scenario.user.name
-              - else
-                %td.text-muted None
-            %td
-              = render('actions', scenario: scenario)
+            %td{colspan: (current_user.is_admin? ? 5 : 4)}
+              There are no scenarios

@@ -1,0 +1,10 @@
+%div.panel.panel-default
+  %div.panel-heading
+    %div.btn-group.pull-right
+      = link_to(edit_user_registration_path, class: 'btn btn-default') do
+        = render('icon', name: 'edit')
+        Edit
+    %h4.panel-title
+      Accout Information
+  %div.panel-body
+    = render 'partials/account_information_dl.html.haml'

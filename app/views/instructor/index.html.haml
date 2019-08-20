@@ -1,20 +1,16 @@
 = render 'instructor/modals/student_group_create'
 = render 'instructor/modals/student_group_user_add'
 
+= render 'partials/account_information_panel'
+
 %div.panel.panel-default
-  %div.panel-heading.nav.nav-pills
-    %li
-      %h3
-        Instructor Home
-
+  %div.panel-heading
+    %h4.panel-title
+      Users
   %div.panel-body
-    = render 'partials/account_information.html.haml'
-    %hr
-
     %label Registration Code:
     %dl
       = current_user.registration_code
-
     %hr
 
     %div.row
@@ -32,11 +28,14 @@
 
     %hr
 
-    %label Running Scenarios:
+%div.panel.panel-default
+  %div.panel-heading
+    %h4.panel-title
+      Scenarios you are playing
+  %div.panel-body
     - if @players.size == 0
       %dl
         none
-
     - @players.each do |player|
       %dl
         - if scenario = Scenario.find(player.group.scenario_id)
