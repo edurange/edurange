@@ -28,7 +28,6 @@ gem 'aws-sdk-ec2', '~> 1'
 gem 'erubis'
 gem 'unix-crypt'
 gem 'ipaddress'
-gem 'nokogiri'
 gem 'pg', '~> 0.18' #TODO, we need to upgrade our rails version we're using some very old versions of libraries.
 gem 'rails_12factor'
 gem 'netaddr', '~>1.5.1'
