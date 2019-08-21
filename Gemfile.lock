@@ -227,7 +227,7 @@ GEM
     nenv (0.3.0)
     netaddr (1.5.1)
     nio4r (2.4.0)
-    nokogiri (1.10.3)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -426,7 +426,6 @@ DEPENDENCIES
   jquery-turbolinks
   momentjs-rails
   netaddr (~> 1.5.1)
-  nokogiri
   pagy
   pg (~> 0.18)
   pry-byebug
