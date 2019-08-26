@@ -14,6 +14,7 @@ message=$(cat << "EOF"
 ########  ########## ########   ########  ###    #### #########          ########     ###     ########  ###             
 
 ****************************************************************************************************
+
 "Remember, you are the dreamer, you build this world."
 
 SSH a level deeper if you dare. This time no password is provided. 

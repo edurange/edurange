@@ -1,5 +1,5 @@
 ---
-Name: SSH_Test
+Name: SSH_Inception
 Description: Ssh Inception teaches students the basics of ssh, a secure a program
   for logging into a remote machine.
 Instructions: Instruct students to connect to the first machine, and further login

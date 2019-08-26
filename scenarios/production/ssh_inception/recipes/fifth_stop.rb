@@ -12,10 +12,13 @@ message=$(cat << "EOF"
                                                                                                                    
 
 ****************************************************************************************************
+
 "The ecstasy that blooms in synapses is Paprika-brand milk fat! 5% is the norm.
 The safety net of the ocean is nonlinear, even with what crabs dream of! Lets go!"
 
 Decode the file 'betcha_cant_read_me' to find your way to the ultimate challenge... SATAN'S PALACE
+
+Helpful commands: apropos, nmap, ssh, man
 
 ****************************************************************************************************
 
@@ -34,7 +37,7 @@ while read player; do
   echo -e "${password}\\n${password}" | passwd $player
 
   password=$(edurange-get-var user $player satans_palace_password)
-  echo "You found me. Good job. The next challenge will not be so easy. You will find Satans Palace on the host with a certain open port. The most evil open port. SSH to that port with the password '${password}'. The final treasure awaits..." | base64 > betcha_cant_read_me
+  echo "You found me. Good job. The next challenge will not be so easy. You will find Satans Palace on the host with a certain open port. The most evil open port. SSH to that port with the password '${password}'. The final treasure awaits... maybe you can steal it, without ever going in..." | base64 > betcha_cant_read_me
 
   chown $player:$player betcha_cant_read_me
   chmod 400 betcha_cant_read_me

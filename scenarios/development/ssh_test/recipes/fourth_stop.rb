@@ -21,13 +21,16 @@ message=$(cat << "EOF"
 
 ****************************************************************************************************
 
-There is loose ftp server on the network. Find some useful credentials there to to help
-decrypt your next password. Read the ftp man page!
+There is loose ftp server on the network. Find some useful credentials there to run decryptpass to
+get your next password.
 
 (The file on the ftp server will give you credentials to use when running decryptpass. The files
-in this directory will not help you get to the ftp server.)
+in this directory will not help you get to the ftp server.) Read the nmap man page!
 
-Helpful commands: nmap, ftp - ls, man
+Helpful commands: nmap, ftp, help, man
+
+Helpful hint: ftp is very friendly. When connected to an ftp server, or simply to its command 
+interpreter, ask for help and ftp will help you understand what you can do. 
 
 ****************************************************************************************************
 
