@@ -1,0 +1,29 @@
+defaults: &defaults
+  region: <%= ENV['AWS_REGION'] %>
+
+  us-east-1:
+    vpc_limit: 10
+    instance_limit: 60
+    ami_nat: ami-fc85c096
+    ami_ubuntu: ami-f485c09e
+
+  us-west-1:
+    vpc_limit: 5
+    instance_limit: 20
+    ami_nat: ami-e4a7cf84
+    ami_ubuntu: ami-02a5cd62
+
+  us-west-2:
+    vpc_limit: 5
+    instance_limit: 20
+    ami_nat: ami-0f9d863f
+    ami_ubuntu: ami-d8aa47eb
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
