@@ -11,6 +11,7 @@ message=$(cat << "EOF"
 `\\____) (_)  (_) (_)(_) (_) (_)  (_)(_) (_)(____/'   (____/'(_)(_) (_)(____/'
 
 ****************************************************************************************************
+
 "It's a week the first level down. Six months the second level down, and... the third level..."
 
 Go a level deeper. You will find the next host at 10.0.0.7. The trick is that the ssh port has been 

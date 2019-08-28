@@ -1,5 +1,5 @@
 ---
-Name: SSH_Test
+Name: SSH_test
 Description: Ssh Inception teaches students the basics of ssh, a secure a program
   for logging into a remote machine.
 Instructions: Instruct students to connect to the first machine, and further login
@@ -221,6 +221,7 @@ Roles:
   Packages:
   - nmap
   Recipes: 
+  - commands
 Scoring:
 - Text: Contents of the file '~/flag' on Starting Line?
   Type: String

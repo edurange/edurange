@@ -507,7 +507,6 @@ class ScenariosController < ApplicationController
   end
 
   def group_instructions_get
-    @instructions = @group.instructions.gsub("\n", "<br>").gsub(" ", "&nbsp").gsub("'", "\"").gsub(/\r/, "").html_safe;
     respond_to do |format|
       format.js { render template: 'scenarios/js/group/instructions_get.js.erb', layout: false }
     end

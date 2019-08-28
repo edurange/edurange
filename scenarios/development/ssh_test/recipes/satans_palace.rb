@@ -49,9 +49,10 @@ while read player; do
   echo -e "${password}\\n${password}" | passwd $player
 
   str=$(edurange-get-var user $player master_string)
-  msg="CONGRATS YOU ARE THE SSH INCEPTION MASTER. Here is your proof: ${str}" 
+  msg="CONGRATS!!! You have outwitted Satans Palace, and are thus crowned a SSH INCEPTION MASTER.
+  If anyone should be as silly as to ask for proof, tell them: ${str}" 
 
-  echo "${msg}" | tr '[A-Za-z]' '[X-ZA-Wx-za-w]' > final_flag
+  echo "${msg}" | base64 > final_flag
 
   chown $player:$player *
   chmod 400 *

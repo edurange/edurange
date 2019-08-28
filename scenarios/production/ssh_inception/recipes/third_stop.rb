@@ -19,6 +19,7 @@ message=$(cat << "EOF"
                                                                                                                           
 
 ****************************************************************************************************
+
 "Do not try and bend the spoon. That's impossible. Instead... only try to realize the truth."
 
 Someone incepted the password for the next stop in one of these directories.
@@ -27,7 +28,7 @@ It sure would take a long time to look through all of them. There has to be a be
 Even once you have the credentials (which are correct), you might have trouble logging into the 
 Forth Stop. Perhaps they are blocking your IP?
 
-Helpful commands: grep, find, cat, man, nmap
+Helpful commands: grep, cat, nmap, man
 
 ****************************************************************************************************
 

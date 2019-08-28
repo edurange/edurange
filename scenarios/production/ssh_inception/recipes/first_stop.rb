@@ -11,12 +11,13 @@ message=$(cat << "EOF"
 ██║     ██║██║  ██║███████║   ██║       ███████║   ██║   ╚██████╔╝██║     
 ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝       ╚══════╝   ╚═╝    ╚═════╝ ╚═╝     
 **************************************************************************************************
+
 "I'll tell you a riddle. You're waiting for a train, a train that will take you far away. 
 You know where you hope this train will take you, but you don't know for sure."
 
 You found it. Well done. The next dream machine lies just a few addresses higher on your subnet.
 
-Helpful commands: ifconfig, nmap, ssh, man, ping
+Helpful commands: ifconfig, nmap, ssh, man
 
 **************************************************************************************************
 
