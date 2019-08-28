@@ -14,7 +14,7 @@ message=$(cat << "EOF"
 
 You found it. Well done. The next dream machine lies just a few addresses higher on your subnet.
 
-Helpful commands: ifconfig, nmap, ssh, man, ping
+Helpful commands: ifconfig, nmap, ssh, man
 
 **************************************************************************************************
 
