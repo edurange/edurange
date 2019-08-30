@@ -265,6 +265,7 @@ class ScenariosController < ApplicationController
 
   def boot
     BootJob.perform_later(@scenario, background: true)
+    CheckIfScenarioStillRunningJob.set(wait: 60.seconds).perform_later(@scenario)
     respond_to do |format|
       format.js { render 'scenarios/js/boot/boot_scenario.js.erb', :layout => false }
     end
