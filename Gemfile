@@ -8,7 +8,7 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0',          group: :doc
-gem 'bootstrap-sass', '~> 3.4.1'
+gem 'bootstrap', '~> 4.3.1'
 gem 'devise', '~> 4.6'
 gem 'figaro', git: 'https://github.com/laserlemon/figaro'
 gem 'haml-rails'
@@ -16,7 +16,8 @@ gem 'simple_form'
 gem 'underscore-rails'
 gem 'thin'
 gem 'jquery-turbolinks'
-gem 'therubyracer'
+gem 'mini_racer'
+gem 'sprockets-rails', :require => 'sprockets/railtie' 
 # Both versions of the aws-sdk can be used simultaneously.
 # We should migrate to the latest version.
 # Version 1 of aws-sdk
