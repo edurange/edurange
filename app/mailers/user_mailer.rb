@@ -17,7 +17,8 @@ class UserMailer < ApplicationMailer
         mail(to: email, subject: 'EDURange test')
     end
 
-    def scenario_time_warning(email)
-	 mail(to: email, subject: 'WARNING: EduRange Scenario Running')
+    def scenario_time_warning(scenario)
+	    @scenario = scenario
+	    mail(to: @scenario.user.email, subject: 'WARNING: EduRange Scenario Running')
     end
 end
