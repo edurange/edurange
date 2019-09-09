@@ -258,6 +258,7 @@ class Instance < ActiveRecord::Base
       # This recipe changes /etc/bash.bashrc so that the bash history is written to file with every command
       cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/bash_history.rb.erb")).result(instance: self) + "\n"
 
+      cookbook += Erubis::Eruby.new(File.read("#{Rails.root}/scenarios/recipes/default/csv_install.rb.erb")).result(instance: self) + "\n"
       # do iptables rules
       routing_rules = Erubis::Eruby.new(File.read(Rails.root + "scenarios/bootstrap/ip_tables.sh.erb")).result(instance: self) + "\n"
       s3_routing_rules = ''
