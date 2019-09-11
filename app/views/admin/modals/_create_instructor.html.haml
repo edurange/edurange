@@ -1,9 +1,7 @@
-%div.modal#modal-create-instructor{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+#modal-create-instructor.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
   %div.modal-dialog
     %div.modal-content
       %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
         %h3.modal-title.inline#title= "Create Instructor"
       %div.modal-body#modalbody
         = form_tag admin_instructor_create_path, remote:true, method: :post do 
@@ -22,8 +20,8 @@
             = text_field_tag :organization, nil, class: 'form-control'
             %span.help-block.inline#organization-help
           %p
-          = submit_tag 'Create', :class => 'btn btn-default'
-
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          close
+            %div.modal-footer
+              = form_tag admin_instructor_create_path, remote:true, method: :post do
+                = submit_tag 'Create', :class => 'btn btn-primary'
+              %button.btn.btn-warning{"data-dismiss" => "modal",}
+                Cancel

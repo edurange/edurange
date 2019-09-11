@@ -1,20 +1,17 @@
-%div.modal#modal-student-group-create{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "mymodallabel", "aria-hidden" => "true"}
+#modal-student-group-create.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "mymodallabel", "aria-hidden" => "true"}
   %div.modal-dialog
     %div.modal-content
       %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
         %h3.modal-title.inline#title
-          create student group
+          Create Student Group
       %div.modal-body#modalbody
         = form_tag admin_student_group_create_path(@scenario), remote: true, method: :post do 
           %div#name-div
-            = label_tag nil, "name:"
+            = label_tag nil, "Name:"
             = text_field_tag "name", nil, class: 'form-control'
-            %span.help-block.inline#name-help
-          %br
-          = submit_tag "submit", :class => 'btn btn-default'
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          close
+            %span.form-text.inline#name-help
+            %br  
+            = submit_tag "Submit", :class => 'btn btn-primary'
+            %button.btn.btn-warning{"data-dismiss" => "modal",}
+              Cancel
 

@@ -1,10 +1,11 @@
-%div.panel.panel-default
-  %div.panel-heading
-    %div.btn-group.pull-right
+%div.card.card-default
+  %div.card-header
+    %button.btn.btn-primary.float-right
       = link_to(edit_user_registration_path, class: 'btn btn-default') do
         = render('icon', name: 'edit')
         Edit
-    %h4.panel-title
+    %h4.card-title
       Accout Information
-  %div.panel-body
+  %div.card-body
     = render 'partials/account_information_dl.html.haml'
+  
