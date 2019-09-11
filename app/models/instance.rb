@@ -316,7 +316,8 @@ class Instance < ActiveRecord::Base
           player: self.players.find_by(login: row[2]),
           exit_status: row[0].to_i,
           performed_at: Time.iso8601(row[1]),
-          command: row[4]
+          command: row[4],   
+	  stdout: row[5]
         )
       rescue ActiveRecord::RecordInvalid
         logger.warn("could not save bash history record: #{$!}")

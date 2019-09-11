@@ -7,6 +7,7 @@ script "csv_install" do
 
 #this is all the necessary installs for csv
 
+
 cd /usr/local/src
 sudo mkdir /usr/local/src/logs
 #necessary files
@@ -64,9 +65,7 @@ else
 			echo "	perl /usr/local/src/logsnoopy.pl &" >> /etc/bash.bashrc
 			echo "fi" >> /etc/bash.bashrc
 
-			#sudo chmod 777 -R /var/log/ttylog
 			sudo chmod 755 -R /usr/local/src
 			sudo chmod 777 -R /usr/local/src/logs
-			#sudo chmod 744 /var/log/auth.log
 	EOH
 end

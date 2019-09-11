@@ -95,3 +95,16 @@ script "write_vars" do
 <% end %>
   EOH
 end
+
+script "stdout_placeholder" do
+  interpreter "bash"
+  user "root"
+  code <<-EOH
+  for FILE in /home/*; do
+    if [[ -d $FILE ]]; then
+      touch $FILE/.cli.csv
+      chmod 666 $FILE/.cli.csv
+    fi
+  done  
+  EOH
+end

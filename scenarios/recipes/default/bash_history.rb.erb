@@ -14,7 +14,7 @@ cron 'schedule_upload_bash_history' do
 end
 
 ruby_block "bash_history_logging" do
-    prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-)" >> ~/.bash_history.log'
+	prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-)\t$(tail ~/.cli.csv | tr -d "\n" | tr -d "\r")" >> ~/.bash_history.log'
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
     block do
       if File.exist?('/etc/bash.bashrc')

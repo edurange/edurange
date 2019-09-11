@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_08_200753) do
+ActiveRecord::Schema.define(version: 2019_09_10_181016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2019_07_08_200753) do
     t.datetime "performed_at", null: false
     t.string "command", null: false
     t.integer "exit_status"
+    t.string "stdout"
   end
 
   create_table "clouds", id: :serial, force: :cascade do |t|
