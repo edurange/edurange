@@ -1,23 +1,20 @@
-%div.modal#modal-scenario-destroy{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+#modal-scenario-destroy.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
   %div.modal-dialog
     %div.modal-content
       %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
         %h3.modal-title.inline#title
           Changes have been made to the Scenario
       %div.modal-body.inline#modalbody
 
       %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
+        = submit_tag "Destroy", :class => 'btn btn-danger'
+        %button.btn.btn-primary{"data-dismiss" => "modal"}
           Cancel
 
-%div.modal#modal-scenario-custom-new{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+#modal-scenario-custom-new.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
   %div.modal-dialog
     %div.modal-content
       %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
         %h3.modal-title.inline#title
           Create Custom Scenario
       %div.modal-body#modalbody
@@ -29,27 +26,26 @@
           %p
           %div#help-div
             %span.help-block#help-help
+            = submit_tag "Submit", :class => 'btn btn-primary'
 
-          = submit_tag "Submit", :class => 'btn btn-default'
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          Close
+            %button.btn.btn-primary{"data-dismiss" => "modal"}
+              Close
 
-%div.panel.panel-default
-  %div.panel-heading
-    %h3.panel-title
-      Scenarios
-    %div.pull-right
-      = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
-      = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-default'
+%div.card
+  %h3.card-header.text-center
+    Scenarios
+  %br
+  %div.text-center
+    = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-primary'
+    = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-primary'
 
-  %div.panel-body
+  %div.card-body
     = form_tag '', method: :get, class: 'form-inline filter-controls' do
       %div.form-group
         = label_tag 'archived' , 'Archived', class: 'control-label'
         = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
       %div.pull-right
-        = button_tag(class: 'btn btn-primary') do
+        = button_tag(class: 'btn btn-primary')  do
           = render('icon', name: 'filter')
           Filter
     %table.table

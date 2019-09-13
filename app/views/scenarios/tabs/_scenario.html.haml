@@ -21,11 +21,11 @@
   %dd
     = @scenario.instructions || 'N/A'
     - if @scenario.modifiable?
-      = link_to '[edit]', instructions_get_scenario_path(@scenario), method: :post, remote: true
+      = link_to '[Edit]', instructions_get_scenario_path(@scenario), method: :post, remote: true, class: "btn btn-primary"
 
   %dt Student Instructions
   %dd#instructor-instructions-student
     = @scenario.instructions_student
     - if @scenario.modifiable?
-      = link_to '[edit]', instructions_student_get_scenario_path(@scenario), method: :post, remote: true
+      = link_to '[Edit]', instructions_student_get_scenario_path(@scenario), method: :post, remote: true, class: "btn btn-primary"
 
