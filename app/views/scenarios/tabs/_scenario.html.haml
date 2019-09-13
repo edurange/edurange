@@ -4,10 +4,7 @@
 
   %dt Status
   %dd
-    %span#scenario-status= @scenario.status
-    %div{ id: "scenario-status-dot", class: "inline-block #{@scenario.status} #{(@scenario.booting? or @scenario.unbooting?) ? 'hidden' : ''}" }
-      &#9679;
-    %div{ id: "scenario-spinner", class: "inline-block #{(@scenario.booting? or @scenario.unbooting?) ? 'spin' : ''}" }
+    = render('scenario_status', scenario: @scenario)
   %dt Actions
   %dd= render('actions', scenario: @scenario)
 
@@ -18,14 +15,7 @@
   %dd= @scenario.created_at
 
   %dt Instructor Instructions
-  %dd
-    = @scenario.instructions || 'N/A'
-    - if @scenario.modifiable?
-      = link_to '[edit]', instructions_get_scenario_path(@scenario), method: :post, remote: true
+  %dd= @scenario.instructions || 'N/A'
 
   %dt Student Instructions
-  %dd#instructor-instructions-student
-    = @scenario.instructions_student
-    - if @scenario.modifiable?
-      = link_to '[edit]', instructions_student_get_scenario_path(@scenario), method: :post, remote: true
-
+  %dd= @scenario.instructions_student

@@ -1,53 +1,29 @@
-%label Instructor:
-= @scenario.user.name
-- if @scenario.user.organization
-  %br
-  %label Organization:
-  = @scenario.user.organization
-- if @scenario.instructions_student
-  %br
-  %label Scenario Instructions:
-  = @scenario.instructions_student
-%br
-%label Groups:
-%ul
-  - @scenario.students_groups(current_user).each do |group|
-    %li
-      %label= group.name
-      - if group.instructions
-        %br
-        %label Instructions:
-        = group.instructions
-      %br
-      %label Credentials:
-      %ul
-        - if player = group.find_player_by_student_id(current_user.id)
-          login:
-          = player.login
-          %br
-          password:
-          = player.password
 
-      %label Instances:
-      %ul
-        - group.instance_groups.each do |instance_group|
-          %li
-            %label Name:
-            = instance_group.instance.name
-            - if instance_group.instance.internet_accessible
-              %br
-              %label Public IP Address:
-              - if instance_group.instance.ip_address_public
-                = instance_group.instance.ip_address_public
-              - else
-                %em.text-muted not set
-            %br
-            %label IP Address:
-            - if instance_group.ip_visible
-              = instance_group.instance.ip_address
-            - else
-              %em.text-muted hidden
-          %br
+%dl.dl-horizontal
+  %dt Instructor
+  %dd= @scenario.user.name
+  - if @scenario.user.organization
+    %dt Organization
+    %dd= @scenario.user.organization
+  %dt Instructions
+  %dd= @player.group.instructions || @scenario.instructions_student
+  %dt Login
+  %dd= @player.login
+  %dt Password
+  %dd= @player.password
+
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Public IP Address
+  %tbody
+    - @player.group.instance_groups.each do |instance_group|
+      %tr
+        %td= instance_group.instance.name
+        %td
+          - if instance_group.instance.ip_address_public
+            = instance_group.instance.ip_address_public
 
 %label Questions:
 %p
@@ -113,5 +89,3 @@
               %span.help-block#help-span
             %br
             = submit_tag "Submit", :class => 'btn btn-default'
-
-= link_to 'Back', '/student', class: 'btn btn-default'

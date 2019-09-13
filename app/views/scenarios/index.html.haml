@@ -12,36 +12,12 @@
         %button.btn.btn-default{"data-dismiss" => "modal"}
           Cancel
 
-%div.modal#modal-scenario-custom-new{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
-  %div.modal-dialog
-    %div.modal-content
-      %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
-        %h3.modal-title.inline#title
-          Create Custom Scenario
-      %div.modal-body#modalbody
-        = form_tag scenarios_create_custom_path, remote:true, method: :post do
-          %div#name-div
-            = label_tag "Name:", nil, class: 'control-label'
-            = text_field_tag "name", nil, class: 'form-control'
-            %span.help-block#name-help
-          %p
-          %div#help-div
-            %span.help-block#help-help
-
-          = submit_tag "Submit", :class => 'btn btn-default'
-      %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
-          Close
-
 %div.panel.panel-default
   %div.panel-heading
     %h3.panel-title
       Scenarios
     %div.pull-right
       = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
-      = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-default'
 
   %div.panel-body
     = form_tag '', method: :get, class: 'form-inline filter-controls' do
@@ -67,7 +43,7 @@
             %tr
               %td= scenario.name
               %td= scenario.created_at
-              %td= scenario.status
+              %td= render('scenario_status', scenario: scenario)
               - if current_user.is_admin?
                 - if scenario.user
                   %td= scenario.user.name

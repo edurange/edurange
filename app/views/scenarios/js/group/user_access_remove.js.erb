@@ -1,4 +1,0 @@
-$('#instance-group-<%= @instance_group.id %>').remove();
-$('#save-button-li').removeClass('disabled');
-$('#save-button').attr('href', '/scenarios/<%= @instance_group.group.scenario.id %>/save');
-update_flash("Removed user access on instance '<%= @instance_group.instance.name%>' from group '<%= @instance_group.group.name %>'.");

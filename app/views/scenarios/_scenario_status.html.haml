@@ -1,0 +1,4 @@
+%span#scenario-status= scenario.status
+%div{ id: "scenario-status-dot", class: "inline-block #{scenario.status} #{(scenario.starting? or scenario.stopping?) ? 'hidden' : ''}" }
+  &#9679;
+%div{ id: "scenario-spinner", class: "inline-block #{(scenario.starting? or scenario.stopping?) ? 'spin' : ''}" }
