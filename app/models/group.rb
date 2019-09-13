@@ -8,10 +8,8 @@ class Group < ActiveRecord::Base
   has_many :variable_templates
 
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
-  validate :instances_stopped
 
   after_save :update_scenario_modified
-  before_destroy :instances_stopped
   after_destroy :update_scenario_modified
 
   def update_scenario_modified
@@ -25,27 +23,6 @@ class Group < ActiveRecord::Base
     instances = self.instance_groups.select {|instance_group| instance_group.administrator }.map {|instance_group| instance_group.instance}
   end
 
-  # return true if the instances which this group has access to have stopped
-  def instances_stopped
-    self.instance_groups.each do |instance_group|
-      if not instance_group.instance.stopped?
-        errors.add(:running, "instances with access must be stopped before modificaton of group")
-        return false
-      end
-    end
-    true
-  end
-
-  def instances_stopped?
-    self.instance_groups.each do |instance_group|
-      if not instance_group.instance.stopped?
-        errors.add(:running, 'instances with access must be stopped to modify group')
-        return false
-      end
-    end
-    true
-  end
-
   # return instances which the group has user level access to
   def user_access_to
     instances = self.instance_groups.select {|instance_group| !instance_group.administrator }.map {|instance_group| instance_group.instance}
@@ -53,13 +30,8 @@ class Group < ActiveRecord::Base
 
   # add a group of students to the group and return list of added players
   def student_group_add(student_group_name)
-    if not self.instances_stopped?
-      return []
-    end
-
     players = []
-    user = User.find(self.scenario.user.id)
-    if not student_group = user.student_groups.find_by_name(student_group_name)
+    if not student_group = self.scenario.user.student_groups.find_by_name(student_group_name)
       errors.add(:name, "student group not found")
       return
     end
@@ -109,24 +81,10 @@ class Group < ActiveRecord::Base
     players
   end
 
-  # return player object for player with matching student id
-  def find_player_by_student_id(student_id)
-    self.players.find_by(user_id: student_id)
-  end
-
   # update scenario instructions
   def update_instructions(instructions)
     self.update_attribute(:instructions, instructions)
     self.update_scenario_modified
-  end
-
-  # add an instance to the list of instances that the group has administrative access to
-  def admin_access_add(instance)
-    instance_group = self.instance_groups.new(instance_id: instance.id, administrator: true)
-    if not instance_group.save
-      errors.add(:instance_group, "could not create instance group: #{instance_group.errors.messages}")
-    end
-    return instance_group
   end
 
   # add an instance to the list of instances that the group has user level access to

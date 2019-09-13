@@ -14,14 +14,15 @@ class VariableTemplate < ActiveRecord::Base
   enum type: {
     random: 'random',
     openssl_pkey_rsa: 'openssl_pkey_rsa',
-    string: 'string'
+    string: 'string',
+    password: 'password'
   }
 
   after_create :instantiate_for
 
   def generate_value
     case
-      when random?
+      when random? || password?
         SecureRandom.hex(4)
       when openssl_pkey_rsa?
         OpenSSL::PKey::RSA.new(2048).to_pem

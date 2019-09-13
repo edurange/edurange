@@ -28,7 +28,7 @@ gem 'aws-sdk-ec2', '~> 1'
 gem 'erubis'
 gem 'unix-crypt'
 gem 'ipaddress'
-gem 'pg', '~> 0.18' #TODO, we need to upgrade our rails version we're using some very old versions of libraries.
+gem 'pg'
 gem 'rails_12factor'
 gem 'netaddr', '~>1.5.1'
 gem 'groupdate'
@@ -37,13 +37,11 @@ gem 'rubyzip'
 gem 'dotenv-rails', :groups => [:development, :test]
 gem 'fullcalendar-rails'
 gem 'momentjs-rails'
-gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
 gem 'pagy'
 gem 'redcarpet'
 
 group :development do
-  gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_20]
   gem 'guard-bundler'
   gem 'guard-rails'

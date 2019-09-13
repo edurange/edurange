@@ -26,18 +26,17 @@ class ScenarioLoader
   def create_scenario!
     begin
       load_metadata
-      build_roles
-      build_clouds
+      build_instances(@scenario, yaml['Instances'])
       build_groups
       build_variables(@scenario, yaml['Variables'])
       @scenario.reload
       build_questions
-    rescue => e
-      binding.pry if Rails.env.development?
-      @scenario.errors.add(:load, "Exception caught during loading: #{e}. "\
-                                  "See log for details.")
-      Rails.logger.error(e.message)
-      Rails.logger.error(e.backtrace.join("\n"))
+#    rescue => e
+#      binding.pry if Rails.env.development?
+#      @scenario.errors.add(:load, "Exception caught during loading: #{e}. "\
+#                                  "See log for details.")
+#      Rails.logger.error(e.message)
+#      Rails.logger.error(e.backtrace.join("\n"))
     end
 
     @scenario.reload
@@ -56,70 +55,6 @@ class ScenarioLoader
       instructions_student: yaml["InstructionsStudent"],
       uuid: SecureRandom.uuid
     )
-  end
-
-  # Roles
-  def build_roles
-    return if yaml["Roles"].nil?
-    raise InvalidYAMLError unless yaml["Clouds"].respond_to? :each
-
-    yaml["Roles"].each do |hash|
-      raise InvalidYAMLError unless hash.respond_to? :[]
-      @scenario.roles.create!(name: hash["Name"],
-                              packages: hash["Packages"],
-                              recipes: recipes_from_names(hash["Recipes"]))
-    end
-  end
-
-  def recipes_from_names(names)
-    return [] if names.nil?
-    raise InvalidYAMLError unless names.respond_to? :map
-    names.map { |n| @scenario.recipes.find_or_create_by(name: n) }
-  end
-
-  # Clouds
-  def build_clouds
-    return if yaml["Clouds"].nil?
-    raise InvalidYAMLError unless yaml["Clouds"].respond_to? :each
-
-    yaml["Clouds"].each do |hash|
-      raise InvalidYAMLError unless hash.respond_to? :[]
-      cloud = @scenario.clouds.create!(name: hash["Name"], cidr_block: hash["CIDR_Block"])
-      build_subnets(cloud, hash["Subnets"])
-    end
-  end
-
-  # Subnets
-  def build_subnets(cloud, subnet_hashes)
-    return if subnet_hashes.nil? || cloud.invalid?
-    raise InvalidYAMLError unless subnet_hashes.respond_to? :each
-
-    subnet_hashes.each do |hash|
-      raise InvalidYAMLError unless hash.respond_to? :[]
-      subnet = cloud.subnets.create!(name: hash["Name"],
-                                     cidr_block: hash["CIDR_Block"],
-                                     internet_accessible: hash["Internet_Accessible"])
-      build_instances(subnet, hash["Instances"])
-    end
-  end
-
-  # Instances
-  def build_instances(subnet, instance_hashes)
-    return if instance_hashes.nil? || subnet.invalid?
-    raise InvalidYAMLError unless instance_hashes.respond_to? :each
-
-    instance_hashes.each do |hash|
-      raise InvalidYAMLError unless hash.respond_to? :[]
-      subnet.instances.create!(
-        name: hash["Name"],
-        ip_address: hash["IP_Address"],
-        ip_address_dynamic: hash["IP_Address_Dynamic"],
-        internet_accessible: hash["Internet_Accessible"],
-        os: hash["OS"],
-        uuid: SecureRandom.uuid,
-        roles: roles_from_names(hash["Roles"])
-      )
-    end
   end
 
   def roles_from_names(names)
@@ -157,7 +92,6 @@ class ScenarioLoader
     end
   end
 
-  # Players
   def build_players(group, player_hashes)
     return if player_hashes.nil?
     raise InvalidYAMLError unless player_hashes.respond_to? :each
@@ -168,8 +102,8 @@ class ScenarioLoader
         if user = User.find(hash["UserId"])
           group.players.create!(
             login: hash["Login"],
-            password: hash["Password"], 
-            student_group_id: hash["StudentGroupId"], 
+            password: hash["Password"],
+            student_group_id: hash["StudentGroupId"],
             user: user
           )
         end
@@ -179,7 +113,6 @@ class ScenarioLoader
     end
   end
 
-  # InstaceGroups
   def build_instance_groups(group, access)
     return if access.nil?
     raise InvalidYAMLError unless access.respond_to? :each
@@ -194,7 +127,6 @@ class ScenarioLoader
     end
   end
 
-  # Scoring
   def build_questions
     return if yaml["Scoring"].nil?
     raise InvalidYAMLError unless yaml["Scoring"].respond_to? :each
@@ -215,5 +147,15 @@ class ScenarioLoader
   def format_values(values)
     return nil unless values.respond_to? :each
     values.map { |value| { value: value["Value"], points: value["Points"] } }
+  end
+
+  def build_instances(scenario, instance_hashes)
+    return if instance_hashes.nil? || scenario.invalid?
+    raise InvalidYAMLError unless instance_hashes.respond_to? :each
+    instance_hashes.each do |instance_hash|
+      scenario.instances.create!(
+        name: instance_hash["Name"]
+      )
+    end
   end
 end

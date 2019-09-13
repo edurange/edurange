@@ -27,8 +27,6 @@
        image-url("bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg")
 }
 
-//th,td { padding: 6px; }
-
 .correct {
   color: green;
 }
@@ -45,11 +43,6 @@
   display: inline;
 }
 
-.center {
-  width: 50%;
-  margin: 0 auto;
-}
-
 header {
   margin-left: auto;
   margin-right: auto;
@@ -61,11 +54,6 @@ main {
   margin-left: auto;
   margin-right: auto;
   width: 90%;
-}
-
-.foo {
-  width:100px;
-  height:13px;
 }
 
 .spin {

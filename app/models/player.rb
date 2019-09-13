@@ -10,7 +10,6 @@ class Player < ActiveRecord::Base
 
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true
-  validate :instances_stopped
 
   after_destroy :update_scenario_modified
   after_create :create_variables
@@ -37,14 +36,6 @@ class Player < ActiveRecord::Base
     self.group.variable_templates.each do |template|
       self.variables << template.instantiate
     end
-  end
-
-  def instances_stopped
-    if group.instances.select{ |i| not i.stopped? }.size > 0
-      errors.add(:running, 'instances with access must be stopped to add a player')
-      return false
-    end
-    true
   end
 
   def password_hash

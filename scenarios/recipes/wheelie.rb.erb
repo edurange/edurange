@@ -1,8 +1,0 @@
-ruby_block "Uncomment wheel in sudoers" do
-  block do
-    fe = Chef::Util::FileEdit.new("/etc/sudoers")
-    fe.insert_line_if_no_match(/%wheel\s+ALL=\(ALL\)\s+ALL/,
-                               "%wheel ALL=(ALL) ALL")
-    fe.write_file
-  end
-end

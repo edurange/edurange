@@ -1,9 +1,0 @@
-<% if @scenario.errors.any? %>
-	<% if @scenario.errors[:running].any? %>
-  	alert('<%= @scenario.errors[:running][0] %>')
-  <% end %>
-<% elsif @scenario.modified? %>
-	$('#modal-scenario-destroy').modal('show');
-	$('#modal-scenario-destroy').find('#modalbody').empty();
-	$('#modal-scenario-destroy').find('#modalbody').append("&nbsp;&nbsp;<form class='inline' method='post' data-remote='true' accept-charset='UTF-8' action='/scenarios/<%= @scenario.id %>/destroyme?save=true'><input type='hidden' value='✓' name='utf8'></input><input class='btn btn-default' type='submit' value='Save & Destroy' name='commit'></input></form>&nbsp;&nbsp;<form class='inline' method='post' data-remote='true' accept-charset='UTF-8' action='/scenarios/<%= @scenario.id %>/destroyme?save=false'><input type='hidden' value='✓' name='utf8'></input><input class='btn btn-default' type='submit' value='Destroy without Saving' name='commit'></input></form>");
-<% end %>

@@ -1,3 +1,10 @@
 [submodule "documentation"]
 	path = documentation
 	url = https://github.com/edurange/edurange-documentation
+[submodule "scenarios/production/ssh_inception"]
+	path = scenarios/production/ssh_inception
+	url = git@github.com:edurange/terraform_ssh_inception.git
+[submodule "scenarios/production/getting_started"]
+	path = scenarios/production/getting_started
+	url = git@github.com:edurange/scenario-getting-started.git
+	branch = terraformize

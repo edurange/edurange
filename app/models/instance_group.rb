@@ -19,21 +19,6 @@ class InstanceGroup < ActiveRecord::Base
   end
 
   def validate
-    if not self.instance.stopped?
-      errors.add(:name, "instance must be stopped first")
-      return false
-    end
-
-    if self.instance.os == "nat" and self.administrator == true
-      errors.add(:access, "can not have admin access on NAT instances")
-      return false
-    end
-
-    if ig = InstanceGroup.where("group_id = ? AND instance_id = ?", self.group_id, self.instance_id).first
-      errors.add(:name, "already has #{ig.administrator == true ? 'admin' : 'user'} accesss")
-      return false
-    end
-
     if InstanceGroup.where("group_id = ? AND instance_id = ? AND administrator = ?", self.group_id, self.instance_id, self.administrator).size > 0
       errors.add(:name, "Already exists")
       return false

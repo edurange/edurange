@@ -1,26 +1,18 @@
 %div.btn-group.btn-group-xs
-  = link_to 'Show', scenario, class: 'btn btn-default'
-  - if scenario.can_boot?
-    = link_to(boot_scenario_path(scenario), method: :post, remote:true, id: 'boot-button', class: 'btn btn-default') do
+  = link_to 'Show', scenario_path(scenario), class: 'btn btn-default'
+  - if scenario.can_start?
+    = link_to(start_scenario_path(scenario), method: :post, class: 'btn btn-default') do
       = render 'icon', name: 'play'
-      Boot
-  - if scenario.can_pause?
-    = link_to(pause_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
-      = render 'icon', name: 'pause'
-      Pause
-  - if scenario.can_resume?
-    = link_to(start_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
-      = render 'icon', name: 'resume'
-      Resume
-  - if scenario.can_unboot?
-    = link_to(unboot_scenario_path(scenario), method: :post, remote:true, id: 'unboot-button', class: 'btn btn-default') do
+      Start
+  - if scenario.started?
+    = link_to(start_scenario_path(scenario), method: :post, class: 'btn btn-default') do
+      = render 'icon', name: 'refresh'
+      Restart
+  - if scenario.can_stop?
+    = link_to(stop_scenario_path(scenario), method: :post, class: 'btn btn-default') do
       = render 'icon', name: 'stop'
-      Unboot
-  - if scenario.can_save?
-    = link_to(save_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-default') do
-      = render 'icon', name: 'floppy-disk'
-      Save
-  - if scenario.can_archive?
+      Stop
+  - if scenario.can_archive? || scenario.can_unarchive?
     = form_for scenario, action: :update, html: {class: 'btn-group btn-group-xs'} do |form|
       = form.hidden_field :archived, value: !scenario.archived?
       = button_tag(type: 'submit', class: 'btn btn-default') do
@@ -30,13 +22,7 @@
         - else
           = render 'icon', name: 'eye-close'
           Archive
-  - if request.path == scenario_path(scenario) # hack: these buttons only work on scenario_path because of modals
-    = link_to "#modal-scenario-clone", :data => {:toggle=>"modal"}, :onclick => "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#name').val(''); $('#modal-scenario-clone').find('#name-help').html('');", class: 'btn btn-default' do
-      = render 'icon', name: 'duplicate'
-      Clone
-    = link_to('Show Boot Log', log_get_scenario_path(scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-default')
-
   - if scenario.can_destroy?
-    = link_to destroyme_scenario_path(scenario), method: :post, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
+    = link_to scenario_path(scenario), method: :delete, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
       = render 'icon', name: 'trash'
       Destroy

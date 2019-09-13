@@ -1,8 +1,0 @@
-<% if @instance.errors.any? %>
-  alert('<%= @instance.errors.messages %>')
-<% else %>
-  $('#<%= "instance-#{@instance.id}-ip-address" %>').html('<%= @instance.ip_address %>');
-  $('#save-button-li').attr('class', '');
-  $('#save-button').attr('href', '/scenarios/<%= @instance.scenario.id %>/save');
-  update_flash("Instance '<%= @instance.name %>' has been assigned the new IP Address <%= @instance.ip_address %>.");
-<% end %>

@@ -86,7 +86,7 @@ class User < ActiveRecord::Base
   def owns?(obj)
     return true if self.is_admin?
     cl = obj.class
-    arr = [Cloud, Group, Instance, Scenario, StudentGroup, Subnet, InstanceRole, InstanceGroup, Role, RoleRecipe, Recipe, Answer]
+    arr = [Group, Instance, Scenario, StudentGroup, InstanceGroup, Answer]
     if arr.include? cl
       return obj.user == self
     elsif cl == Player
@@ -169,7 +169,6 @@ class User < ActiveRecord::Base
   def User.instructors_and_admins
     where(role: User.roles.fetch_values('admin', 'instructor'))
   end
-
 
   def User.students
     where(role: 'student')

@@ -240,6 +240,7 @@ class Question < ActiveRecord::Base
       if self.options.include? "variable-group-player"
         group_name, var_name = value[:value].split(':')
         variable = player.variables.find_by_name(var_name)
+        logger.debug("WATWATWAT #{variable.value}")
         value[:value] = variable.value
       end
 
