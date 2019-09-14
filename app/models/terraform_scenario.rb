@@ -24,12 +24,21 @@ class TerraformScenario
     data_dir.join('variables.auto.tfvars.json')
   end
 
+  class TerraformError < StandardError
+
+  end
+
   def run cmd
     Open3.popen3(cmd, chdir: data_dir) do |stdin, stdout, stderr, p|
       stdout.each do |line|
         logger.debug(line.chop)
       end
-      p.value.success?
+      stderr.each do |line|
+        logger.warn(line.chop)
+      end
+      if !p.value.success? then
+        raise TerraformError.new("exit status was #{@status.exitstatus}")
+      end
     end
   end
 
@@ -60,7 +69,7 @@ class TerraformScenario
           if i then
             i.update!(ip_address_public: h['public_ip'])
           else
-            logger.warn("no instance with name #{h['name']}")
+            raise TerraformError.new("no instance with name #{h['name']}")
           end
         end
       end
@@ -69,28 +78,24 @@ class TerraformScenario
 
   def start!
     scenario.starting!
-    if init! && apply! then
-      output!
-      scenario.started!
-    else
-      scenario.error!
-    end
+    init!
+    apply!
+    output!
+    scenario.schedule_import_bash_histories!
+    scenario.started!
   rescue
     scenario.error!
-    raise
+    raise $!
   end
 
   def stop!
     scenario.stopping!
-    if destroy! then
-      scenario.stopped!
-      scenario.instances.each do |i|
-        i.update!(
-          ip_address_public: nil
-        )
-      end
-    else
-      scenario.error!
+    destroy!
+    scenario.stopped!
+    scenario.instances.each do |i|
+      i.update!(
+        ip_address_public: nil
+      )
     end
   rescue
     scenario.error!
@@ -132,7 +137,10 @@ class TerraformScenario
 
   def self.serialize_scenario(scenario)
     h = {
-      scenario_id: scenario.uuid,
+      scenario_id:           scenario.uuid,
+      aws_access_key_id:     ENV['AWS_ACCESS_KEY_ID'], # TODO, bad
+      aws_secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
+      aws_region:            ENV['AWS_REGION']
     }
     scenario.variables.each do |v|
       h.merge!(TerraformScenario.serialize_variable(v))

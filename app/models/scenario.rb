@@ -48,90 +48,86 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  # Callbacks
-  # http://guides.rubyonrails.org/active_record_callbacks.html
   after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
-  # File structure
-
-  def update_yml
-    if not self.modifiable?
-      self.errors.add(:customizable, "Scenario is not modifiable.")
-      return false
-    end
-    if not self.modified?
-      self.errors.add(:modified, "Scenario is not modified.")
-      return false
-    end
-
-    yml = {
-      "Name" => self.name,
-      "Description" => self.description,
-      "Instructions" => self.instructions,
-      "InstructionsStudent" => self.instructions_student
-    }
-
-    if not self.variable_templates.blank?
-      yml['Variables'] = self.variable_templates.map{ |v| {
-        "Name"  => v.name,
-        "Type"  => v.type,
-        "Value" => v.value
-      }}
-    end
-
-    if !self.groups.empty? then
-      yml["Groups"] =  self.groups.map do |group|
-        {
-          "Name" => group.name,
-          "Instructions" => group.instructions,
-          "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map do |access|
-            {
-              "Instance" => access.instance.name,
-              "Administrator" => access.administrator,
-              "IP_Visible" => access.ip_visible
-            }
-          end,
-          "Users" => group.players.empty? ? nil : group.players.map do |p|
-            {
-              "Login" => p.login,
-              "Password" => p.password
-            }
-          end,
-          "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map do |v|
-            {
-              "Name"  => v.name,
-              "Type"  => v.type,
-              "Value" => v.value
-            }
-          end
-      }
-    end
-  end
-
-    if !subnet.instances.empty? then
-      yml['Instances'] = subnet.instances.map do |instance|
-        {
-          'Name' => instance.name
-        }
-      end
-    end
-
-    yml["Scoring"] = self.questions.empty? ? nil : self.questions.map { |question| {
-        "Text" => question.text,
-        "Type" => question.type_of,
-        "Options" => question.options,
-        "Values" => question.values == nil ? nil : question.values.map { |vals| { "Value" => vals[:special] == '' || vals[:special] == nil ? vals[:value] : vals[:special], "Points" => vals[:points] } },
-        "Order" => question.order,
-        "Points" => question.points
-      }
-    }
-
-    f = File.open("#{self.path}/#{self.name.downcase}.yml", "w")
-    f.write(yml.to_yaml)
-    f.close()
-    self.update_attribute(:modified, false)
-  end
+  # def update_yml
+  #   if not self.modifiable?
+  #     self.errors.add(:customizable, "Scenario is not modifiable.")
+  #     return false
+  #   end
+  #   if not self.modified?
+  #     self.errors.add(:modified, "Scenario is not modified.")
+  #     return false
+  #   end
+  #
+  #   yml = {
+  #     "Name" => self.name,
+  #     "Description" => self.description,
+  #     "Instructions" => self.instructions,
+  #     "InstructionsStudent" => self.instructions_student
+  #   }
+  #
+  #   if not self.variable_templates.blank?
+  #     yml['Variables'] = self.variable_templates.map{ |v| {
+  #       "Name"  => v.name,
+  #       "Type"  => v.type,
+  #       "Value" => v.value
+  #     }}
+  #   end
+  #
+  #   if !self.groups.empty? then
+  #     yml["Groups"] =  self.groups.map do |group|
+  #       {
+  #         "Name" => group.name,
+  #         "Instructions" => group.instructions,
+  #         "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map do |access|
+  #           {
+  #             "Instance" => access.instance.name,
+  #             "Administrator" => access.administrator,
+  #             "IP_Visible" => access.ip_visible
+  #           }
+  #         end,
+  #         "Users" => group.players.empty? ? nil : group.players.map do |p|
+  #           {
+  #             "Login" => p.login,
+  #             "Password" => p.password
+  #           }
+  #         end,
+  #         "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map do |v|
+  #           {
+  #             "Name"  => v.name,
+  #             "Type"  => v.type,
+  #             "Value" => v.value
+  #           }
+  #         end
+  #     }
+  #   end
+  # end
+  #
+  #   if !subnet.instances.empty? then
+  #     yml['Instances'] = subnet.instances.map do |instance|
+  #       {
+  #         'Name' => instance.name
+  #       }
+  #     end
+  #   end
+  #
+  #   yml["Scoring"] = self.questions.empty? ? nil : self.questions.map { |question| {
+  #       "Text" => question.text,
+  #       "Type" => question.type_of,
+  #       "Options" => question.options,
+  #       "Values" => question.values == nil ? nil : question.values.map { |vals| { "Value" => vals[:special] == '' || vals[:special] == nil ? vals[:value] : vals[:special], "Points" => vals[:points] } },
+  #       "Order" => question.order,
+  #       "Points" => question.points
+  #     }
+  #   }
+  #
+  #   f = File.open("#{self.path}/#{self.name.downcase}.yml", "w")
+  #   f.write(yml.to_yaml)
+  #   f.close()
+  #   self.update_attribute(:modified, false)
+  # end
 
   def path
     Rails.root.join('scenarios', scenario.location, scenario.name.downcase)
@@ -324,7 +320,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def can_stop?
-    !stopped?
+    !stopped? & !archived?
   end
 
   def can_destroy?
@@ -339,6 +335,7 @@ class Scenario < ActiveRecord::Base
     archived?
   end
 
+  # list all scenarios available to create
   def self.templates
     Rails.root.join('scenarios').children.flat_map do |location|
       if location.directory? then
@@ -355,6 +352,33 @@ class Scenario < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def import_bash_histories!
+    s3 = Aws::S3::Resource.new(region: 'us-east-1')
+    bucket = s3.bucket('edurange')
+    objects = bucket.objects(prefix: "scenarios/#{scenario.uuid}/bash_history/")
+    objects.each do |object|
+      object.get.body.read.each_line do |line|
+        record = JSON.parse(line)
+        begin
+          BashHistory.find_or_create_by!(
+            instance:     self.instances.find_by_name(record['hostname'].gsub('-', '_')),
+            player:       self.players.find_by_login(record['user']),
+            exit_status:  record['exit_code'].to_i,
+            performed_at: Time.iso8601(record['time']),
+            command:      record['cmd']
+          )
+        rescue ActiveRecord::RecordInvalid
+          logger.warn("could not save bash history record: #{$!}")
+        end
+      end
+      object.delete
+    end
+  end
+
+  def schedule_import_bash_histories!
+    ImportBashHistories.set(wait: 1.minute).perform_later(self)
   end
 
 end
