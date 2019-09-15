@@ -92,16 +92,16 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
   end
 
   create_table "scenarios", id: :serial, force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.string "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "uuid"
-    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.string "uuid", null: false
+    t.integer "user_id", null: false
     t.text "instructions", default: ""
     t.text "instructions_student", default: ""
-    t.integer "location", default: 0
+    t.integer "location", default: 0, null: false
   end
 
   create_table "schedules", id: :serial, force: :cascade do |t|
@@ -196,11 +196,12 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
   add_foreign_key "groups", "scenarios", name: "fk_groups_scenarios", on_delete: :cascade
   add_foreign_key "instance_groups", "groups", name: "fk_instance_groups_groups", on_delete: :cascade
   add_foreign_key "instance_groups", "instances", name: "fk_instance_groups_instances", on_delete: :cascade
-  add_foreign_key "instances", "scenarios"
+  add_foreign_key "instances", "scenarios", name: "fk_instances_scenarios"
   add_foreign_key "players", "groups", name: "fk_players_groups", on_delete: :cascade
   add_foreign_key "players", "student_groups", name: "fk_players_student_groups", on_delete: :nullify
   add_foreign_key "players", "users", name: "fk_players_users", on_delete: :nullify
   add_foreign_key "questions", "scenarios", name: "fk_questions_scenarios", on_delete: :cascade
+  add_foreign_key "scenarios", "users", name: "fk_scenarios_users"
   add_foreign_key "statistics", "scenarios", on_delete: :nullify
   add_foreign_key "variable_templates", "groups", on_delete: :cascade
   add_foreign_key "variable_templates", "scenarios", on_delete: :cascade
