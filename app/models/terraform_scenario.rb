@@ -76,30 +76,8 @@ class TerraformScenario
     end
   end
 
-  def start!
-    scenario.starting!
-    init!
-    apply!
-    output!
-    scenario.schedule_import_bash_histories!
-    scenario.started!
-  rescue
-    scenario.error!
-    raise $!
-  end
-
-  def stop!
-    scenario.stopping!
-    destroy!
-    scenario.stopped!
-    scenario.instances.each do |i|
-      i.update!(
-        ip_address_public: nil
-      )
-    end
-  rescue
-    scenario.error!
-    raise
+  def clean!
+    data_dir.rmtree if data_dir.exist?
   end
 
   def self.serialize_player(player)
