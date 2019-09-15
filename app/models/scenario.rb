@@ -3,13 +3,89 @@ class Scenario < ActiveRecord::Base
 
   enum location: [:development, :production, :local, :custom, :test]
 
+
+  # scenario status lifecycle
+  #
+  #     archived
+  #        ^
+  #        |  archive!/unarchive!
+  #        v
+  # --> stopped <-------------------\
+  #        |                        |
+  #        | start!                 |
+  #        v                        |
+  #     starting <--> error <--> stopping
+  #        |                        ^
+  #        |                        |
+  #        V            stop!       |
+  #     started --------------------/
+
   enum status: {
     stopped: 0,
     started: 4,
     starting: 2,
     stopping: 12,
     error: 3,
+    archived: 14
   }
+
+  def can_start?
+    valid_transition?(status, 'starting')
+  end
+
+  def can_stop?
+    valid_transition?(status, 'stopping')
+  end
+
+  def can_archive?
+     !archived? & stopped?
+  end
+
+  def can_unarchive?
+    archived?
+  end
+
+  def can_destroy?
+    stopped?
+  end
+
+  def can_restart?
+    started? | error?
+  end
+
+  def valid_transition?(old, new)
+    logger.debug("testing state transition #{old} to #{new}")
+    case new
+    when 'stopped'
+      ['stopping', 'archived'].include?(old)
+    when 'stopping'
+      ['started', 'error'].include?(old)
+    when 'started'
+      'starting' == old
+    when 'starting'
+      ['stopped', 'error'].include?(old)
+    when 'archived'
+      'stopped' == old
+    when :error
+      ['starting', 'stopping'].include?(old)
+    else
+      false
+    end
+  end
+
+  validate def state_machine_valid?
+    if status_changed? then
+      if !valid_transition?(status_was, status) then
+        errors.add(:status, "Can not update state from #{status_was} to #{status}")
+        false
+      end
+    end
+    true
+  end
+
+  def self.not_archived
+    where.not(status: 'archived')
+  end
 
   belongs_to :user
   has_many :questions, dependent: :destroy
@@ -42,13 +118,6 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  validate do
-    if changed? and archived? and not archived_changed? then
-      errors.add(:base, "You can not update an archived scenario.")
-    end
-  end
-
-  after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
   before_destroy do
@@ -139,18 +208,6 @@ class Scenario < ActiveRecord::Base
 
   def path_yml
     path.join("#{self.name.downcase}.yml")
-  end
-
-  def modifiable_check
-    if self.test? or self.development? or self.custom?
-      self.update_attribute(:modifiable, true)
-    end
-  end
-
-  def update_modified
-    if self.modifiable?
-      self.update_attribute(:modified, true)
-    end
   end
 
   def change_name(name)
@@ -319,26 +376,6 @@ class Scenario < ActiveRecord::Base
     Rails.root.join('documentation', 'scenarios')
   end
 
-  def can_start?
-    !started? & !archived?
-  end
-
-  def can_stop?
-    !stopped? & !archived?
-  end
-
-  def can_destroy?
-    stopped?
-  end
-
-  def can_archive?
-     !archived? & stopped?
-  end
-
-  def can_unarchive?
-    archived?
-  end
-
   # list all scenarios available to create
   def self.templates
     Rails.root.join('scenarios').children.flat_map do |location|
@@ -413,6 +450,19 @@ class Scenario < ActiveRecord::Base
   rescue
     scenario.error!
     raise
+  end
+
+  def restart!
+    stop!
+    start!
+  end
+
+  def archive!
+    archived!
+  end
+
+  def unarchive!
+    stopped!
   end
 
 end

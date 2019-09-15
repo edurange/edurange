@@ -1,16 +1,8 @@
 %label Scoring:
-- if @scenario.modifiable?
-  %div.inline-block
-    %div.dropdown{id:'dropdown-scoring'}
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-button-scoring', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-        %span.caret
-      %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-scoring'}
-        %li{ id: 'scoring-add-button-li' }
-          = link_to 'Add Question', "#modal-scoring-question-add", :data => {:toggle=>"modal"}, onclick: "scoring_question_modal_add_question_setup();", id: 'scoring-add-button'
 %div
   %label Questions:
   %ol#questions
-    - @scenario.questions.order(:order).each_with_index do |question, index| 
+    - @scenario.questions.order(:order).each_with_index do |question, index|
       = render '/scenarios/show/question', question: question, index: index
   %br
   %label Student Answers:

@@ -26,6 +26,18 @@ class DropInternalScenarioTables < ActiveRecord::Migration[5.2]
     remove_column :instances, :ip_address_dynamic
     remove_column :instances, :boot_code
     remove_column :instances, :uuid
+
+    remove_column :scenarios, :log
+    remove_column :scenarios, :answers
+    remove_column :scenarios, :com_page
+    remove_column :scenarios, :modified
+    remove_column :scenarios, :modifiable
+    remove_column :scenarios, :boot_code
+    remove_column :scenarios, :archived
+    remove_column :scenarios, :scoring_pages
+    remove_column :scenarios, :answers_url
+    remove_column :scenarios, :scoring_pages_content
+
     drop_table :subnets
     drop_table :clouds
   end

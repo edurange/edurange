@@ -4,24 +4,22 @@
     = link_to(start_scenario_path(scenario), method: :post, class: 'btn btn-default') do
       = render 'icon', name: 'play'
       Start
-  - if scenario.started?
-    = link_to(start_scenario_path(scenario), method: :post, class: 'btn btn-default') do
+  - if scenario.can_restart?
+    = link_to(restart_scenario_path(scenario), method: :post, class: 'btn btn-default') do
       = render 'icon', name: 'refresh'
       Restart
   - if scenario.can_stop?
     = link_to(stop_scenario_path(scenario), method: :post, class: 'btn btn-default') do
       = render 'icon', name: 'stop'
       Stop
-  - if scenario.can_archive? || scenario.can_unarchive?
-    = form_for scenario, action: :update, html: {class: 'btn-group btn-group-xs'} do |form|
-      = form.hidden_field :archived, value: !scenario.archived?
-      = button_tag(type: 'submit', class: 'btn btn-default') do
-        - if scenario.archived?
-          = render 'icon', name: 'eye-open'
-          Unarchive
-        - else
-          = render 'icon', name: 'eye-close'
-          Archive
+  - if scenario.can_archive?
+    = link_to(archive_scenario_path(scenario), method: :post, class: 'btn btn-default') do
+      = render 'icon', name: 'eye-close'
+      Archive
+  - if scenario.can_unarchive?
+    = link_to(unarchive_scenario_path(scenario), method: :post, class: 'btn btn-default') do
+      = render 'icon', name: 'eye-open'
+      Unarchive
   - if scenario.can_destroy?
     = link_to scenario_path(scenario), method: :delete, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
       = render 'icon', name: 'trash'

@@ -8,16 +8,6 @@ class InstanceGroup < ActiveRecord::Base
   validates :instance, presence: true
   validates :group, presence: true
 
-  after_save :update_scenario_modified
-  after_destroy :update_scenario_modified
-
-  def update_scenario_modified
-    if self.scenario.modifiable?
-      return self.instance.scenario.update_attribute(:modified, true)
-    end
-    false
-  end
-
   def validate
     if InstanceGroup.where("group_id = ? AND instance_id = ? AND administrator = ?", self.group_id, self.instance_id, self.administrator).size > 0
       errors.add(:name, "Already exists")

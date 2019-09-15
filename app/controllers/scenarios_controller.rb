@@ -4,7 +4,7 @@ class ScenariosController < ApplicationController
 
   before_action :set_scenario, only: [
     :edit, :update, :show, :destroy,
-    :start, :stop,
+    :start, :stop, :archive, :unarchive, :restart,
     :users, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
     :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
@@ -35,9 +35,9 @@ class ScenariosController < ApplicationController
 
     case params[:archived] || 'No'
     when 'Yes'
-      @scenarios = @scenarios.where(archived: true)
+      @scenarios = @scenarios.archived
     when 'No'
-      @scenarios = @scenarios.where(archived: false)
+      @scenarios = @scenarios.not_archived
     end
 
     if not current_user.is_admin?
@@ -126,6 +126,31 @@ class ScenariosController < ApplicationController
       notice: "Stopping scenario."
     )
   end
+
+  def restart
+    RestartScenarioJob.perform_later(@scenario)
+    redirect_back(
+      fallback_location: scenario_path(@scenario),
+      notice: "Restarting scenario."
+    )
+  end
+
+  def archive
+    @scenario.archive!
+    redirect_back(
+      fallback_location: scenario_path(@scenario),
+      notice: "Archived scenario."
+    )
+  end
+
+  def unarchive
+    @scenario.unarchive!
+    redirect_back(
+      fallback_location: scenario_path(@scenario),
+      notice: "Unarchived scenario."
+    )
+  end
+
 
   def group_player_add
     @player = @group.players.new(login: params[:login], password: params[:password])

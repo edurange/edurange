@@ -1,13 +1,5 @@
 // Teams, previously called Groups
 %label Teams:
-- if @scenario.modifiable?
-  %div.inline-block
-    %div.dropdown{id:'dropdown-roles'}
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-button-roles', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-        %span.caret
-      %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-roles'}
-        %li{ id: 'group-add-button-li' }
-          = link_to 'Add Group', "#modal-group-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-add').find('#name').val(''); $('#modal-group-add').find('#name-div').removeClass('has-error'); $('#modal-group-add').find('#name-help').html('');", id: 'group-add-button'
 %ul#groups
   - @scenario.groups.each do |group|
     = render '/scenarios/show/group', group: group

@@ -9,15 +9,6 @@ class Group < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
 
-  after_save :update_scenario_modified
-  after_destroy :update_scenario_modified
-
-  def update_scenario_modified
-    if self.scenario.modifiable?
-      return self.scenario.update_attribute(:modified, true)
-    end
-  end
-
   # return instances which the group has administrative access to
   def administrative_access_to
     instances = self.instance_groups.select {|instance_group| instance_group.administrator }.map {|instance_group| instance_group.instance}
@@ -55,13 +46,12 @@ class Group < ActiveRecord::Base
         players.push(player)
       end
     end
-    self.update_scenario_modified
     players
   end
 
   # remove a group of students from the group and return list of removed students
   def student_group_remove(student_group_name)
-    if not self.instances_stopped?
+    if not self.scenario.stopped?
       return []
     end
 
@@ -77,7 +67,6 @@ class Group < ActiveRecord::Base
         player.destroy
       end
     end
-    self.update_scenario_modified
     players
   end
 
