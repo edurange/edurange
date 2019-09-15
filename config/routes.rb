@@ -18,6 +18,9 @@ Edurange::Application.routes.draw do
     member do
       post 'start'
       post 'stop'
+      post 'restart'
+      post 'archive'
+      post 'unarchive'
 
       get  'users'
 

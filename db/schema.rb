@@ -97,21 +97,11 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "status", default: 0
-    t.text "log", default: ""
-    t.string "answers", default: ""
     t.string "uuid"
-    t.string "scoring_pages"
-    t.string "answers_url"
-    t.text "scoring_pages_content", default: ""
     t.integer "user_id"
-    t.string "com_page"
-    t.boolean "modified", default: true
     t.text "instructions", default: ""
     t.text "instructions_student", default: ""
     t.integer "location", default: 0
-    t.boolean "modifiable", default: false
-    t.string "boot_code", default: ""
-    t.boolean "archived", default: false, null: false
   end
 
   create_table "schedules", id: :serial, force: :cascade do |t|

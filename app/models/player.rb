@@ -11,7 +11,6 @@ class Player < ActiveRecord::Base
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true
 
-  after_destroy :update_scenario_modified
   after_create :create_variables
 
   before_validation do
@@ -22,12 +21,6 @@ class Player < ActiveRecord::Base
 
   def self.random_password
     SecureRandom.hex(4)
-  end
-
-  def update_scenario_modified
-    if self.group.scenario.modifiable?
-      self.group.scenario.update(modified: true)
-    end
   end
 
   def create_variables

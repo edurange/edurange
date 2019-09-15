@@ -12,52 +12,10 @@
           = link_to 'Add Student Group', "#modal-group-student-group-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-add').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-add').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
         %li{ id: "group-#{group.id}-student-group-remove-button-li", class: group.scenario.stopped? ? "" : "disabled" }
           = link_to 'Remove Student Group', "#modal-group-student-group-remove", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-remove').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-remove').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
-        - if @scenario.modifiable?
-          %li.divider
-          %li{ id: "group-#{group.id}-modify-button-li", class: group.scenario.stopped? ? "" : "disabled" }
-            = link_to 'Modify', "#modal-group-modify", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-modify').find('#group-name').html($('#group-#{group.id}-name').html().trim()); $('#modal-group-modify').find('#group_id').val('#{group.id}'); $('#modal-group-modify').find('#name-div').removeClass('has-error'); $('#modal-group-modify').find('#name').val(''); $('#modal-group-modify').find('#name-help').html(''); $('#modal-group-modify').find('#help-div').removeClass('has-error'); $('#modal-group-modify').find('#help-help').html('');"
-          %li{ id: "group-#{group.id}-delete-button-li", class: group.instances_stopped? ? "" : "disabled" } 
-            = link_to 'Delete', group_delete_scenario_path(group_id: group), remote: true, method: :post
   %p
   Instructions:
-  - if @scenario.modifiable?
-    %div.inline-block
-      %div.dropdown{id:"dropdown-group-#{group.id}-instructions"}
-        %button.btn.btn-default.dropdown-toggle{type:'button', id:"dropdown-button-group-#{group.id}-instructions", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-          %span.caret
-        %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "dropdown-button-group-#{group.id}-instructions"}
-          %li{ id: 'instructions-student-modify-button-li' }
-            = link_to 'Modify', group_instructions_get_scenario_path(@scenario, group_id: group.id), method: :post, remote: true
   %div.indent{ id: "group-#{group.id}-instructions" }
     = group.instructions
-
-  %p
-  Admin Access:
-  - if @scenario.modifiable?
-    %div.inline-block
-      %div.dropdown{ id: "group-#{group.id}-admin-access-dropdown" }
-        %button.btn.btn-default.dropdown-toggle{type:'button', id: "group-#{group.id}-admin-access-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true" }
-          %span.caret
-        %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "group-#{group.id}-admin-access-dropdown-button" }
-          %li{ id: "group-#{group.id}-admin-access-button-li", class: group.instances_stopped? ? "" : "disabled" }
-            = link_to 'Add Instance', "#modal-group-admin-access-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-admin-access-add').find('#group-name').html($('#group-#{group.id}-name').html().trim()); $('#modal-group-admin-access-add').find('#group_id').val('#{group.id}'); $('#modal-group-admin-access-add').find('#name').val(''); $('#modal-group-admin-access-add').find('#name-div').removeClass('has-error'); $('#modal-group-admin-access-add').find('#name-help').html(''); $('#modal-group-admin-access-add').find('#help-div').removeClass('has-error'); $('#modal-group-admin-access-add').find('#help-help').html('');"
-
-  User Access:
-  - if @scenario.modifiable?
-    %div.inline-block
-      %div.dropdown{ id: "group-#{group.id}-user-access-dropdown" }
-        %button.btn.btn-default.dropdown-toggle{type:'button', id: "group-#{group.id}-user-access-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true" }
-          %span.caret
-        %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "group-#{group.id}-user-access-dropdown-button" }
-          %li{ id: "group-#{group.id}-user-access-button-li", class: group.instances_stopped? ? "" : "disabled" }
-            = link_to 'Add Instance', "#modal-group-user-access-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-user-access-add').find('#group-name').html($('#group-#{group.id}-name').html().trim()); $('#modal-group-user-access-add').find('#group_id').val('#{group.id}'); $('#modal-group-user-access-add').find('#name').val(''); $('#modal-group-user-access-add').find('#name-div').removeClass('has-error'); $('#modal-group-user-access-add').find('#name-help').html('');"
-  -#%ul{ id: "group-#{group.id}-user-access" }
-    - group.instance_groups.select{ |ig| ig.administrator == false }.each do |instance_group|
-      %li{ id: "instance-group-#{instance_group.id}" }
-        %span#name
-          = instance_group.instance.name
-        - if @scenario.modifiable?
-          = link_to 'remove', group_user_access_remove_scenario_path(instance_group_id: instance_group), remote: true, method: :post, class: group.instances_stopped? ? "" : "hidden"
 
   %br
   %table.table{id: "group-#{group.id}-players-table" }

@@ -12,7 +12,6 @@ class Question < ActiveRecord::Base
   validate :validate_values
 
   after_create :set_order
-  after_save :update_scenario_modified
 
   TYPES = ["String", "Number", "Essay"]
   # TYPES = ["String", "Number", "Essay", "Event"]
@@ -184,13 +183,6 @@ class Question < ActiveRecord::Base
         self.update_attribute(:order, self.scenario.questions.maximum("order") + 1)
       end
     end
-  end
-
-  def update_scenario_modified
-    if self.scenario.modifiable?
-      self.scenario.update_attribute(:modified, true)
-    end
-    true
   end
 
   def move_up
