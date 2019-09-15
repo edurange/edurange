@@ -26,9 +26,7 @@ class Player < ActiveRecord::Base
 
   def update_scenario_modified
     if self.group.scenario.modifiable?
-      if self.group.scenario
-        self.group.scenario.update(modified: true)
-      end
+      self.group.scenario.update(modified: true)
     end
   end
 

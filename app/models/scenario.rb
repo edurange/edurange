@@ -51,6 +51,10 @@ class Scenario < ActiveRecord::Base
   after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
+  before_destroy do
+    terraform.clean!
+  end
+
   # def update_yml
   #   if not self.modifiable?
   #     self.errors.add(:customizable, "Scenario is not modifiable.")
@@ -379,6 +383,36 @@ class Scenario < ActiveRecord::Base
 
   def schedule_import_bash_histories!
     ImportBashHistories.set(wait: 1.minute).perform_later(self)
+  end
+
+  def terraform
+    @terraform ||= TerraformScenario.new(self)
+  end
+
+  def start!
+    scenario.starting!
+    terraform.init!
+    terraform.apply!
+    terraform.output!
+    scenario.schedule_import_bash_histories!
+    scenario.started!
+  rescue
+    scenario.error!
+    raise
+  end
+
+  def stop!
+    scenario.stopping!
+    terraform.destroy!
+    scenario.stopped!
+    scenario.instances.each do |i|
+      i.update!(
+        ip_address_public: nil
+      )
+    end
+  rescue
+    scenario.error!
+    raise
   end
 
 end
