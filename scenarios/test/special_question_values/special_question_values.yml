@@ -1,0 +1,38 @@
+---
+Name: Special_Question_Values
+Description: Test special values in questions
+Instructions: 
+InstructionsStudent: 
+Groups: 
+Clouds:
+- Name: Cloud
+  CIDR_Block: 10.0.0.0/24
+  Subnets:
+  - Name: Subnet
+    CIDR_Block: 10.0.0.0/24
+    Internet_Accessible: false
+    Instances:
+    - Name: Instance_1
+      OS: ubuntu
+      IP_Address: 10.0.0.16
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles: []
+    - Name: Instance_2
+      OS: ubuntu
+      IP_Address: 10.0.0.17
+      IP_Address_Dynamic: 
+      Internet_Accessible: false
+      Roles: []
+Subnets: 
+Instances: 
+Roles: 
+Scoring:
+- Text: Test
+  Type: String
+  Options: []
+  Values:
+  - Value: $Instance_1$
+    Points: '1'
+  - Value: $Instance_2$
+    Points: '1'

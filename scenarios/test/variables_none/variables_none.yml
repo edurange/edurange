@@ -1,0 +1,19 @@
+---
+Name: Variables_None
+Description: no variables
+Instructions: none
+Roles:
+Groups:
+- Name: Group0
+  Access:
+  - Instance: Instance0
+    Administrator: false
+    IP_Visible: true
+  Users:
+  - Login: student
+    Password: sWfwkNGblfv
+Instances:
+- Name: Instance0
+  OS: ubuntu
+  IP_Address: 10.0.129.5
+  Internet_Accessible: true
