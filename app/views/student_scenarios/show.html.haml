@@ -1,10 +1,12 @@
 
 %dl.dl-horizontal
   %dt Instructor
-  %dd= @scenario.user.name
-  - if @scenario.user.organization
+  %dd= @player.scenario.user.name
+  - if @player.scenario.user.organization
     %dt Organization
-    %dd= @scenario.user.organization
+    %dd= @player.scenario.user.organization
+  %dt Status
+  %dd= render('scenarios/scenario_status', scenario: @player.scenario)
   %dt Instructions
   %dd= @player.group.instructions || @scenario.instructions_student
   %dt Login
