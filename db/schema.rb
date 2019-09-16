@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
 
   create_table "instances", id: :serial, force: :cascade do |t|
     t.string "name", null: false
+    t.string "ip_address_private"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
@@ -115,20 +116,6 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "statistics", id: :serial, force: :cascade do |t|
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "bash_histories", default: ""
-    t.text "bash_analytics", default: "--- []\n"
-    t.string "scenario_name"
-    t.datetime "scenario_created_at"
-    t.string "script_log", default: ""
-    t.string "exit_status", default: ""
-    t.integer "scenario_id"
-    t.string "resource_info"
-  end
-
   create_table "student_group_users", id: :serial, force: :cascade do |t|
     t.integer "student_group_id"
     t.integer "user_id"
@@ -142,13 +129,6 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "registration_code"
-  end
-
-  create_table "tutorials", id: :serial, force: :cascade do |t|
-    t.string "title"
-    t.text "text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
@@ -202,7 +182,6 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
   add_foreign_key "players", "users", name: "fk_players_users", on_delete: :nullify
   add_foreign_key "questions", "scenarios", name: "fk_questions_scenarios", on_delete: :cascade
   add_foreign_key "scenarios", "users", name: "fk_scenarios_users"
-  add_foreign_key "statistics", "scenarios", on_delete: :nullify
   add_foreign_key "variable_templates", "groups", on_delete: :cascade
   add_foreign_key "variable_templates", "scenarios", on_delete: :cascade
   add_foreign_key "variables", "players", on_delete: :cascade

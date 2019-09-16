@@ -51,7 +51,7 @@ class ScenariosController < ApplicationController
   end
 
   def new
-    @templates = Scenario.templates
+    @templates = Scenario.templates.select{|s| s.location == 'production'}
   end
 
   def edit

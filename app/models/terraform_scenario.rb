@@ -64,10 +64,10 @@ class TerraformScenario
       logger.debug(output)
       if output['instances'] then
         instances = output["instances"]["value"]
-        instances.each do |h|
-          i = scenario.instances.find_by_name(h['name'])
+        instances.each do |hash|
+          i = scenario.instances.find_by_name(hash['name'])
           if i then
-            i.update!(ip_address_public: h['public_ip'])
+            i.update_attributes!(hash)
           else
             raise TerraformError.new("no instance with name #{h['name']}")
           end
