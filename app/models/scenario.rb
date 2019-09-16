@@ -71,7 +71,7 @@ class Scenario < ActiveRecord::Base
       ['stopped', 'error'].include?(old)
     when 'archived'
       'stopped' == old
-    when :error
+    when 'error'
       ['starting', 'stopping'].include?(old)
     else
       false
@@ -468,12 +468,13 @@ class Scenario < ActiveRecord::Base
   def stop!
     scenario.stopping!
     terraform.destroy!
-    scenario.stopped!
     scenario.instances.each do |i|
-      i.update!(
-        ip_address_public: nil
+      i.update_attributes!(
+        ip_address_public: nil,
+        ip_address_private: nil
       )
     end
+    scenario.stopped!
   rescue
     scenario.error!
     raise

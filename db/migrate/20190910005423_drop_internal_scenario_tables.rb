@@ -13,10 +13,11 @@ class DropInternalScenarioTables < ActiveRecord::Migration[5.2]
     change_column_null :instances, :name, false
     change_column_null :instances, :status, false
 
+    rename_column :instances, :ip_address, :ip_address_private
+
     # Remove unnesacary instances columns
 
     remove_column :instances, :driver_id
-    remove_column :instances, :ip_address
     remove_column :instances, :ip_address_dynamic
     remove_column :instances, :os
     remove_column :instances, :internet_accessible
