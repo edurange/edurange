@@ -7,7 +7,7 @@ class GroupTest < ActiveSupport::TestCase
   end
 
   test 'variables' do
-    s = ScenarioLoader.new(user: users(:instructor1), name: 'Variables', location: :test).fire!
+    s = ScenarioLoader.new(user: users(:instructor1), name: 'Variables', location: 'test').fire!
     assert s.valid?
 
     assert_equal(3, s.variable_templates.count)

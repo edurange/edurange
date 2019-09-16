@@ -1,34 +1,24 @@
-#s3test is incomplete
-#s3test: 
-#  name: 's3test'
-#  os: 'ubuntu'
-
 ip_test_instance:
   id: 333
   name: 'ip_test_instance'
-  ip_address: '10.0.0.4'
-  subnet_id: 333
-
-role_test_instance:
-  id: 344
-  subnet_id: 344
+  scenario_id: 3
 
 relations_instance_1:
   id: 4
-  subnet_id: 4
   name: "instance_a_1"
+  scenario_id: 2
 
 relations_instance_2:
   id: 5
-  subnet_id: 4
   name: "instance_a_2"
+  scenario_id: 2
 
 relations_instance_3:
   id: 6
-  subnet_id: 5
   name: "instance_b_3"
+  scenario_id: 2
 
 relations_instance_4:
   id: 7
-  subnet_id: 5
   name: "instance_b_4"
+  scenario_id: 2

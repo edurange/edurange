@@ -4,28 +4,21 @@ test1:
   name: test1
   description: none
   status: booted
+  user_id: 1
+  uuid: <%= SecureRandom.uuid %>
 
 two:
   id: 2
   name: test1
   description: none
   status: stopped
-  log:
-  answers:
-  scoring_pages:
-  answers_url:
-  scoring_pages_content:
   user_id: 1
-  instructions:
-  com_page:
-  modified:
+  uuid: <%= SecureRandom.uuid %>
 
 ip_test_scenario:
-  id: 333
-
-role_test_scenario:
-  id: 344
-
-relations:
-  name: "scenario"
-  id: 4
+  id: 3
+  name: ip_test_scenario
+  description: none
+  status: booted
+  user_id: 1
+  uuid: <%= SecureRandom.uuid %>
