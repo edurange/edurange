@@ -17,7 +17,15 @@ class ScenarioLoader
   end
 
   def fire!
-    @scenario = Scenario.new(user: @user, name: @name, location: @location)
+    @scenario = Scenario.new(
+      user: @user,
+      name: @name,
+      location: @location,
+      name: yaml["Name"],
+      description: yaml["Description"],
+      instructions: yaml["Instructions"],
+      instructions_student: yaml["InstructionsStudent"],
+    )
     create_scenario! if @scenario.save
   end
 
@@ -25,7 +33,6 @@ class ScenarioLoader
 
   def create_scenario!
     begin
-      load_metadata
       build_instances(@scenario, yaml['Instances'])
       build_groups
       build_variables(@scenario, yaml['Variables'])
@@ -43,18 +50,7 @@ class ScenarioLoader
   end
 
   def yaml
-    return nil unless @scenario
-    @yaml ||= YAML.load_file(@scenario.path_yml)
-  end
-
-  def load_metadata
-    @scenario.update!(
-      name: yaml["Name"],
-      description: yaml["Description"],
-      instructions: yaml["Instructions"],
-      instructions_student: yaml["InstructionsStudent"],
-      uuid: SecureRandom.uuid
-    )
+    @yaml ||= YAML.load_file(Scenario.path_yml(@location, @name))
   end
 
   def roles_from_names(names)
@@ -158,4 +154,5 @@ class ScenarioLoader
       )
     end
   end
+
 end

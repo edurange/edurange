@@ -1,8 +1,13 @@
 class Scenario < ActiveRecord::Base
   require 'open-uri'
 
-  enum location: [:development, :production, :local, :custom, :test]
-
+  enum location: {
+    development:0,
+    production: 1,
+    local: 2,
+    custom: 3,
+    test: 4
+  }
 
   # scenario status lifecycle
   #
@@ -74,13 +79,12 @@ class Scenario < ActiveRecord::Base
   end
 
   validate def state_machine_valid?
-    if status_changed? then
-      if !valid_transition?(status_was, status) then
-        errors.add(:status, "Can not update state from #{status_was} to #{status}")
-        false
-      end
+    if status_changed? & !valid_transition?(status_was, status) then
+      errors.add(:status, "Can not update state from #{status_was} to #{status}")
+      false
+    else
+      true
     end
-    true
   end
 
   def self.not_archived
@@ -96,11 +100,24 @@ class Scenario < ActiveRecord::Base
   has_many :variable_templates
   has_many :variables
 
-  validates_associated :questions, :groups, :user
+  validates_associated :questions, :groups, :user, :instances
+
   validates :user, presence: true
-  validates :name, presence: true, format: { without: /\A_*_\z/ }
-  validates :name, format: { with: /\A\w*\z/,
-                             message: "can only contain alphanumeric and underscore" }
+
+  validates :name, presence: true, format: {
+    with: /\A\w*\z/,
+    message: "can only contain alphanumeric and underscore"
+  }
+
+  validates :uuid, presence: true, format: {
+    with: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
+    message: 'Invalid UUID format'
+  }
+
+  after_initialize def set_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
+
   validate :paths_exist, :owner_is_instructor_or_admin
 
   def paths_exist
@@ -112,8 +129,10 @@ class Scenario < ActiveRecord::Base
     errors.add(:base, 'You can only update a scenario when it is stopped.') unless stopped? or not changed?
   end
 
+  alias owner user
+
   def owner_is_instructor_or_admin
-    unless self.user.admin? or self.user.instructor?
+    unless owner.admin? or owner.instructor?
       errors.add(:user, 'Only admins and instructors create scenarios.')
     end
   end
@@ -202,12 +221,20 @@ class Scenario < ActiveRecord::Base
   #   self.update_attribute(:modified, false)
   # end
 
+  def self.path(location, name)
+    Rails.root.join('scenarios', location.to_s, name.to_s.downcase)
+  end
+
+  def self.path_yml(location, name)
+    Scenario.path(location, name).join("#{name.downcase}.yml")
+  end
+
   def path
-    Rails.root.join('scenarios', scenario.location, scenario.name.downcase)
+    Scenario.path(location, name)
   end
 
   def path_yml
-    path.join("#{self.name.downcase}.yml")
+    Scenario.path_yml(location, name)
   end
 
   def change_name(name)

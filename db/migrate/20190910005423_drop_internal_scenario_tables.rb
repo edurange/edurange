@@ -17,13 +17,13 @@ class DropInternalScenarioTables < ActiveRecord::Migration[5.2]
 
     remove_column :instances, :driver_id
     remove_column :instances, :ip_address
+    remove_column :instances, :ip_address_dynamic
     remove_column :instances, :os
     remove_column :instances, :internet_accessible
     remove_column :instances, :scoring_url
     remove_column :instances, :scoring_page
     remove_column :instances, :log
     remove_column :instances, :subnet_id
-    remove_column :instances, :ip_address_dynamic
     remove_column :instances, :boot_code
     remove_column :instances, :uuid
 
@@ -73,5 +73,9 @@ class DropInternalScenarioTables < ActiveRecord::Migration[5.2]
     drop_table :roles
     drop_table :subnets
     drop_table :clouds
+
+    # Also these tables just are not used anymore
+    drop_table :tutorials
+    drop_table :statistics
   end
 end

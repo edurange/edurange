@@ -29,6 +29,12 @@ class User < ActiveRecord::Base
     with: /\A[a-zA-Z0-9_]+\z/,
   }
 
+  # validate def has_default_student_group_if_instructor_or_admin
+  #   if instructor? or admin?
+  #     student_groups.find_by_name("All")
+  #   end
+  # end
+
   validate :validate_running
 
 #  validate def has_all_student_group
@@ -123,6 +129,7 @@ class User < ActiveRecord::Base
       self.student_group_users.each do |student_group_user|
         student_group_user.mark_for_destruction
       end
+      logger.debug("Creating default student group 'All'")
       self.student_groups.find_or_initialize_by(name: "All")
     end
     super(role)
