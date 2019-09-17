@@ -33,11 +33,12 @@ class ScenariosController < ApplicationController
   def index
     @scenarios = Scenario.all.order(updated_at: :desc)
 
-    case params[:archived] || 'No'
-    when 'Yes'
-      @scenarios = @scenarios.archived
-    when 'No'
-      @scenarios = @scenarios.not_archived
+    @selected_statuses = params[:status] || []
+
+    @scenarios = if !@selected_statuses.blank?
+      @scenarios.where(status: @selected_statuses)
+    else
+      @scenarios.not_archived
     end
 
     if not current_user.is_admin?
@@ -61,8 +62,8 @@ class ScenariosController < ApplicationController
   def create
     # Curious where ScenarioLoader lives? lib/scenario_loader.rb
     @scenario = ScenarioLoader.new(user: current_user,
-                                   name: scenario_params[:name],
-                                   location: scenario_params[:location])
+                                   name: new_scenario_params[:name],
+                                   location: new_scenario_params[:location])
                               .fire!
 
     respond_to do |format|
@@ -439,7 +440,7 @@ class ScenariosController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def scenario_params
-      params.require(:scenario).permit(:name, :template, :location, :archived)
+    def new_scenario_params
+      params.require(:scenario).permit(:name, :location)
     end
 end
