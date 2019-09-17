@@ -16,42 +16,45 @@
   %div.panel-heading
     %h3.panel-title
       Scenarios
-    %div.pull-right
-      = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
 
   %div.panel-body
-    = form_tag '', method: :get, class: 'form-inline filter-controls' do
-      %div.form-group
-        = label_tag 'archived' , 'Archived', class: 'control-label'
-        = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
-      %div.pull-right
-        = button_tag(class: 'btn btn-primary') do
-          = render('icon', name: 'filter')
-          Filter
-    %table.table
-      %thead
-        %tr
-          %th Name
-          %th Date Created
-          %th Status
-          - if current_user.is_admin?
-            %th Instructor
-          %th Actions
-      %tbody
-        - if @scenarios.size > 0
-          - @scenarios.each do |scenario|
-            %tr
-              %td= scenario.name
-              %td= scenario.created_at
-              %td= render('scenario_status', scenario: scenario)
-              - if current_user.is_admin?
-                - if scenario.user
-                  %td= scenario.user.name
-                - else
-                  %td.text-muted None
-              %td
-                = render('actions', scenario: scenario)
-        - else
+    = form_with(method: 'get', class: 'form-inline') do |f|
+      %fieldset.form-group
+        - Scenario.statuses.each do |status, value|
+          = f.label nil, class: 'checkbox-inline' do
+            = f.check_box :status, {multiple: true, checked: @selected_statuses.include?(status)}, status, false
+            = status
+      .pull-right
+        .form-group
+          = button_tag(type: 'submit', class: 'btn btn-default') do
+            = render('icon', name: 'filter')
+            Filter
+        .form-group
+          = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-default'
+  %table.table
+    %thead
+      %tr
+        %th Name
+        %th Date Created
+        %th Status
+        - if current_user.is_admin?
+          %th Instructor
+        %th Actions
+    %tbody
+      - if @scenarios.size > 0
+        - @scenarios.each do |scenario|
           %tr
-            %td{colspan: (current_user.is_admin? ? 5 : 4)}
-              There are no scenarios
+            %td= scenario.name
+            %td= scenario.created_at
+            %td= render('scenario_status', scenario: scenario)
+            - if current_user.is_admin?
+              - if scenario.user
+                %td= scenario.user.name
+              - else
+                %td.text-muted None
+            %td
+              = render('actions', scenario: scenario)
+      - else
+        %tr
+          %td{colspan: (current_user.is_admin? ? 5 : 4)}
+            There are no scenarios
