@@ -1,47 +1,40 @@
-%li{ id: "group-#{group.id}" }
-  %label{ id: "group-#{group.id}-name" }
+.panel-body
+  %h4
     = group.name
-  %div.inline-block
-    %div.dropdown{ id: "group-#{group.id}-dropdown" }
-      %button.btn.btn-default.dropdown-toggle{type:'button', id: "group-#{group.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-        %span.caret
-      %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "group-#{group.id}-dropdown-button" }
-        %li{ id: "group-#{group.id}-player-add-button-li", class: group.scenario.stopped? ? "" : "disabled" }
-          = link_to 'Add Player', "#modal-group-player-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-player-add').find('#group-name').html($('#group-#{group.id}-name').html().trim()); $('#modal-group-player-add').find('#group_id').val('#{group.id}'); $('#modal-group-player-add').find('#login-div').removeClass('has-error'); $('#modal-group-player-add').find('#login').val(''); $('#modal-group-player-add').find('#login-help').html(''); $('#modal-group-player-add').find('#password-div').removeClass('has-error'); $('#modal-group-player-add').find('#password').val(''); $('#modal-group-player-add').find('#password-help').html(''); $('#modal-group-player-add').find('#help-div').removeClass('has-error'); $('#modal-group-player-add').find('#help-help').html('');"
-        %li{ id: "group-#{group.id}-student-group-add-button-li", class: group.scenario.stopped? ? "" : "disabled" }
-          = link_to 'Add Student Group', "#modal-group-student-group-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-add').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-add').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
-        %li{ id: "group-#{group.id}-student-group-remove-button-li", class: group.scenario.stopped? ? "" : "disabled" }
-          = link_to 'Remove Student Group', "#modal-group-student-group-remove", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-remove').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-remove').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
-  %p
-  Instructions:
-  %div.indent{ id: "group-#{group.id}-instructions" }
-    = group.instructions
-
-  %br
-  %table.table{id: "group-#{group.id}-players-table" }
-    %tr
-      %th Name
-      %th Email
-      %th Student Group
-      %th Login
-      %th Password
-      %th
-    - group.players.each do |player|
-      %tr{id: "player-#{player.id}" }
-
-        - if user = User.find_by_id(player.user_id)
-          %td= user.name
-          %td= user.email
-          %td= player.student_group ? player.student_group.name : '-'
-        - else
-          %td= "-"
-          %td= "-"
-          %td= "-"
-
-        %td= player.login
-        %td= player.password
-
-        - if user
-          %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden", data: { confirm: "Are you sure? This will erase any answers to questions that the student has entered." }
-        - else
-          %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden"
+    %div.inline-block
+      %div.dropdown{ id: "group-#{group.id}-dropdown" }
+        %button.btn.btn-default.dropdown-toggle{type:'button', id: "group-#{group.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+          %span.caret
+        %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "group-#{group.id}-dropdown-button" }
+          %li{ id: "group-#{group.id}-player-add-button-li", class: group.scenario.stopped? ? "" : "disabled" }
+            = link_to 'Add Player', "#modal-group-player-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-player-add').find('#group-name').html($('#group-#{group.id}-name').html().trim()); $('#modal-group-player-add').find('#group_id').val('#{group.id}'); $('#modal-group-player-add').find('#login-div').removeClass('has-error'); $('#modal-group-player-add').find('#login').val(''); $('#modal-group-player-add').find('#login-help').html(''); $('#modal-group-player-add').find('#password-div').removeClass('has-error'); $('#modal-group-player-add').find('#password').val(''); $('#modal-group-player-add').find('#password-help').html(''); $('#modal-group-player-add').find('#help-div').removeClass('has-error'); $('#modal-group-player-add').find('#help-help').html('');"
+          %li{ id: "group-#{group.id}-student-group-add-button-li", class: group.scenario.stopped? ? "" : "disabled" }
+            = link_to 'Add Student Group', "#modal-group-student-group-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-add').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-add').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
+          %li{ id: "group-#{group.id}-student-group-remove-button-li", class: group.scenario.stopped? ? "" : "disabled" }
+            = link_to 'Remove Student Group', "#modal-group-student-group-remove", :data => {:toggle=>"modal"}, onclick: "$('#modal-group-student-group-remove').find('#group_id').val('#{group.id}'); $('#modal-group-student-group-remove').find('#group-name').html($('#group-#{group.id}-name').html().trim());"
+  -if group.instructions
+    %p= group.instructions
+%table.table{id: "group-#{group.id}-players-table" }
+  %tr
+    %th Name
+    %th Email
+    %th Student Group
+    %th Login
+    %th Password
+    %th
+  - group.players.each do |player|
+    %tr{id: "player-#{player.id}" }
+      - if player.user
+        %td= player.user.name
+        %td= player.user.email
+        %td= player.student_group ? player.student_group.name : '-'
+      - else
+        %td= "-"
+        %td= "-"
+        %td= "-"
+      %td= player.login
+      %td= player.password
+      - if player.user
+        %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden", data: { confirm: "Are you sure? This will erase any answers to questions that the student has entered." }
+      - else
+        %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden"

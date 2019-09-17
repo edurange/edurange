@@ -39,6 +39,5 @@
         %li{class: ('active' if request.path == student_scenario_path(@scenario))}= link_to('Scenario', student_scenario_path(@scenario))
         %li{class: ('active' if request.path == student_scenario_guide_path(@scenario))}= link_to('Guide', student_scenario_guide_path(@scenario) )
         %li{class: ('active' if request.path == student_scenario_commands_path)}= link_to('Command History', student_scenario_commands_path(@scenario))
-    %div.indent.panel-body
-      = yield
+    = yield
 = render template: 'layouts/application'
