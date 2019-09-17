@@ -80,23 +80,30 @@ class TerraformScenario
     data_dir.rmtree if data_dir.exist?
   end
 
+  # Inputs are passed to terraform via a json file.
+  # It would be nice if someday this format was the same as is used for parshing the yaml files.
   def self.serialize_player(player)
-    h = {
+    {
       login: player.login,
       password: {
         plaintext: player.password,
         hash: player.password_hash
-      }
+      },
+      variables: TerraformScenario.serialize_variables(player.variables)
     }
-    player.variables.each do |var|
-      h.merge!(TerraformScenario.serialize_variable(var))
-    end
-    h
   end
 
   def self.serialize_group(group)
-    h = {}
+    h = Hash.new
     h[group.name.downcase] = group.players.map{|p| TerraformScenario.serialize_player(p) }
+    h
+  end
+
+  def self.serialize_variables(vs)
+    h = Hash.new
+    vs.each do |v|
+      h.merge!(TerraformScenario.serialize_variable(v))
+    end
     h
   end
 
@@ -118,11 +125,9 @@ class TerraformScenario
       scenario_id:           scenario.uuid,
       aws_access_key_id:     ENV['AWS_ACCESS_KEY_ID'], # TODO, bad
       aws_secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
-      aws_region:            ENV['AWS_REGION']
+      aws_region:            ENV['AWS_REGION'],
+      variables:             TerraformScenario.serialize_variables(scenario.variables)
     }
-    scenario.variables.each do |v|
-      h.merge!(TerraformScenario.serialize_variable(v))
-    end
     scenario.groups.each do |g|
       h.merge!(TerraformScenario.serialize_group(g))
     end
