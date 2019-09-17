@@ -1,0 +1,16 @@
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Public IP Address
+      %th Private Ip Address
+  %tbody
+    - @scenario.instances.each do |instance|
+      %tr
+        %td= instance.name
+        %td
+          - if instance.ip_address_public
+            = instance.ip_address_public
+        %td
+          - if instance.ip_address_private
+            = instance.ip_address_private

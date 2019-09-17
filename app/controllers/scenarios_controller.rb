@@ -5,10 +5,12 @@ class ScenariosController < ApplicationController
   before_action :set_scenario, only: [
     :edit, :update, :show, :destroy,
     :start, :stop, :archive, :unarchive, :restart,
-    :users, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
+    :players, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
     :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
     :scoring_answer_essay_grade_delete,
+    :guide,
+    :instances
   ]
 
   before_action :set_group, only: [
@@ -33,7 +35,7 @@ class ScenariosController < ApplicationController
   def index
     @scenarios = Scenario.all.order(updated_at: :desc)
 
-    @selected_statuses = params[:status] || []
+    @selected_statuses = params[:status] || Scenario.statuses.keys - ['archived']
 
     @scenarios = if !@selected_statuses.blank?
       @scenarios.where(status: @selected_statuses)
@@ -152,6 +154,8 @@ class ScenariosController < ApplicationController
     )
   end
 
+  def instances
+  end
 
   def group_player_add
     @player = @group.players.new(login: params[:login], password: params[:password])

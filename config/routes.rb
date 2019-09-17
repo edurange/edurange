@@ -22,7 +22,7 @@ Edurange::Application.routes.draw do
       post 'archive'
       post 'unarchive'
 
-      get  'users'
+      get  'players'
 
       post 'group_player_add'
       post 'group_player_delete'
@@ -47,8 +47,10 @@ Edurange::Application.routes.draw do
       post 'scoring_answer_comment_edit'
       post 'scoring_answer_comment_edit_show'
 
-      get  'guide'
-      get  'solution'
+      get 'instances'
+
+      get 'guide'
+      get 'solution'
     end
   end
 
