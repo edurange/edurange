@@ -116,7 +116,7 @@ class ScenarioLoader
     access.each do |hash|
       raise InvalidYAMLError unless hash.respond_to? :[]
       group.instance_groups.create!(
-        instance: @scenario.instances.find_by_name(hash["Instance"]),
+        instance: @scenario.instances.find_by_name!(hash["Instance"]),
         administrator: hash["Administrator"],
         ip_visible: hash["IP_Visible"]
       )

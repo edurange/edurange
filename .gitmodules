@@ -8,3 +8,7 @@
 	path = scenarios/production/getting_started
 	url = git@github.com:edurange/scenario-getting-started.git
 	branch = terraformize
+[submodule "scenarios/production/file_wrangler"]
+	path = scenarios/production/file_wrangler
+	url = git@github.com:edurange/scenario-file-wrangler.git
+	branch = terraformize
