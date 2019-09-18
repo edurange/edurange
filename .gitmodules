@@ -12,3 +12,7 @@
 	path = scenarios/production/file_wrangler
 	url = git@github.com:edurange/scenario-file-wrangler.git
 	branch = terraformize
+[submodule "scenarios/production/strace"]
+	path = scenarios/production/strace
+	url = git@github.com:edurange/strace-lyn.git
+	branch = terraformize
