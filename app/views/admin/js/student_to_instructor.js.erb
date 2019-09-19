@@ -2,4 +2,4 @@ $('#user-<%= @user.id %>').remove();
 $('.student-group-user-<%= @user.id %>').each(function(i, obj) {
     $(obj).remove();
 });
-$('#instructors-table').append('<%= escape_javascript(render("/admin/instructor", user: @user)) %>');
+$('#instructors-table > tbody').append('<%= escape_javascript(render("/admin/instructor", user: @user)) %>');

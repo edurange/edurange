@@ -1,0 +1,7 @@
+$('#modal-student-group-user-add').modal('hide');
+
+<% added_users.each do |user| %>
+$('#student-group-<%= student_group.id %>-table > tbody').append('<%=j render("/student_groups/student", student_group: student_group, user: user)%>');
+<% end %>
+$('#student-group-<%= student_group.id %>-collapse').collapse('show');
+$(':checkbox').prop('checked', false);

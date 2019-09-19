@@ -11,12 +11,23 @@ class User < ActiveRecord::Base
     student: 4
   }
 
+  attribute :role, default: 4
+
   has_many :scenarios, dependent: :destroy
   has_many :schedules
-  has_many :student_groups, dependent: :destroy, autosave: true
-  has_many :student_group_users, dependent: :destroy, autosave: true
 
-  after_initialize :set_defaults
+  has_many :student_groups,
+    dependent: :destroy,
+    autosave: true
+
+  has_many :student_group_users,
+    dependent: :destroy,
+    autosave: true
+
+  has_many :member_of_student_groups,
+    through: :student_group_users,
+    source: :student_group
+
   validates :registration_code, uniqueness: true, allow_blank: true
   validates :registration_code, presence: true, unless: :student?
 
@@ -29,21 +40,21 @@ class User < ActiveRecord::Base
     with: /\A[a-zA-Z0-9_]+\z/,
   }
 
-  # validate def has_default_student_group_if_instructor_or_admin
-  #   if instructor? or admin?
-  #     student_groups.find_by_name("All")
-  #   end
-  # end
+  validate def has_all_student_group
+    if self.admin? or self.instructor?
+      unless self.student_groups.select{|g| g.name == 'All'}.size == 1
+        self.errors.add(:base, 'Admins and Instructors must have default student group.')
+      end
+    end
+  end
 
-  validate :validate_running
-
-#  validate def has_all_student_group
-#    if self.admin? or self.instructor?
-#      unless self.student_groups.find_by_name('All')
-#        self.errors.add('Admins and Instructors must have default student group.')
-#      end
-#    end
-#  end
+  validate def student_in_student_group_all
+    if self.student?
+      unless self.student_group_users.select{|sgu| sgu.student_group.name == 'All'}.size == 1
+        errors.add(:base, "Student #{self.name} not in a student group 'All'")
+      end
+    end
+  end
 
   attr_accessor :invitee_registration_code
 
@@ -67,23 +78,23 @@ class User < ActiveRecord::Base
     end
   end
 
-  after_create def add_to_student_groups
+  after_initialize def add_to_student_groups
     if invited_to_student_group
       logger.debug("Adding #{self.email} to #{invited_to_student_group.name} and All")
-      invited_to_student_group.users << self
+      self.student_group_users.build(student_group: invited_to_student_group)
       invited_by = invited_to_student_group.user
       all_student_group = invited_by.student_groups.find_by(name: 'All')
-      all_student_group.users << self
+      self.student_group_users.build(student_group: all_student_group)
     end
 
     if invited_by_instructor_or_admin
       logger.debug("Adding #{self.email} to All")
       all_student_group = invited_by_instructor_or_admin.student_groups.find_by(name: 'All')
-      all_student_group.users << self
+      self.student_group_users.build(student_group: all_student_group)
     end
   end
 
-  def validate_running
+  validate def validate_running
     if self.changed? and self.scenarios.select{ |s| not s.stopped? }.size > 0
       errors.add(:running, "can not modify while a scenario is running")
     end
@@ -102,10 +113,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def set_defaults
-    self.role ||= :student
-  end
-
   alias is_admin?      admin?
   alias is_instructor? instructor?
   alias is_student?    student?
@@ -114,38 +121,17 @@ class User < ActiveRecord::Base
     SecureRandom.hex(REGISTRATION_CODE_LENGTH / 2)
   end
 
-  def role=(role)
-    case role
-    when 'student'
-      self.registration_code = nil
-      # students should not have any student_groups
-      self.student_groups.each do |student_group|
-        student_group.mark_for_destruction
-      end
-    when 'admin', 'instructor'
-      self.registration_code ||= self.class.generate_registration_code
-      self.create_custom_scenario_path!
-      # admins and instructors should not be in any student groups
-      self.student_group_users.each do |student_group_user|
-        student_group_user.mark_for_destruction
-      end
-      logger.debug("Creating default student group 'All'")
-      self.student_groups.find_or_initialize_by(name: "All")
-    end
-    super(role)
-  end
-
-  def create_custom_scenario_path!
-    if not File.exists? "#{Rails.root}/scenarios/custom"
-      FileUtils.mkdir "#{Rails.root}/scenarios/custom"
-    end
-    if not File.exists? "#{Rails.root}/scenarios/custom/#{self.id}"
-      FileUtils.mkdir "#{Rails.root}/scenarios/custom/#{self.id}"
-    end
+  def self.generate_password
+    SecureRandom.hex(16)
   end
 
   def User.new_instructor(params)
-    User.new(params.merge(password: SecureRandom.hex(16), role: 'instructor'))
+    User.new(params.merge(
+      password: User.generate_password,
+      registration_code: User.generate_registration_code,
+      role: 'instructor',
+      student_groups: [StudentGroup.new(name: 'All')]
+    ))
   end
 
   def email_credentials(password)
@@ -153,24 +139,41 @@ class User < ActiveRecord::Base
   end
 
   def student_to_instructor
-    self.role = 'instructor'
-    self.save!
-  end
+    User.transaction do
+      self.student_groups.find_or_create_by!(name: "All")
+      self.role = 'instructor'
+      self.member_of_student_groups.destroy_all
+      self.registration_code = self.class.generate_registration_code
 
-  def student_add_to_all(student)
-    if self.is_admin? or self.is_instructor? then
-      if sg = self.student_groups.find_by_name("All")
-        sgu = sg.student_group_users.new(user_id: student.id)
-        sgu.save
-      end
-      return sg, sgu
+
+      logger.debug("hello #{self.role}")
+
+      self.save!
     end
   end
 
-  def instructor_to_student(user)
-    self.role = 'student'
-    self.save
-    return user.student_add_to_all(self)
+  def student_group_all
+    self.student_groups.find_by_name("All")
+  end
+
+  def member_of_student_group_all
+    self.member_of_student_groups.find_by_name("All")
+  end
+
+  def instructor_to_student(admin)
+    unless student?
+      User.transaction do
+        self.registration_code = nil
+        self.student_groups.each do |student_group|
+          student_group.mark_for_destruction
+        end
+        self.student_group_users.create(student_group: admin.student_group_all)
+        self.role = 'student'
+        self.save
+      end
+    else
+      logger.warn("User #{name} is already a student")
+    end
   end
 
   def User.instructors_and_admins
