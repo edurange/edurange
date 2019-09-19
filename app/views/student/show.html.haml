@@ -1,8 +1,9 @@
 = render('partials/account_information_panel')
-
-%div.panel.panel-default
-  %div.panel-heading
-    %h4 Scenarios
+%br
+%div.card.card-default
+  %div.card-header
+    %div.card-title
+      %h4 Scenarios
   %table.table
     %thead
       %tr
@@ -19,7 +20,7 @@
             %td= scenario.user.name
             %td
               %div.btn-group.btn-group-xs
-                = link_to 'Show', student_scenario_path(scenario), class: 'btn btn-default'
+                = link_to 'Show', student_scenario_path(scenario), class: 'btn btn-primary'
       - else
         %tr
           %td{colspan: 4}

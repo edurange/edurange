@@ -14,8 +14,8 @@
     %main{:role => "main"}
       %div.col-md-8.col-md-offset-2
         = render 'layouts/messages'
-        %div.panel.panel-default
-          %div.panel-heading
+        %div.card
+          %div.card-header
             %h1
               EDURange
               %small
@@ -23,5 +23,5 @@
             %hr
             %h4
               Visit our website for more information - <a href="http://edurange.org">edurange.org</a>
-          %div.panel-body
+          %div.card-body
             = yield
