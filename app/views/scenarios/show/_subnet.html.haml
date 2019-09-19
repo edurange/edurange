@@ -4,7 +4,7 @@
       = subnet.name
   %div.inline-block
     %div.dropdown{id:"subnet-#{subnet.id}-dropdown" }
-      %button.btn.btn-default.dropdown-toggle{type:'button', id: "subnet-#{subnet.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+      %button.btn.btn-secondary.dropdown-toggle{type:'button', id: "subnet-#{subnet.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
         %span.caret
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "subnet-#{subnet.id}-dropdown-button" }
         %li{ id: "subnet-#{subnet.id}-boot-button-li", class: subnet.bootable? ? "" : "disabled" }
@@ -44,7 +44,7 @@
     - if subnet.scenario.modifiable?
       %div.inline-block
         %div.dropdown
-          %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-instances', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+          %button.btn.btn-secondary.dropdown-toggle{type:'button', id:'dropdown-instances', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
             %span.caret
           %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-clouds'}
             %li

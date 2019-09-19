@@ -1,11 +1,13 @@
 %h4 Actions
 %div.inline-block= render('actions', scenario: @scenario)
 
+%br
+%br
 %h4
   Clouds
   - if @scenario.modifiable?
     %div.inline-block.dropdown
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-clouds', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+      %button.btn.btn-secondary.dropdown-toggle{type:'button', id:'dropdown-clouds', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
         %span.caret
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-clouds'}
         %li
@@ -13,5 +15,3 @@
 %ul#clouds
   - @scenario.clouds.each do |cloud|
     = render '/scenarios/show/cloud', cloud: cloud
-
-

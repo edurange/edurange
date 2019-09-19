@@ -38,6 +38,6 @@
     = link_to('Show Boot Log', log_get_scenario_path(scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-secondary')
 
   - if scenario.can_destroy?
-    = link_to destroyme_scenario_path(scenario), method: :post, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
+    = link_to destroyme_scenario_path(scenario), method: :post, remote: true, "data-toggle" => "modal", 'data-target' => '#modal-scenario-destroy', class: 'btn btn-danger' do
       = render 'icon', name: 'trash'
       Destroy

@@ -1,10 +1,10 @@
-%div.panel.panel-default
-  %div.panel-heading
+%div.card
+  %div.card-header
     %h4 Editing scenario
-  %div.panel-body
+  %div.card-body
     - if @scenario.errors.any? then
-      %div.panel.panel-danger
-        %div.panel-body
+      %div.card
+        %div.card-body
           %ul
             - @scenario.errors.full_messages.each do |err|
               %li= err

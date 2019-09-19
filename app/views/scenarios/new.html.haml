@@ -1,4 +1,4 @@
-.modal#modal-scenario-clone{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+#modal-scenario-clone.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
   .modal-dialog
     .modal-content
       .modal-header
@@ -7,7 +7,7 @@
         %h3.modal-title.inline#title
           Clone Scenario
       .modal-body#modalbody
-        = form_tag clone_new_scenario_path(0), remote: true, method: :post do 
+        = form_tag clone_new_scenario_path(0), remote: true, method: :post do
           %p
           = hidden_field_tag "location"
           = hidden_field_tag "name"
@@ -16,17 +16,17 @@
             = text_field_tag "newname", nil, class: 'form-control'
             %span.help-block.inline#name-help
           %br
-          = submit_tag "Submit", :class => 'btn btn-default'
+          = submit_tag "Submit", :class => 'btn btn-primary'
       .modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
+        %button.btn.btn-danger{"data-dismiss" => "modal"}
           Close
 
-.panel.panel-default
-  .panel-heading.nav.nav-pills
+.card
+  .card-header.nav.nav-pills
     %li
-      %h4.panel-title#scenario-new-title
+      %h4.card-title#scenario-new-title
         New Scenario
-  .panel-body
+  .card-body
     %table.table
       - @templates.each do |template_kind|
         %thead
@@ -59,5 +59,4 @@
                       - if template_kind[:title] == 'Custom'
                         = link_to 'Obliterate', scenarios_obliterate_custom_path(filename: template[:filename]), remote: true, method: :post, :data => { confirm: "This will completely erase the scenario. Are you sure?" }, class: 'btn btn-danger'
 
-= link_to 'Back', scenarios_path, class: 'btn btn-default'
-
+= link_to 'Back', scenarios_path, class: 'btn btn-primary'

@@ -1,20 +1,20 @@
 %li{ id: "role-#{role.id}" }
-  %label#role-name
+  %label#rolename
     = role.name
   - if role.scenario.modifiable?
     %div.inline-block
-      %div.dropdown{ id: "role-#{role.id}-dropdown"  }
-        %button.btn.btn-default.dropdown-toggle{type:'button', id:"role-#{role.id}-dropdown", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+      .dropdown{ id: "role-#{role.id}-dropdown"  }
+        %button#dropdownMenuButton.btn.btn-secondary.dropdown-toggle{type:'button', id:"role-#{role.id}-dropdown", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
           %span.caret
-        %ul.dropdown-menu{ id: "dropdown-role-menu" , role: 'menu', "aria-labelledby" => "role-#{role.id}-dropdown" }
-          %li{ id: "role-#{role.id}-package-add-button-li", class: role.instances_stopped? ? "" : "disabled" }
+        .dropdown-menu{ id: "dropdown-role-menu" , role: 'menu', "aria-labelledby" => "role-#{role.id}-dropdown" }
+          .dropdown-item{ id: "role-#{role.id}-package-add-button-li", class: role.instances_stopped? ? "" : "disabled" }
             = link_to 'Add Package', '#modal-role-package-add', :data => {:toggle=>"modal"}, onclick: "role_package_add('#{role.id}', '#{role.name}')"
-          %li{ id: "role-#{role.id}-recipe-add-button-li", class: role.instances_stopped? ? "" : "disabled" }
+          .dropdown-item{ id: "role-#{role.id}-recipe-add-button-li", class: role.instances_stopped? ? "" : "disabled" }
             = link_to 'Add Recipe', '#modal-role-recipe-add', :data => {:toggle=>"modal"}, onclick: "role_recipe_add('#{role.id}', '#{role.name}')"
-          %li.divider
-          %li{ id: "role-#{role.id}-modify-button-li" }
+          .divider
+          .dropdown-item{ id: "role-#{role.id}-modify-button-li" }
             = link_to 'Modify','#modal-role-modify', :data => {:toggle=>"modal"}, onclick: "$('#modal-role-modify').find('#role-name').html($('#role-#{role.id}').find('#role-name').html().trim()); $('#modal-role-modify').find('#role_id').val('#{role.id}'); $('#modal-role-modify').find('#name-div').removeClass('has-error'); $('#modal-role-modify').find('#name').val(''); $('#modal-role-modify').find('#name-help').html(''); $('#modal-role-modify').find('#help-div').removeClass('has-error'); $('#modal-role-modify').find('#help-help').html('');"
-          %li{ id: "role-#{role.id}-delete-button-li", class: role.instances_stopped? ? "" : "disabled" }
+          .dropdown-item{ id: "role-#{role.id}-delete-button-li", class: role.instances_stopped? ? "" : "disabled" }
             = link_to 'Delete', role_delete_scenario_path(role_id: role), remote: true, method: :post
   %br
   Packages:
@@ -29,4 +29,6 @@
       %li{ id: "role-recipe-#{role_recipe.id}"}
         = role_recipe.recipe.name
         - if role.scenario.modifiable?
-          = link_to 'remove', role_recipe_remove_scenario_path(role_recipe_id: role_recipe.id), remote: true, method: :post, id: "role-recipe-#{role_recipe.id}-remove-button", class: role.instances_stopped? ? "" : "hidden"
+          = link_to 'remove', role_recipe_remove_scenario_path(role_recipe_id: role_recipe.id), remote: true, method: :post, id: "role-recipe-#{role_recipe.id}-remove-button", class: role.instances_stopped? ? "" : "hidden", class: "btn btn-danger"
+          %br
+          %br

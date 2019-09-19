@@ -4,7 +4,7 @@
       = instance.name
   %div.inline-block
     %div.dropdown{ id:"instance-#{instance.id}-dropdown" }
-      %button.btn.btn-default.dropdown-toggle{type:'button', id:"instance-#{instance.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+      %button.btn.btn-secondary.dropdown-toggle{type:'button', id:"instance-#{instance.id}-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
         %span.caret
       %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "instance-#{instance.id}-dropdown-button"}
         %li
@@ -75,12 +75,12 @@
   - if instance.scenario.modifiable?
     %div.inline-block
       %div.dropdown{ id:"instance-#{instance.id}-role-dropdown" }
-        %button.btn.btn-default.dropdown-toggle{type:'button', id:"instance-#{instance.id}-role-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
+        %button.btn.btn-secondary.dropdown-toggle{type:'button', id:"instance-#{instance.id}-role-dropdown-button", "data-toggle" => 'dropdown', "aria-expanded" => "true"}
           %span.caret
         %ul.dropdown-menu{role: 'menu', "aria-labelledby" => "instance-#{instance.id}-role-dropdown-button" }
           %li{ id: "instance-#{instance.id}-role-add-button-li", class: instance.stopped? ? "" : "disabled" }
             = link_to 'Add Role', "#modal-instance-role-add", :data => {:toggle=>"modal"}, onclick: "$('#modal-instance-role-add').find('#instance-name').html($('#instance-#{instance.id}-name').html().trim()); $('#modal-instance-role-add').find('#name').val(''); $('#modal-instance-role-add').find('#instance_id').val('#{instance.id}'); $('#modal-instance-role-add').find('#name-div').removeClass('has-error'); $('#modal-instance-role-add').find('#name-help').html(''); $('#modal-instance-role-add').find('#help-div').removeClass('has-error'); $('#modal-instance-role-add').find('#help-help').html('');", id: "instance-#{instance.id}-role-add-button"
-  
+
   %ul{ id: "instance-#{instance.id}-roles"}
     - instance.instance_roles.each do |instance_role|
       %li{ id: "instance-role-#{instance_role.id}" }

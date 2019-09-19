@@ -32,13 +32,13 @@
         %div.modal-footer
           %button.btn.btn-default{"data-dismiss" => "modal"}
             Close
-  %div.panel.panel-default
-    %div.panel-heading.panel-heading-with-tabs
-      %h4.panel-title#scenario-name=@scenario.name
-      %ul.nav.nav-tabs
-        %li{class: ('active' if request.path == student_scenario_path(@scenario))}= link_to('Scenario', student_scenario_path(@scenario))
-        %li{class: ('active' if request.path == student_scenario_guide_path(@scenario))}= link_to('Guide', student_scenario_guide_path(@scenario) )
-        %li{class: ('active' if request.path == student_scenario_commands_path)}= link_to('Command History', student_scenario_commands_path(@scenario))
-    %div.indent.panel-body
+  %div.card
+    %div.card-header
+      %h4.card-title#scenario-name=@scenario.name
+      .nav.nav-tabs
+        .nav-item.nav-link{class: ('active' if request.path == student_scenario_path(@scenario))}= link_to('Scenario', student_scenario_path(@scenario))
+        .nav-item.nav-link{class: ('active' if request.path == student_scenario_guide_path(@scenario))}= link_to('Guide', student_scenario_guide_path(@scenario) )
+        .nav-item.nav-link{class: ('active' if request.path == student_scenario_commands_path)}= link_to('Command History', student_scenario_commands_path(@scenario))
+    %div.indent.card-body
       = yield
 = render template: 'layouts/application'

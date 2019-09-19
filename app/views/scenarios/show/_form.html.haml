@@ -1,5 +1,5 @@
-%div.panel.panel-default
-  %div.panel-body
+%div.card
+  %div.card-body
     = simple_form_for(@scenario) do |f|
       = f.label "Select Scenario", nil, :style => "display:inline;"
       = f.error_notification
@@ -7,4 +7,3 @@
 
       .form-actions
         = f.button :submit, class: 'btn btn-primary'
-

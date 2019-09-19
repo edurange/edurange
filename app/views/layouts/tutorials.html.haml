@@ -1,8 +1,8 @@
 - content_for :main do
-  %div.panel.panel-default
-    %div.panel-heading.panel-heading-with-tabs
-      %h3.panel-title Documentation
+  %div.card.card
+    %div.card-header.card-header-tabs
+      %h3.card-title Documentation
       = render 'tutorials/tabs'
-    %div.panel-body
+    %div.card-body
       = yield
 = render template: 'layouts/application'

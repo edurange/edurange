@@ -12,7 +12,7 @@
           = link_to 'Scenarios', scenarios_path
           //%li{role: 'presentation', class: params[:controller] == 'schedules' ? "active" : "" }
           //  = link_to 'Scheduler', schedules_path
-      %li.nav-link.justify-content-center{role: 'presentation', class: params[:controller] == 'tutorials' ? "active" : "" }
+      %li.nav-link{role: 'presentation', class: params[:controller] == 'tutorials' ? "active" : "" }
         = link_to 'Help Docs', tutorials_path
     %ul.nav.navbar-nav.navbar-right
       - if current_user
