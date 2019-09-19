@@ -28,66 +28,67 @@
         %td
           - if instance_group.instance.ip_address_public
             = instance_group.instance.ip_address_public
-.panel-body
-  %h4 Questions
-  - @scenario.questions.order(:order).each_with_index do |question, question_index|
-    %dl{ id: "question.#{question.id}" }
-      %b= question.order.to_s + '.'
-      = question.text
-      %p
-      %dl
-        %div{ id: "question-#{question.id}-answers" }
-          %label Answer Type:
-          = question.type_of
-          %br
-          - if question.type_of == "String" or question.type_of == "Number"
-            - answers = question.answers.where("user_id = ?", current_user.id)
-            - if answers
+- if !@scenario.questions.empty?
+  .panel-body
+    %h4 Questions
+    - @scenario.questions.order(:order).each_with_index do |question, question_index|
+      %dl{ id: "question.#{question.id}" }
+        %b= question.order.to_s + '.'
+        = question.text
+        %p
+        %dl
+          %div{ id: "question-#{question.id}-answers" }
+            %label Answer Type:
+            = question.type_of
+            %br
+            - if question.type_of == "String" or question.type_of == "Number"
+              - answers = question.answers.where("user_id = ?", current_user.id)
+              - if answers
+                %label My Answers:
+                %table.table{ id: "question-#{question.id}-answers-table" }
+                  %tr
+                    %th Answer
+                    %th Correct
+                    %th Points
+                    %th Comments
+                    %th Date
+                  - answers.each_with_index do |answer, answer_index|
+                    = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
+
+            - elsif question.type_of == "Essay"
               %label My Answers:
               %table.table{ id: "question-#{question.id}-answers-table" }
                 %tr
                   %th Answer
-                  %th Correct
-                  %th Points
+                  %th Graded
+                  %th Points Awarded
+                  %th Points Possible
                   %th Comments
                   %th Date
-                - answers.each_with_index do |answer, answer_index|
-                  = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
+                  %th
+                  - if answers = question.answers.where("user_id = ?", current_user.id)
+                    - answers.each do |answer|
+                      = render 'answer_essay', answer: answer
+            - if question.type_of == "String"
+              = form_tag answer_string_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+                %div#help-div
+                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
+                  %span.help-block#help-span
+                %br
+                = submit_tag "Submit", :class => 'btn btn-default'
 
-          - elsif question.type_of == "Essay"
-            %label My Answers:
-            %table.table{ id: "question-#{question.id}-answers-table" }
-              %tr
-                %th Answer
-                %th Graded
-                %th Points Awarded
-                %th Points Possible
-                %th Comments
-                %th Date
-                %th
-                - if answers = question.answers.where("user_id = ?", current_user.id)
-                  - answers.each do |answer|
-                    = render 'answer_essay', answer: answer
-          - if question.type_of == "String"
-            = form_tag answer_string_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-              %div#help-div
-                = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-                %span.help-block#help-span
-              %br
-              = submit_tag "Submit", :class => 'btn btn-default'
+            - elsif question.type_of == "Number"
+              = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+                %div#help-div
+                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
+                  %span.help-block#help-span
+                %br
+                = submit_tag "Submit", :class => 'btn btn-default'
 
-          - elsif question.type_of == "Number"
-            = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-              %div#help-div
-                = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-                %span.help-block#help-span
-              %br
-              = submit_tag "Submit", :class => 'btn btn-default'
-
-          - elsif question.type_of == "Essay"
-            = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-              %div#help-div
-                = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
-                %span.help-block#help-span
-              %br
-              = submit_tag "Submit", :class => 'btn btn-default'
+            - elsif question.type_of == "Essay"
+              = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+                %div#help-div
+                  = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
+                  %span.help-block#help-span
+                %br
+                = submit_tag "Submit", :class => 'btn btn-default'

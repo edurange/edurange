@@ -1,0 +1,55 @@
+%div{ id: "student-group-#{student_group.id}"}
+  %div.panel-body.student-group-heading
+    %h4.panel-title= student_group.name
+    = link_to 'expand/collapse', "#student-group-#{student_group.id}",
+      data: { toggle: 'collapse', target: "#student-group-#{student_group.id}-collapse", parent: '#student_groups' }
+    - if student_group.name != "All"
+      .btn-group.pull-right
+        = link_to student_group_path(student_group),
+            remote: true, method: :delete, role: "button",
+            class: 'btn btn-default',
+            data: { confirm: "Are you sure you want to delete Student Group #{student_group.name}?" } do
+          = render 'icon', name: 'trash'
+          Delete
+
+%div.collapse{ id: "student-group-#{student_group.id}-collapse", class: (student_group.name == "All" ? "in" : "") }
+  %div.panel-body
+    %dl
+      %dt Registration Code
+      %dd= student_group.registration_code
+
+  = form_tag users_student_groups_path, remote: true, method: :post, class: 'form-inline' do
+
+    %table.table{ id: "student-group-#{student_group.id}-table"}
+      %thead
+        %tr
+          %th
+            = link_to 'all', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
+            = link_to 'none', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
+          %th Name
+          %th Email
+          %th Organization
+      %tbody
+        - if student_group.users.empty?
+          %tr
+            %td{colspan: 4} No Users
+        - else
+          - student_group.users.each do |user|
+            = render 'student_groups/student', student_group: student_group, user: user
+      %tfoot
+        %tr
+          %td{ colspan: 4 }
+            = link_to 'all', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
+            = link_to 'none', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
+            %b with selected:
+            - if student_group.name == "All"
+              = submit_tag("Add To", name: 'add')
+              = (select_tag 'add_to_id',
+                options_for_select(StudentGroup.all.select{ |s| s.name != "All" and s.user.id == current_user.id }.collect{ |s| [s.name, s.id] }),
+                class: 'form-control input-sm', id: 'student-group-select') + ','
+            = hidden_field_tag('remove_from_id', student_group.id)
+            = submit_tag("Remove", name: 'remove')

@@ -154,9 +154,6 @@ class ScenariosController < ApplicationController
     )
   end
 
-  def instances
-  end
-
   def group_player_add
     @player = @group.players.new(login: params[:login], password: params[:password])
     @player.save

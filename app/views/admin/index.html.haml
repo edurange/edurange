@@ -1,6 +1,6 @@
 = render 'admin/modals/create_instructor'
-= render 'admin/modals/student_group_create'
-= render 'admin/modals/student_group_user_add'
+= render 'student_groups/modals/create'
+= render 'student_groups/modals/add_users'
 
 = render 'partials/account_information_panel'
 
@@ -13,75 +13,59 @@
         FAILED TO VALIDATE CREDENTIALS
     = render 'admin/aws_settings.html.haml'
 
+= render 'partials/student_groups_panel'
+
 %div.panel.panel-default
   %div.panel-heading
     %h3.panel-title
-      Users
-  %div.panel-body
-    %label Registration Code:
-    %dl
-      = current_user.registration_code
-    %p
+      Instructors
+    %div.btn-group.pull-right
+      = link_to 'Create Instructor', "#modal-create-instructor", :data => {:toggle=>"modal"},
+          class: 'btn btn-default', |
+          onclick: "$('#modal-create-instructor').find('#email').val('');" +                  |
+                   "$('#modal-create-instructor').find('#name').val('');" +                   |
+                   "$('#modal-create-instructor').find('#organization').val('');"             |
+  %table.table#instructors-table
+    %thead
+      %tr
+        %th Name
+        %th Email
+        %th Organization
+        %th
+    %tbody
+      - @instructors.each do |user|
+        = render 'instructor', user: user
 
-    %hr
-
-    %label User Information:
-
-    %dl
-      %span.pull-right= link_to '+ create instructor', "#modal-create-instructor", :data => {:toggle=>"modal"}, |
-              onclick: "$('#modal-create-instructor').find('#email').val('');" +                  |
-                       "$('#modal-create-instructor').find('#name').val('');" +                   |
-                       "$('#modal-create-instructor').find('#organization').val('');"             |
-      %label Instructors:
-      %dl
-
-        %table.table#instructors-table
-          %tr
-            %th Name
-            %th Email
-            %th Organization
-            %th
-          - @instructors.each do |user|
-            = render 'instructor', user: user
-
-      %label
-        Students:
-        = link_to 'expand/collapse', '#students-table',
-            data: { toggle: 'collapse', target: '#students-table-collapse' }
-
-      %dl
-        %div.collapse.in#students-table-collapse
-          = form_tag '#', method: :post, remote: true, class: 'form-inline', id: 'students-table-form' do
-            = hidden_field_tag 'action', value: 'delete'
-            %table.table#students-table
-              %tr
-                %td
-                  = link_to 'all', "javascript:void(0)",
-                    onclick: "$('#students-table input:checkbox').prop('checked', true);"
-                  = link_to 'none', "javascript:void(0)",
-                    onclick: "$('#students-table input:checkbox').prop('checked', false);"
-                %th Name
-                %th Email
-                %th Organization
-                %th
-              - @students.each do |user|
-                = render 'student', user: user
-              %tr#foot
-                %td{ colspan: "5" }
-                  = link_to 'all', "javascript:void(0)",
-                    onclick: "$('#students-table input:checkbox').prop('checked', true);"
-                  = link_to 'none', "javascript:void(0)",
-                    onclick: "$('#students-table input:checkbox').prop('checked', false);"
-                  %b with selected:
-                  = (link_to 'add to all', "javascript:void(0);",
-                    onclick: "$('#students-table-form').attr('action', '#{admin_student_add_to_all_path}');$('#students-table-form').submit();") + ','
-                  = link_to('delete', "javascript:void(0);", remote: true, method: :post,
-                    onclick: "$('#students-table-form').attr('action', '#{admin_user_delete_path}');$('#students-table-form').submit();",
-                    :data => { :confirm => "Are you sure you want to delete all selected students?" })
-
-      %span.pull-right= link_to '+ create student group', '#modal-student-group-create', data: {toggle: "modal"}, onclick: "$('#modal-student-group-create').find('#name-div').removeClass('has-error'); $('#modal-student-group-create').find('#name').val(''); $('#modal-student-group-create').find('#name-help').html(''); "
-      %label Student groups:
-      %dl
-        %dl{ id: "student-groups" }
-          - current_user.student_groups.each do |student_group|
-            = render 'student_group', student_group: student_group, scenario: @scenario
+%div.panel.panel-default
+  %div.panel-heading
+    %h3.panel-title Students
+  = form_tag '#', method: :post, remote: true, class: 'form-inline', id: 'students-table-form' do
+    = hidden_field_tag 'action', value: 'delete'
+    %table.table#students-table
+      %thead
+        %tr
+          %th
+            = link_to 'all', "javascript:void(0)",
+              onclick: "$('#students-table input:checkbox').prop('checked', true);"
+            = link_to 'none', "javascript:void(0)",
+              onclick: "$('#students-table input:checkbox').prop('checked', false);"
+          %th Name
+          %th Email
+          %th Organization
+          %th
+      %tbody
+        - @students.each do |user|
+          = render 'student', user: user
+      %tfoot
+        %tr
+          %td{ colspan: "5" }
+            = link_to 'all', "javascript:void(0)",
+              onclick: "$('#students-table input:checkbox').prop('checked', true);"
+            = link_to 'none', "javascript:void(0)",
+              onclick: "$('#students-table input:checkbox').prop('checked', false);"
+            %b with selected:
+            = (link_to 'add to all', "javascript:void(0);",
+              onclick: "$('#students-table-form').attr('action', '#{admin_student_add_to_all_path}');$('#students-table-form').submit();") + ','
+            = link_to('delete', "javascript:void(0);", remote: true, method: :post,
+              onclick: "$('#students-table-form').attr('action', '#{admin_user_delete_path}');$('#students-table-form').submit();",
+              :data => { :confirm => "Are you sure you want to delete all selected students?" })

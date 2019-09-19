@@ -10,6 +10,15 @@ Edurange::Application.routes.draw do
     get 'instructor_manual'
   end
 
+  resources :student_groups do
+    collection do
+      post 'users', action: 'add_or_remove_users'
+    end
+    # member do
+    #   post 'users', action: 'add_or_remove_users'
+    # end
+  end
+
   resources :commands, only: [:index]
 
   resources :scenarios do
