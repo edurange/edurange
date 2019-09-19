@@ -21,15 +21,15 @@ Rails.application.configure do
     from: 'no-reply@edurange.org'
   }
   config.action_mailer.default_url_options = {
-    host: 'edurange.org'
+	  host: 'edurange.org'
   }
   config.action_mailer.smtp_settings = {
     address:                  'smtp.gmail.com',
     port:                        587,
-    domain:                   'localhost',
-    user_name:              '',
-    password:                 '',
-    authentication:          'plain',
+    domain:                    'gmail.com',
+    user_name:                 ENV["ADMIN_EMAIL"],
+    password:              ENV["ADMIN_PASSWORD"],
+    authentication:        'plain',
     enable_starttls_auto: true
   }
 
@@ -57,4 +57,5 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+ 
 end
