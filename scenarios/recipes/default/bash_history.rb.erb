@@ -3,7 +3,7 @@ file '/root/upload_bash_history' do
   x += "\n"
   x += 'cat /home/*/.bash_history.log | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.bash_history_page %>"'
   x += "\n"
-  x += 'cat /home/*/.cli.csv | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.bash_history_page %>"'
+  x += 'cat /home/*/.cli.csv | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.ttylog_page %>"'
   content x
   owner 'root'
   group 'root'

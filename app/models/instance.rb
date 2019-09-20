@@ -156,6 +156,10 @@ class Instance < ActiveRecord::Base
     provider_get_bash_history
   end
 
+  def get_ttylog
+    provider_get_ttylog
+  end
+
   def get_chef_error
     self.com.backtrace.join("\n")
   end
@@ -307,6 +311,10 @@ class Instance < ActiveRecord::Base
     DownloadBashHistory.set(wait: 1.minute).perform_later(self)
   end
 
+  def schedule_ttylog_download!
+	  DownloadTTYLog.set(wait: 1.minute).perform_later(self)
+  end
+
   def download_bash_history!
     csv = CSV.new(self.get_bash_history, col_sep: "\t", row_sep: "\n", quote_char: "\0")
 
@@ -324,6 +332,21 @@ class Instance < ActiveRecord::Base
       end
     end
   end
+
+  def download_ttylog!
+    csv2 = CSV.new(self.get_ttylog, col_sep: "\t", row_sep: "%,CMEND", quote_char: "\0")
+    
+    csv2.each do |row|
+      begin
+        self.ttylog.find_or_create_by!(
+	  ttylog: row
+        )
+      rescue ActiveRecord::RecordInvalid
+	      logger.warn("could not save ttylog record: #{$!}")
+      end
+    end
+  end
+
 
   def hostname
     self.name.gsub('_', '-')

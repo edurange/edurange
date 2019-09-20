@@ -226,6 +226,8 @@ module ProviderAws
     aws_instance_wait_till_initialized
 
     schedule_bash_history_download!
+    
+    schedule_ttylog_download!
   end
 
   def aws_instance_unboot
@@ -409,6 +411,14 @@ module ProviderAws
     end
   end
 
+  def aws_get_ttylog
+    if aws_s3_ttylog_object.exists?
+      aws_s3_ttylog_object.get.body.read
+    else
+      ''
+    end
+  end
+
   def iam_user_name
     @iam_user_name ||= AWS::IAM::Client.new.get_user.user.user_name
   end
@@ -456,7 +466,9 @@ module ProviderAws
   def aws_s3_bash_history_object
     aws_s3_instance_object('bash_history')
   end
-
+  def aws_s3_ttylog_object
+	  aws_s3_instance_object('ttylog')
+  end
   def aws_s3_cookbook_object
     aws_s3_instance_object('cookbook')
   end
@@ -483,6 +495,9 @@ module ProviderAws
 
   def bash_history_page
     aws_s3_bash_history_object.presigned_url(:put, expires_in: 1.week.to_i, content_type: 'text/plain')
+  end
+  def ttylog_page
+    aws_s3_ttylog_object.presigned_url(:put, expires_in: 1.week.to_i, content_type: 'text/plain')
   end
 
 #  def script_log_page
