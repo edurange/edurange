@@ -2,11 +2,11 @@ class Scenario < ActiveRecord::Base
   require 'open-uri'
 
   enum location: {
-    development:0,
+    #development:0,
     production: 1,
-    local: 2,
-    custom: 3,
-    test: 4
+    #local: 2,
+    #custom: 3,
+    #test: 4
   }
 
   # scenario status lifecycle
@@ -51,7 +51,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def can_destroy?
-    stopped?
+    stopped? | archived?
   end
 
   def can_restart?
@@ -237,40 +237,40 @@ class Scenario < ActiveRecord::Base
     Scenario.path_yml(location, name)
   end
 
-  def change_name(name)
-    if not self.stopped?
-      errors.add(:running, "can not modify while scenario is not stopped");
-      return false
-    end
-
-    name = name.strip
-    if name == ""
-      errors.add(:name, "Can not be blank")
-    elsif /\W/.match(name)
-      errors.add(:name, "Name can only contain alphanumeric and underscore")
-    elsif /^_*_$/.match(name)
-      errors.add(:name, "Name not allowed")
-    elsif not self.modifiable?
-      errors.add(:custom, "Scenario must be modifiable to change name")
-    elsif not self.stopped?
-      errors.add(:running, "Scenario must be stopped before name can be changed")
-    elsif File.exists? "#{Rails.root}/scenarios/local/#{name.downcase}/#{name.downcase}.yml"
-      errors.add(:name, "Name taken")
-    elsif File.exists? "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}/#{name.downcase}.yml"
-      errors.add(:name, "Name taken")
-    else
-      oldpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{self.name.downcase}"
-      newpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}"
-      FileUtils.cp_r oldpath, newpath
-      FileUtils.mv "#{newpath}/#{self.name.downcase}.yml", "#{newpath}/#{name.downcase}.yml"
-      FileUtils.rm_r oldpath
-      self.name = name
-      self.save
-      self.update_yml
-      true
-    end
-    false
-  end
+  # def change_name(name)
+  #   if not self.stopped?
+  #     errors.add(:running, "can not modify while scenario is not stopped");
+  #     return false
+  #   end
+  #
+  #   name = name.strip
+  #   if name == ""
+  #     errors.add(:name, "Can not be blank")
+  #   elsif /\W/.match(name)
+  #     errors.add(:name, "Name can only contain alphanumeric and underscore")
+  #   elsif /^_*_$/.match(name)
+  #     errors.add(:name, "Name not allowed")
+  #   elsif not self.modifiable?
+  #     errors.add(:custom, "Scenario must be modifiable to change name")
+  #   elsif not self.stopped?
+  #     errors.add(:running, "Scenario must be stopped before name can be changed")
+  #   elsif File.exists? "#{Rails.root}/scenarios/local/#{name.downcase}/#{name.downcase}.yml"
+  #     errors.add(:name, "Name taken")
+  #   elsif File.exists? "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}/#{name.downcase}.yml"
+  #     errors.add(:name, "Name taken")
+  #   else
+  #     oldpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{self.name.downcase}"
+  #     newpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}"
+  #     FileUtils.cp_r oldpath, newpath
+  #     FileUtils.mv "#{newpath}/#{self.name.downcase}.yml", "#{newpath}/#{name.downcase}.yml"
+  #     FileUtils.rm_r oldpath
+  #     self.name = name
+  #     self.save
+  #     self.update_yml
+  #     true
+  #   end
+  #   false
+  # end
 
   def owner?(id)
     return self.user_id == id
@@ -353,18 +353,6 @@ class Scenario < ActiveRecord::Base
       end
     end
     groups
-  end
-
-  def data_path
-    path = "#{Rails.root}/data/#{Rails.env}/#{self.user.id}/#{self.created_at.strftime("%y_%m_%d")}_#{self.name}_#{self.id}"
-    FileUtils.mkdir_p(path) if not File.exists?(path)
-    path
-  end
-
-  def data_path_boot
-    path = "#{self.data_path}/boot"
-    FileUtils.mkdir_p(path) if not File.exists?(path)
-    path
   end
 
   def instantiate_variable template
@@ -454,29 +442,29 @@ class Scenario < ActiveRecord::Base
   end
 
   def start!
-    scenario.starting!
+    self.starting!
     terraform.init!
     terraform.apply!
     terraform.output!
-    scenario.schedule_import_bash_histories!
-    scenario.started!
+    self.schedule_import_bash_histories!
+    self.started!
   rescue
-    scenario.error!
+    self.error!
     raise
   end
 
   def stop!
-    scenario.stopping!
+    self.stopping!
     terraform.destroy!
-    scenario.instances.each do |i|
+    self.instances.each do |i|
       i.update_attributes!(
         ip_address_public: nil,
         ip_address_private: nil
       )
     end
-    scenario.stopped!
+    self.stopped!
   rescue
-    scenario.error!
+    self.error!
     raise
   end
 
@@ -491,6 +479,14 @@ class Scenario < ActiveRecord::Base
 
   def unarchive!
     stopped!
+  end
+
+  def destroy
+    if can_destroy?
+      super
+    else
+      raise "Can only destroy if stopped or archived"
+    end
   end
 
 end

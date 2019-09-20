@@ -5,7 +5,7 @@ class ScenariosController < ApplicationController
   before_action :set_scenario, only: [
     :edit, :update, :show, :destroy,
     :start, :stop, :archive, :unarchive, :restart,
-    :players, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
+    :players, :player_add, :player_group_add, :player_delete,
     :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
     :scoring_answer_essay_grade_delete,
@@ -14,15 +14,14 @@ class ScenariosController < ApplicationController
   ]
 
   before_action :set_group, only: [
-    :group_delete, :group_modify, :group_admin_access_add, :group_user_access_add, :group_player_add,
-    :group_student_group_add, :group_student_group_remove, :group_instructions_get, :group_instructions_modify
+    :group_player_add,
+    :group_student_group_add,
+    :group_student_group_remove
   ]
   before_action :set_player, only: [
     :group_player_delete
   ]
-  before_action :set_question, only: [
-    :scoring_question_delete, :scoring_question_modify, :scoring_question_move_up, :scoring_question_move_down
-  ]
+
   before_action :set_student, only: [
     :scoring_answers_show
   ]
@@ -336,65 +335,9 @@ class ScenariosController < ApplicationController
       end
     end
 
-    def set_cloud
-      @cloud = Cloud.find(params[:cloud_id])
-      if not current_user.owns? @cloud
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_subnet
-      @subnet = Subnet.find(params[:subnet_id])
-      if not current_user.owns? @subnet
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_instance
-      @instance = Instance.find(params[:instance_id])
-      if not current_user.owns? @instance
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
     def set_group
       @group = Group.find(params[:group_id])
       if not current_user.owns? @group
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_instance_role
-      @instance_role = InstanceRole.find(params[:instance_role_id])
-      if not current_user.owns? @instance_role
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_role
-      @role = Role.find(params[:role_id])
-      if not current_user.owns? @role
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_role_recipe
-      @role_recipe = RoleRecipe.find(params[:role_recipe_id])
-      if not current_user.owns? @role_recipe
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_recipe
-      @recipe = Recipe.find(params[:recipe_id])
-      if not current_user.owns? @recipe
         head :ok, content_type: "text/html"
         return
       end
