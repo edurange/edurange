@@ -2,6 +2,8 @@ file '/root/upload_bash_history' do
   x  = '#!/usr/bin/env bash'
   x += "\n"
   x += 'cat /home/*/.bash_history.log | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.bash_history_page %>"'
+  x += "\n"
+  x += 'cat /home/*/.cli.csv | curl -X PUT --data-binary @- -H "Content-Type: text/plain" "<%= instance.bash_history_page %>"'
   content x
   owner 'root'
   group 'root'
@@ -14,7 +16,7 @@ cron 'schedule_upload_bash_history' do
 end
 
 ruby_block "bash_history_logging" do
-	prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-)\t$(cat ~/.cli.csv | tr -d "\n" | tr -d "\r")" >> ~/.bash_history.log ; echo ""  > ~/.cli.csv'
+	prompt_command = 'echo -e "$?\t$(date --utc +%FT%T.%3NZ)\t$(whoami)\t$(pwd)\t$(history 1 | cut -c 8-) >> ~/.bash_history.log'
     set_prompt_command = "PROMPT_COMMAND='#{prompt_command}'"
     block do
       if File.exist?('/etc/bash.bashrc')
