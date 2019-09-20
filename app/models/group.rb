@@ -9,16 +9,6 @@ class Group < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: { scope: :scenario, message: "Name taken" }
 
-  # return instances which the group has administrative access to
-  def administrative_access_to
-    instances = self.instance_groups.select {|instance_group| instance_group.administrator }.map {|instance_group| instance_group.instance}
-  end
-
-  # return instances which the group has user level access to
-  def user_access_to
-    instances = self.instance_groups.select {|instance_group| !instance_group.administrator }.map {|instance_group| instance_group.instance}
-  end
-
   # add a group of students to the group and return list of added players
   def student_group_add(student_group_name)
     players = []
@@ -68,21 +58,6 @@ class Group < ActiveRecord::Base
       end
     end
     players
-  end
-
-  # update scenario instructions
-  def update_instructions(instructions)
-    self.update_attribute(:instructions, instructions)
-    self.update_scenario_modified
-  end
-
-  # add an instance to the list of instances that the group has user level access to
-  def user_access_add(instance)
-    instance_group = self.instance_groups.new(instance_id: instance.id, administrator: false)
-    if not instance_group.save
-      errors.add(:instance_group, "could not create instance group: #{instance_group.errors.messages}")
-    end
-    return instance_group
   end
 
   def instantiate_variable(variable_template)
