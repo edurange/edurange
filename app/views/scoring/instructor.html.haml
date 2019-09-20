@@ -1,9 +1,0 @@
-%h3= @scenario.name
-%p
-- @scenario.questions.each_with_index do |question, index|
-    = (index += 1).to_s + "."
-    = question.question_text
-    %dl
-    %dd= question.answer_text
-    %br
-%p
