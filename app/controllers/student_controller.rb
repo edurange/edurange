@@ -3,7 +3,7 @@ class StudentController < ApplicationController
 
   def show
     @scenarios = []
-    Player.where(user_id: current_user.id).each do |p|
+    current_user.players.each do |p|
       @scenarios << p.scenario if not @scenarios.include? p.scenario
     end
   end

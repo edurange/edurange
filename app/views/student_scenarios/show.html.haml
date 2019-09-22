@@ -69,22 +69,13 @@
                   - if answers = question.answers.where("user_id = ?", current_user.id)
                     - answers.each do |answer|
                       = render 'answer_essay', answer: answer
-            - if question.type_of == "String"
-              = form_tag answer_string_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+            - if question.string? | question.number?
+              = form_tag answer_string_or_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
                 %div#help-div
                   = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
                   %span.help-block#help-span
                 %br
                 = submit_tag "Submit", :class => 'btn btn-default'
-
-            - elsif question.type_of == "Number"
-              = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-                %div#help-div
-                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-                  %span.help-block#help-span
-                %br
-                = submit_tag "Submit", :class => 'btn btn-default'
-
             - elsif question.type_of == "Essay"
               = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
                 %div#help-div
