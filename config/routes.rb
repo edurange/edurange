@@ -86,8 +86,7 @@ Edurange::Application.routes.draw do
   get 'student/scenarios/:scenario_id/guide', to: 'student_scenarios#show_scenario_guide', as: 'student_scenario_guide'
   get 'student/scenarios/:scenario_id/commands', to: 'student_scenario_commands#index', as: 'student_scenario_commands'
 
-  post 'student/scenarios/:scenario_id/answer_string', to: 'student_scenarios#answer_string', as: 'answer_string_student'
-  post 'student/:scenario_id/answer_number', to: 'student_scenarios#answer_number', as: 'answer_number_student'
+  post 'student/scenarios/:scenario_id/answer_string_or_number', to: 'student_scenarios#answer_string_or_number', as: 'answer_string_or_number_student'
   post 'student/:scenario_id/answer_essay', to: 'student_scenarios#answer_essay', as: 'answer_essay_student'
   post 'student/:scenario_id/answer_essay_delete', to: 'student_scenarios#answer_essay_delete', as: 'answer_essay_delete_student'
   post 'student/:scenario_id/answer_essay_show', to: 'student_scenarios#answer_essay_show', as: 'answer_essay_show_student'

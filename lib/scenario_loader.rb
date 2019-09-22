@@ -127,13 +127,13 @@ class ScenarioLoader
     return if yaml["Scoring"].nil?
     raise InvalidYAMLError unless yaml["Scoring"].respond_to? :each
 
-    yaml["Scoring"].each do |hash|
+    yaml["Scoring"].each_with_index do |hash, index|
       raise InvalidYAMLError unless hash.respond_to? :[]
       @scenario.questions.create!(
         type_of: hash["Type"],
         text: hash["Text"],
         points: hash["Points"],
-        order: hash["Order"],
+        order: index + 1,
         options: hash["Options"],
         values: format_values(hash["Values"])
       )

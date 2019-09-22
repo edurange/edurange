@@ -6,7 +6,7 @@ class Scenario < ActiveRecord::Base
     production: 1,
     #local: 2,
     #custom: 3,
-    #test: 4
+    test: 4
   }
 
   # scenario status lifecycle

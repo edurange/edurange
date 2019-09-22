@@ -18,16 +18,16 @@
       %dt Registration Code
       %dd= student_group.registration_code
 
-  = form_tag users_student_groups_path, remote: true, method: :post, class: 'form-inline' do
+  = form_tag users_student_groups_path, remote: true, method: :post, class: 'form-inline', id: "student-group-#{student_group.id}-form" do
 
     %table.table{ id: "student-group-#{student_group.id}-table"}
       %thead
         %tr
           %th
             = link_to 'all', "javascript:void(0)",
-              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
+              onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',true);"
             = link_to 'none', "javascript:void(0)",
-              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
+              onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',false);"
           %th Name
           %th Email
           %th Organization
@@ -41,15 +41,22 @@
       %tfoot
         %tr
           %td{ colspan: 4 }
-            = link_to 'all', "javascript:void(0)",
-              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
-            = link_to 'none', "javascript:void(0)",
-              onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
-            %b with selected:
-            - if student_group.name == "All"
-              = submit_tag("Add To", name: 'add')
-              = (select_tag 'add_to_id',
-                options_for_select(StudentGroup.all.select{ |s| s.name != "All" and s.user.id == current_user.id }.collect{ |s| [s.name, s.id] }),
-                class: 'form-control input-sm', id: 'student-group-select') + ','
-            = hidden_field_tag('remove_from_id', student_group.id)
-            = submit_tag("Remove", name: 'remove')
+            .form-inline.row
+              .col-md-1
+                .form-group
+                  = link_to 'all', "javascript:void(0)",
+                    onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',true);"
+                .form-group
+                  = link_to 'none', "javascript:void(0)",
+                    onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',false);"
+              - if student_group.name == "All"
+                .col-md-2
+                  .form-group
+                    = submit_tag("Add Selected To", name: 'add', class: 'btn btn-default')
+                  .form-group
+                    = (select_tag 'add_to_id',
+                      options_for_select(StudentGroup.all.select{ |s| s.name != "All" and s.user.id == current_user.id }.collect{ |s| [s.name, s.id] }),
+                      class: 'form-control input-sm', id: 'student-group-select')
+              .form-group.col-md-1
+                = hidden_field_tag('remove_from_id', student_group.id)
+                = submit_tag("Remove Selected", name: 'remove', class: 'btn btn-default')

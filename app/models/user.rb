@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
     through: :student_group_users,
     source: :student_group
 
+  has_many :players
+
   validates :registration_code, uniqueness: true, allow_blank: true
   validates :registration_code, presence: true, unless: :student?
 
