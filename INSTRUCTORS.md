@@ -2,7 +2,6 @@
 
 Join us in #edurange on irc.freenode.net!
 
-
 EDURange is a project sponsored by the National Science Foundation intended to help automate creation of cyber security training games.
 ## Introduction
 EDURange is working!  This document will be updated at new features are added.  EDURange is both a collection of interactive, collaborative cybersecurity exercises and a framework for creating these exercises. Currently, we have
@@ -43,7 +42,7 @@ the future, we will provide a form on this website for you to request access, bu
 you have an account, the URL to sign in will be
 https://edurange.signin.aws.amazon.com/
 console
-After you login to the console, you can navigate to EC2. 
+After you login to the console, you can navigate to EC2.
 
 At the upper right, there will be a dropdown tab for the different AWS centers. You want East (N Virginia)
 and you should see a heading called Resources. Under that, click on the link to
@@ -71,8 +70,8 @@ Note: If you are new to EDURange, you can just use the existing Instructor machi
 After logging in to the instructor machine,
 > cd edurange
 ## Usage
-    
-We now have three scenarios - 
+
+We now have three scenarios -
 - recon.yml, a host discovery game with a scoring site (github.com/sboesen/edurange_scoring)
 - elf.yml, an scenario with an instances with where 'ls' has an elf infection. Scoring is being developed to support elf and other scenarios.
 - scapy.yml
@@ -99,7 +98,7 @@ should have that information.  You should
 be familiar with how to specify an network address using CIDR notation or as a range of IP addresses.
 
 
-The VM that you will use to scan and the network 
+The VM that you will use to scan and the network
 that you will be scanning are on AWS/EC2.  
 The first step  is to login to the gateway.  The instructor will have the IP address of the gateway.
 The main purpose of the gateway is to allow you to login to your player VM instance.  The gateway

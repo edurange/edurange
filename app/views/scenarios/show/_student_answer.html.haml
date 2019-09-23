@@ -1,4 +1,4 @@
-- if question.type_of == "String" or question.type_of == "Number"
+- if question.string? or question.number?
   %tr{ id: "answer-#{answer.id}" }
     %td= answer.text
     %td= answer.correct
@@ -9,7 +9,7 @@
       = link_to 'edit', scoring_answer_comment_edit_show_scenario_path(@scenario, answer_id: answer.id, question_index: question_index, answer_index: answer_index), remote: true, method: :post, class: answer.comment == nil ? 'hidden' : '', id: "answer-#{answer.id}-edit-button"
     %td= answer.created_at.to_formatted_s(:db)
 
-- elsif question.type_of == "Essay"
+- elsif question.essay?
   %tr{ id: "answer-#{answer.id}" }
     %td= answer_index + 1
     %td= link_to 'show', scoring_answer_essay_show_scenario_path(question.scenario.id, answer_id: answer), remote: true, method: :post

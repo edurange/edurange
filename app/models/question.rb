@@ -1,6 +1,8 @@
 class Question < ActiveRecord::Base
   belongs_to :scenario
   has_many :answers, dependent: :destroy
+
+  # serializing is probably bad
   serialize :options
   serialize :values
 
@@ -8,32 +10,29 @@ class Question < ActiveRecord::Base
   validates :type_of, presence: true
   validates :order, presence: true
 
+  enum type_of: {
+    string: 'String',
+    number: 'Number',
+    essay:  'Essay'
+  }
+
   # validate :validate_text
-  validate :validate_options
   validate :validate_values
 
-  def string?
-    type_of == "String"
-  end
-
-  def number?
-    type_of == "Number"
-  end
-
-  def essay?
-    type_of == "Essay"
-  end
-
   def accept_integer?
-    self.number? & (self.options.include? 'accept-integer')
+    number? & (options.include? 'accept-integer')
   end
 
   def accept_decimal?
-    self.number? & (self.options.include? 'accept-decimal')
+    number? & (options.include? 'accept-decimal')
   end
 
   def accept_hex?
-    self.number? & (self.options.include? 'accept-hex')
+    number? & (options.include? 'accept-hex')
+  end
+
+  def check_player_variables?
+    options.include? "variable-group-player"
   end
 
   TYPES = ["String", "Number", "Essay"]
@@ -46,45 +45,40 @@ class Question < ActiveRecord::Base
     self.options.include? "ignore-case"
   end
 
-  def validate_options
-    # check for valid type
-    if not Question::TYPES.include? self.type_of
-      errors.add(:type_of, 'not a valid type')
-      return false
+  def validate_correct_options valid_options
+    invalid = options - valid_options
+    unless invalid.empty?
+      message = 'must be ' + invalid.to_sentence(
+        two_words_connector: ' or ',
+        last_word_connector: ', or '
+      )
+      errors.add(:options, message)
     end
+  end
 
-    # check string type
-    if self.type_of == "String" && self.options != nil
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_STRING.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
-    elsif self.type_of == "Number"
-      # number type must have at least one option
-      if self.options.size == 0
-        errors.add(:options, 'must have at least one option')
-        return false
-      end
+  validate def validate_string_options
+    if string?
+      validate_correct_options OPTIONS_STRING
+    end
+  end
 
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_NUMBER.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
-    elsif self.type_of == "Essay"
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_ESSAY.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
+  validate def validate_number_options
+    if number?
+      errors.add(:options, 'must have at least one option') if options.empty?
+      validate_correct_options OPTIONS_NUMBER
+    end
+  end
+
+  validate def validate_essay_options
+    if essay?
+      validate_correct_options OPTIONS_ESSAY
     end
   end
 
   def validate_values
 
     # check Essay type
-    if self.type_of == "Essay"
+    if self.essay?
       if not self.points
         errors.add(:points, 'must not be blank')
         return false
@@ -159,12 +153,12 @@ class Question < ActiveRecord::Base
       points_total += value[:points].to_i
 
       # check for duplicate values keep track of values in valuearr
-      if self.type_of == "String"
+      if self.string?
         if valuearr.include? value[:value]
           errors.add(:values, "duplicate values not allowed")
           return false
         end
-      elsif self.type_of == "Number"
+      elsif self.number?
         valuearr.each do |v|
           if Float(v) == Float(value[:value])
             errors.add(:values, "duplicate values not allowed")
@@ -179,7 +173,7 @@ class Question < ActiveRecord::Base
     self.points = points_total
 
     # if type is NUmber check that each value is accepted by options
-    if not self.type_of == "Number"
+    if not self.number?
       return true
     end
     self.values.each do |value|
@@ -198,8 +192,18 @@ class Question < ActiveRecord::Base
         return false
       end
     end
-
     true
+  end
+
+  def answer_string_or_number(text, user)
+    answer = Answer.new(
+      question: self,
+      user: user,
+      text: text
+    )
+    answer.grade
+    answer.save
+    answer
   end
 
   def answer_essay(text, user_id)
@@ -207,7 +211,7 @@ class Question < ActiveRecord::Base
 
     answer = Answer.new(question: self, user: User.find(user_id), text_essay: text)
 
-    if not self.type_of == "Essay"
+    if not self.essay?
       answer.errors.add(:type_of, "must be type Number")
       return answer
     end
@@ -215,8 +219,8 @@ class Question < ActiveRecord::Base
     answer
   end
 
-  def student_answers(user_id)
-    self.answers.where("user_id = ?", user_id)
+  def answers_from(user)
+    self.answers.where(user: user)
   end
 
 end

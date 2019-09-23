@@ -4,11 +4,6 @@ class Answer < ActiveRecord::Base
   has_one    :scenario, through: :question
 
   after_initialize do
-    self.text = self.text.strip
-    self.correct ||= false # if nil set to false
-  end
-
-  after_initialize do
     self.class.validates :text, uniqueness: {
       scope:          [:user, :question],
       message:        "duplicate answer",
@@ -16,7 +11,7 @@ class Answer < ActiveRecord::Base
     }
   end
 
-  validates :text, presence: true, allow_blank: false
+  validates :text, presence: true, allow_blank: false, if: :number_or_string?
 
   # sanity check, don't save nils to the database
   validates :correct, inclusion: { in: [true, false] }
@@ -38,13 +33,22 @@ class Answer < ActiveRecord::Base
     end
   end
 
+  after_initialize do
+    self.text = self.text.strip unless text.nil?
+    self.correct ||= false # if nil set to false
+  end
+
+  def number_or_string?
+    question.number? || question.string?
+  end
+
   # Hacky polymorphism
   def grade
     if valid?
       if question.number?
         grade_number
       elsif question.essay?
-        #ggr_essay?
+
       elsif question.string?
         grade_string
       else
@@ -53,13 +57,22 @@ class Answer < ActiveRecord::Base
     end
   end
 
+  validate def check_duplicate_number
+    if question.number? && !self.text.nil? && self.text.is_numeric?
+      duplicate = question.answers_from(user).any? do |other|
+        other.id != self.id && Float(self.text) == Float(other.text)
+      end
+      if duplicate
+        errors.add(:text, 'duplicate answer')
+      end
+    end
+  end
+
   def grade_number
     # go through each value looking for answer
-
     question.values.each_with_index do |value, index|
-      # check answer
-      if Float(text) == Float(value[:value])
-        self.correct = true
+      if Float(self.text) == Float(value[:value])
+        self.correct     = true
         self.value_index = index
         break
       end
@@ -68,8 +81,7 @@ class Answer < ActiveRecord::Base
 
   def grade_string
     question.values.each_with_index do |value, index|
-
-      if question.options.include? "variable-group-player"
+      if question.check_player_variables?
         group_name, var_name = value[:value].split(':')
         variable = player.variables.find_by_name(var_name)
         value[:value] = variable.value
@@ -95,7 +107,7 @@ class Answer < ActiveRecord::Base
 
   # ensure that text is not blank in an answer
   def validate_text
-    if self.question.type_of == "Essay" and self.text_essay == "" #problem here, question isn't linking correctly to answer. do a SQL query...
+    if self.question.essay? and self.text_essay == "" #problem here, question isn't linking correctly to answer. do a SQL query...
       errors.add(:text_essay, 'must not be blank')
       return false
     else

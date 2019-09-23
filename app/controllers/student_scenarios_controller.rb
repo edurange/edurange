@@ -10,13 +10,7 @@ class StudentScenariosController < ApplicationController
   end
 
   def answer_string_or_number
-    @answer = Answer.new(
-      question: @question,
-      user: current_user,
-      text: params[:text]
-    )
-    @answer.grade
-    @answer.save
+    @answer = @question.answer_string_or_number(params[:text], current_user)
     respond_to do |format|
       format.js { render "student_scenarios/js/answer_string_or_number.js.erb", layout: false }
     end

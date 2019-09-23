@@ -41,7 +41,7 @@
             %label Answer Type:
             = question.type_of
             %br
-            - if question.type_of == "String" or question.type_of == "Number"
+            - if question.string? or question.number?
               - answers = question.answers.where("user_id = ?", current_user.id)
               - if answers
                 %label My Answers:
@@ -55,7 +55,7 @@
                   - answers.each_with_index do |answer, answer_index|
                     = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
 
-            - elsif question.type_of == "Essay"
+            - elsif question.essay?
               %label My Answers:
               %table.table{ id: "question-#{question.id}-answers-table" }
                 %tr
@@ -76,7 +76,7 @@
                   %span.help-block#help-span
                 %br
                 = submit_tag "Submit", :class => 'btn btn-default'
-            - elsif question.type_of == "Essay"
+            - elsif question.essay?
               = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
                 %div#help-div
                   = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
