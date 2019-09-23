@@ -94,18 +94,10 @@ class ScenarioLoader
 
     player_hashes.each do |hash|
       raise InvalidYAMLError unless hash.respond_to? :[]
-      if hash["UserId"]
-        if user = User.find(hash["UserId"])
-          group.players.create!(
-            login: hash["Login"],
-            password: hash["Password"],
-            student_group_id: hash["StudentGroupId"],
-            user: user
-          )
-        end
-      else
-        group.players.create!(login: hash["Login"], password: hash["Password"])
-      end
+      group.players.create!(
+        login: hash["Login"],
+        password: hash["Password"]
+      )
     end
   end
 

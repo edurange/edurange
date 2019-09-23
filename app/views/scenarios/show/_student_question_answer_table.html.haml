@@ -1,6 +1,6 @@
-- answers = question.student_answers(user.id)
+- answers = question.answers_from(user)
 %table.table{ id: "student-#{user.id}-question-#{question.id}-answers-table", class: "student-#{user.id}-answers", question_id: question.id, question_index: question_index, answer_cnt: answers.size }
-  - if question.type_of == "String" or question.type_of == "Number"
+  - if question.string? or question.number?
     %tr
       %th Answer
       %th Correct
@@ -10,7 +10,7 @@
     - answers.each_with_index do |answer, answer_index|
       = render '/scenarios/show/student_answer', answer: answer, answer_index: answer_index, question: question, question_index: question_index, user: user
 
-  - elsif question.type_of == "Essay"
+  - elsif question.essay?
     %tr
       %th
       %th Answer
