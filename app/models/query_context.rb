@@ -1,5 +1,5 @@
 #
-# This class provides a safe and simple way to query the state of a object for use in QuestionQueryTest
+# This class provides a safe and simple way to query the state of a object for use in questions.
 #
 # For example we can imagine a scenario where an instance has a dynamically assigned private ip address.
 # A question might be, "what is the ip address of the instance running the ftp server?"
@@ -17,7 +17,7 @@ class QueryContext
   include ActiveModel::Model
   attr_accessor :scenario, :player
 
-  PATH_DELIMITER = '/' # People might be more comfortable with . (dot), for example ${player.login} vs ${player/login}
+  PATH_DELIMITER = '.'
 
   def evaluate(text)
     matches = text.scan(/\$\{.+?\}/)
