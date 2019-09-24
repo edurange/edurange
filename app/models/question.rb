@@ -31,13 +31,9 @@ class Question < ActiveRecord::Base
     number? & (options.include? 'accept-hex')
   end
 
-  def check_player_variables?
-    options.include? "variable-group-player"
-  end
-
   TYPES = ["String", "Number", "Essay"]
   # TYPES = ["String", "Number", "Essay", "Event"]
-  OPTIONS_STRING = ["ignore-case", "variable-group-player"]
+  OPTIONS_STRING = ["ignore-case"]
   OPTIONS_NUMBER = ["accept-integer", "accept-decimal", "accept-hex"]
   OPTIONS_ESSAY = ["larger-text-field"]
 
@@ -193,6 +189,10 @@ class Question < ActiveRecord::Base
       end
     end
     true
+  end
+
+  after_initialize def set_defaults
+    self.options ||= []
   end
 
   def answer_string_or_number(text, user)

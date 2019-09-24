@@ -1,0 +1,10 @@
+test_player:
+  id: 666
+  login: 'wat'
+  group_id: 333
+
+test_player_2:
+  id: 2
+  login: 'ezekiel'
+  group_id: 2
+  user_id: 3
