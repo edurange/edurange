@@ -13,30 +13,30 @@ class QuestionQueryTest < ActiveSupport::TestCase
 
     assert_equal(
       scenario.instances.first.ip_address_private,
-      context.evaluate_path('scenario/instances/ip_test_instance/ip_address_private')
+      context.evaluate_path('scenario.instances.ip_test_instance.ip_address_private')
     )
 
     assert_equal(
       '99dffec6',
-      context.evaluate_path('scenario/variables/foo'),
+      context.evaluate_path('scenario.variables.foo'),
     )
 
     assert_equal(
       scenario.players.first.login,
-      context.evaluate_path('player/login')
+      context.evaluate_path('player.login')
     )
 
     assert_equal(
       '76adadf9',
-      context.evaluate_path('player/variables/foo')
+      context.evaluate_path('player.variables.foo')
     )
 
     assert_raise QueryError do
-      context.evaluate_path('player/floom_floggin_flaz')
+      context.evaluate_path('player.floom_floggin_flaz')
     end
 
     assert_raise QueryError do
-      context.evaluate_path('player/login/extra')
+      context.evaluate_path('player.login.extra')
     end
 
     assert_raise QueryError do
@@ -44,30 +44,30 @@ class QuestionQueryTest < ActiveSupport::TestCase
     end
 
     assert_raise QueryError do
-      context.evaluate_path('scenario/instances')
+      context.evaluate_path('scenario.instances')
     end
 
     assert_raise QueryError do
-      context.evaluate_path('scenario/instances/zzzzzzzz')
+      context.evaluate_path('scenario.instances.zzzzzzzz')
     end
 
     assert_raise QueryError do
-      context.evaluate_path('scenario/instances/ip_test_instance')
+      context.evaluate_path('scenario.instances.ip_test_instance')
     end
 
 
     assert_raise QueryError do
-      context.evaluate_path('scenario/instances/ip_test_instance/floom_floggin_flaz')
+      context.evaluate_path('scenario.instances.ip_test_instance.floom_floggin_flaz')
     end
 
     assert_equal(
       '99dffec6',
-      context.evaluate('${scenario/variables/foo}')
+      context.evaluate('${scenario.variables.foo}')
     )
 
     assert_equal(
       '99dffec6-76adadf9',
-      context.evaluate('${scenario/variables/foo}-${player/variables/foo}')
+      context.evaluate('${scenario.variables.foo}-${player.variables.foo}')
     )
 
     assert_equal(
