@@ -80,17 +80,14 @@ class Answer < ActiveRecord::Base
   end
 
   def grade_string
+    context = QueryContext.new(player: player, scenario: scenario)
     question.values.each_with_index do |value, index|
-      if question.check_player_variables?
-        group_name, var_name = value[:value].split(':')
-        variable = player.variables.find_by_name(var_name)
-        value[:value] = variable.value
-      end
+      x = context.evaluate(value[:value])
 
       correct = if question.ignore_case?
-         value[:value].casecmp(text) == 0
+         x.casecmp(text) == 0
       else
-         value[:value] == text
+         x == text
       end
 
       if correct

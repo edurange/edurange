@@ -2,6 +2,7 @@ ip_test_instance:
   id: 333
   name: 'ip_test_instance'
   scenario_id: 3
+  ip_address_private: '10.0.226.64'
 
 relations_instance_1:
   id: 4

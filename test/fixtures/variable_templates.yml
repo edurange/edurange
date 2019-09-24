@@ -1,0 +1,11 @@
+foo_group_var_template:
+  id: 1
+  group_id: 333
+  name: foo
+  type: random
+
+foo_scenario_var_template:
+  id: 2
+  scenario_id: 3
+  name: foo
+  type: random

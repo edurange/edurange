@@ -1,0 +1,11 @@
+player_foo:
+  id: 1
+  variable_template_id: 1
+  player_id: 666
+  value: 76adadf9
+
+scenario_foo:
+  id: 2
+  variable_template_id: 1
+  scenario_id: 3
+  value: 99dffec6

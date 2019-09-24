@@ -114,7 +114,7 @@ class Scenario < ActiveRecord::Base
     message: 'Invalid UUID format'
   }
 
-  after_initialize def set_uuid
+  after_initialize def set_defaults
     self.uuid ||= SecureRandom.uuid
   end
 
