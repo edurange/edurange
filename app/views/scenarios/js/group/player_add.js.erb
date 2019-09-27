@@ -23,7 +23,7 @@
 <% else %>
   $('#modal-group-player-add').modal('toggle');
   $('#group-<%= @group.id.to_s %>-players-table').append("<tr id='player-<%= @player.id.to_s %>'><td>-</td><td>-</td><td>-</td><td><%= @player.login %></td><td><%= @player.password %></td><td><a href='/scenarios/<%= @group.scenario.id %>/group_player_delete?player_id=<%= @player.id %>' data-method='post' rel='nofollow' data-remote='true'>delete</a></td>");
-  <% if @group.scenario.modifiable? %>
+  <% if @group.scenario.stopped? %>
     $('#save-button-li').removeClass('disabled');
     $('#save-button').attr('href', '/scenarios/<%= @group.scenario.id %>/save');
   <% end %>

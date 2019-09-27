@@ -1,7 +1,0 @@
-%li{ id: "recipes-#{recipe.id}" }
-  = recipe.name
-  = link_to 'view', recipe_view_scenario_path(@scenario, recipe_id: recipe), remote: true, method: :post
-  - if @scenario.modifiable?
-    = link_to 'update', recipe_update_view_scenario_path(@scenario, recipe_id: recipe), remote: true, method: :post, id: "recipe-#{recipe.id}-update-button", class: recipe.instances_stopped? ? "" : "hidden"
-    = link_to 'remove', recipe_remove_scenario_path(@scenario, recipe_id: recipe), remote: true, method: :post, id: "recipe-#{recipe.id}-remove-button", class: recipe.instances_stopped? ? "" : "hidden"
-  %br

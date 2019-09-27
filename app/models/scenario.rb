@@ -1,194 +1,240 @@
 class Scenario < ActiveRecord::Base
-  include Provider
   require 'open-uri'
 
-  #  as a string
-  enum location: [:development, :production, :local, :custom, :test]
+  enum location: {
+    development:0,
+    production: 1,
+    local: 2,
+    custom: 3,
+    test: 4
+  }
 
-  # Associations
-  # http://guides.rubyonrails.org/association_basics.html
+  # scenario status lifecycle
+  #
+  #     archived
+  #        ^
+  #        |  archive!/unarchive!
+  #        v
+  # --> stopped <-------------------\
+  #        |                        |
+  #        | start!                 |
+  #        v                        |
+  #     starting <--> error <--> stopping
+  #        |                        ^
+  #        |                        |
+  #        V            stop!       |
+  #     started --------------------/
+
+  enum status: {
+    stopped: 0,
+    started: 4,
+    starting: 2,
+    stopping: 12,
+    error: 3,
+    archived: 14
+  }
+
+  def can_start?
+    valid_transition?(status, 'starting')
+  end
+
+  def can_stop?
+    valid_transition?(status, 'stopping')
+  end
+
+  def can_archive?
+     !archived? & stopped?
+  end
+
+  def can_unarchive?
+    archived?
+  end
+
+  def can_destroy?
+    stopped?
+  end
+
+  def can_restart?
+    started? | error?
+  end
+
+  def valid_transition?(old, new)
+    logger.debug("testing state transition #{old} to #{new}")
+    case new
+    when 'stopped'
+      ['stopping', 'archived'].include?(old)
+    when 'stopping'
+      ['started', 'error'].include?(old)
+    when 'started'
+      'starting' == old
+    when 'starting'
+      ['stopped', 'error'].include?(old)
+    when 'archived'
+      'stopped' == old
+    when 'error'
+      ['starting', 'stopping'].include?(old)
+    else
+      false
+    end
+  end
+
+  validate def state_machine_valid?
+    if status_changed? & !valid_transition?(status_was, status) then
+      errors.add(:status, "Can not update state from #{status_was} to #{status}")
+      false
+    else
+      true
+    end
+  end
+
+  def self.not_archived
+    where.not(status: 'archived')
+  end
+
   belongs_to :user
-  has_many :clouds, dependent: :destroy
   has_many :questions, dependent: :destroy
-  has_many :roles, dependent: :destroy
-  has_many :recipes, dependent: :destroy
-  has_many :groups, dependent: :destroy
-  has_many :subnets, through: :clouds
-  has_many :instances, through: :subnets
+  has_many :groups,    dependent: :destroy
+  has_many :instances,  dependent: :destroy
   has_many :players, through: :groups
 
   has_many :variable_templates
   has_many :variables
 
-  # Validations
-  # http://guides.rubyonrails.org/active_record_validations.html
-  validates_associated :clouds, :questions, :roles, :recipes, :groups, :user
-  validates :user, presence: true
-  validates :name, presence: true, format: { without: /\A_*_\z/ }
-  validates :name, format: { with: /\A\w*\z/,
-                             message: "can only contain alphanumeric and underscore" }
-  validate :paths_exist, :validate_stopped, :owner_is_instructor_or_admin
+  validates_associated :questions, :groups, :user, :instances
 
-  # Custom validations methods
-  # http://guides.rubyonrails.org/active_record_validations.html#custom-methods
+  validates :user, presence: true
+
+  validates :name, presence: true, format: {
+    with: /\A\w*\z/,
+    message: "can only contain alphanumeric and underscore"
+  }
+
+  validates :uuid, presence: true, format: {
+    with: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
+    message: 'Invalid UUID format'
+  }
+
+  after_initialize def set_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
+
+  validate :paths_exist, :owner_is_instructor_or_admin
 
   def paths_exist
     errors.add(:path, "#{path} does not exist") unless File.exists? path
     errors.add(:path, "#{path_yml} does not exist") unless File.exists? path_yml
-    errors.add(:path, "#{path_recipes} does not exist") unless File.exists? path_recipes
   end
 
   def validate_stopped
     errors.add(:base, 'You can only update a scenario when it is stopped.') unless stopped? or not changed?
   end
 
+  alias owner user
+
   def owner_is_instructor_or_admin
-    unless self.user.admin? or self.user.instructor?
+    unless owner.admin? or owner.instructor?
       errors.add(:user, 'Only admins and instructors create scenarios.')
     end
   end
 
-  validate do
-    if changed? and archived? and not archived_changed? then
-      errors.add(:base, "You can not update an archived scenario.")
-    end
-  end
-
-  # Callbacks
-  # http://guides.rubyonrails.org/active_record_callbacks.html
-  after_create :modifiable_check
   before_destroy :validate_stopped, prepend: true
 
-  # File structure
+  before_destroy do
+    terraform.clean!
+  end
 
-  def update_yml
-    if not self.modifiable?
-      self.errors.add(:customizable, "Scenario is not modifiable.")
-      return false
-    end
-    if not self.modified?
-      self.errors.add(:modified, "Scenario is not modified.")
-      return false
-    end
+  # def update_yml
+  #   if not self.modifiable?
+  #     self.errors.add(:customizable, "Scenario is not modifiable.")
+  #     return false
+  #   end
+  #   if not self.modified?
+  #     self.errors.add(:modified, "Scenario is not modified.")
+  #     return false
+  #   end
+  #
+  #   yml = {
+  #     "Name" => self.name,
+  #     "Description" => self.description,
+  #     "Instructions" => self.instructions,
+  #     "InstructionsStudent" => self.instructions_student
+  #   }
+  #
+  #   if not self.variable_templates.blank?
+  #     yml['Variables'] = self.variable_templates.map{ |v| {
+  #       "Name"  => v.name,
+  #       "Type"  => v.type,
+  #       "Value" => v.value
+  #     }}
+  #   end
+  #
+  #   if !self.groups.empty? then
+  #     yml["Groups"] =  self.groups.map do |group|
+  #       {
+  #         "Name" => group.name,
+  #         "Instructions" => group.instructions,
+  #         "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map do |access|
+  #           {
+  #             "Instance" => access.instance.name,
+  #             "Administrator" => access.administrator,
+  #             "IP_Visible" => access.ip_visible
+  #           }
+  #         end,
+  #         "Users" => group.players.empty? ? nil : group.players.map do |p|
+  #           {
+  #             "Login" => p.login,
+  #             "Password" => p.password
+  #           }
+  #         end,
+  #         "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map do |v|
+  #           {
+  #             "Name"  => v.name,
+  #             "Type"  => v.type,
+  #             "Value" => v.value
+  #           }
+  #         end
+  #     }
+  #   end
+  # end
+  #
+  #   if !subnet.instances.empty? then
+  #     yml['Instances'] = subnet.instances.map do |instance|
+  #       {
+  #         'Name' => instance.name
+  #       }
+  #     end
+  #   end
+  #
+  #   yml["Scoring"] = self.questions.empty? ? nil : self.questions.map { |question| {
+  #       "Text" => question.text,
+  #       "Type" => question.type_of,
+  #       "Options" => question.options,
+  #       "Values" => question.values == nil ? nil : question.values.map { |vals| { "Value" => vals[:special] == '' || vals[:special] == nil ? vals[:value] : vals[:special], "Points" => vals[:points] } },
+  #       "Order" => question.order,
+  #       "Points" => question.points
+  #     }
+  #   }
+  #
+  #   f = File.open("#{self.path}/#{self.name.downcase}.yml", "w")
+  #   f.write(yml.to_yaml)
+  #   f.close()
+  #   self.update_attribute(:modified, false)
+  # end
 
-    yml = {
-      "Name" => self.name,
-      "Description" => self.description,
-      "Instructions" => self.instructions,
-      "InstructionsStudent" => self.instructions_student,
-      "Groups" => nil,
-      "Clouds" => nil,
-      "Subnets" => nil,
-      "Instances" => nil
-    }
+  def self.path(location, name)
+    Rails.root.join('scenarios', location.to_s, name.to_s.downcase)
+  end
 
-    if not self.variable_templates.blank?
-      yml['Variables'] = self.variable_templates.map{ |v| {
-        "Name"  => v.name,
-        "Type"  => v.type,
-        "Value" => v.value
-      }}
-    end
-
-    yml["Roles"] = self.roles.empty? ? nil : self.roles.map { |r|
-      { "Name"=>r.name,
-        "Packages" => r.packages.empty? ? nil : r.packages,
-        "Recipes"=>r.recipes.empty? ? nil : r.recipes.map { |rec| rec.name }
-      }
-    }
-
-    yml["Groups"] = self.groups.empty? ? nil : self.groups.map { |group|
-      { "Name" => group.name,
-        "Instructions" => group.instructions,
-        "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map { |access|
-          { "Instance" => access.instance.name,
-            "Administrator" => access.administrator,
-            "IP_Visible" => access.ip_visible
-          }
-        },
-        "Users" => group.players.empty? ? nil : group.players.map { |p| {
-          "Login" => p.login,
-          "Password" => p.password,
-          "Id" => self.has_student?(p.user) ? p.user_id : nil,
-          "UserId" => p.user_id,
-          "StudentGroupId" => p.student_group_id
-          }
-        },
-
-        "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map { |v| {
-          "Name"  => v.name,
-          "Type"  => v.type,
-          "Value" => v.value
-        }}
-      }
-    }
-
-    yml["Clouds"] = self.clouds.empty? ? nil : self.clouds.map { |cloud|
-      {
-      "Name" => cloud.name,
-      "CIDR_Block" => cloud.cidr_block,
-      "Subnets" => cloud.subnets.empty? ? nil : cloud.subnets.map { |subnet|
-        {
-        "Name" => subnet.name,
-        "CIDR_Block" => subnet.cidr_block,
-        "Internet_Accessible" => subnet.internet_accessible,
-        "Instances" => subnet.instances.empty? ? nil : subnet.instances.map { |instance|
-          {
-          "Name" => instance.name,
-          "OS" => instance.os,
-          "IP_Address" => instance.ip_address,
-          "IP_Address_Dynamic" => instance.has_dynamic_ip? ? instance.ip_address_dynamic.str : nil,
-          "Internet_Accessible" => instance.internet_accessible,
-          "Roles" => instance.roles.map { |r| r.name }
-          }
-        }}
-      }}
-    }
-
-    yml["Scoring"] = self.questions.empty? ? nil : self.questions.map { |question| {
-        "Text" => question.text,
-        "Type" => question.type_of,
-        "Options" => question.options,
-        "Values" => question.values == nil ? nil : question.values.map { |vals| { "Value" => vals[:special] == '' || vals[:special] == nil ? vals[:value] : vals[:special], "Points" => vals[:points] } },
-        "Order" => question.order,
-        "Points" => question.points
-      }
-    }
-
-    f = File.open("#{self.path}/#{self.name.downcase}.yml", "w")
-    f.write(yml.to_yaml)
-    f.close()
-    self.update_attribute(:modified, false)
+  def self.path_yml(location, name)
+    Scenario.path(location, name).join("#{name.downcase}.yml")
   end
 
   def path
-    if self.custom?
-      "#{Rails.root}/scenarios/custom/#{self.user.id}/#{self.name.downcase}"
-    else
-      "#{Rails.root}/scenarios/#{self.location}/#{self.name.downcase}"
-    end
+    Scenario.path(location, name)
   end
 
   def path_yml
-    "#{self.path}/#{self.name.downcase}.yml"
-  end
-
-  def path_recipes
-    path = "#{self.path}/recipes"
-    FileUtils.mkdir(path) unless File.exists?(path) or not File.exists?(self.path)
-    path
-  end
-
-  def modifiable_check
-    if self.test? or self.development? or self.custom?
-      self.update_attribute(:modifiable, true)
-    end
-  end
-
-  def update_modified
-    if self.modifiable?
-      self.update_attribute(:modified, true)
-    end
+    Scenario.path_yml(location, name)
   end
 
   def change_name(name)
@@ -267,161 +313,9 @@ class Scenario < ActiveRecord::Base
     correct
   end
 
-  def public_instances_reachable?
-    reachable
-    return self.instances.select{ |i| not i.port_open?(22) }.any?
-  end
-
-  def check_status
-    return
-    cnt = 0
-    stopped = 0
-    queued_boot = 0
-    queued_unboot = 0
-    booted = 0
-    booting = 0
-    unbooting = 0
-    boot_failed = 0
-    unboot_failed = 0
-    paused = 0
-    pausing  = 0
-    starting = 0
-
-    self.clouds.each do |cloud|
-      cloud.reload
-      cnt += 1
-      stopped += 1 if cloud.stopped?
-      queued_boot += 1 if cloud.queued_boot?
-      queued_unboot += 1 if cloud.queued_unboot?
-      booted += 1 if cloud.booted?
-      booting += 1 if cloud.booting?
-      unbooting += 1 if cloud.unbooting?
-      boot_failed += 1 if cloud.boot_failed?
-      unboot_failed += 1 if cloud.unboot_failed?
-
-      cloud.subnets.each do |subnet|
-        subnet.reload
-        cnt += 1
-        stopped += 1 if subnet.stopped?
-        queued_boot += 1 if subnet.queued_boot?
-        queued_unboot += 1 if subnet.queued_unboot?
-        booted += 1 if subnet.booted?
-        booting += 1 if subnet.booting?
-        unbooting += 1 if subnet.unbooting?
-        boot_failed += 1 if subnet.boot_failed?
-        unboot_failed += 1 if subnet.unboot_failed?
-
-        subnet.instances.each do |instance|
-          instance.reload
-          cnt += 1
-          stopped += 1 if instance.stopped?
-          queued_boot += 1 if instance.queued_boot?
-          queued_unboot += 1 if instance.queued_unboot?
-          booted += 1 if instance.booted?
-          paused += 1 if instance.paused?
-          pausing += 1 if instance.pausing?
-          starting += 1 if instance.starting?
-          booting += 1 if instance.booting?
-          unbooting += 1 if instance.unbooting?
-          boot_failed += 1 if instance.boot_failed?
-          unboot_failed += 1 if instance.unboot_failed?
-        end
-      end
-    end
-
-    if boot_failed > 0
-      self.set_boot_failed
-    elsif unboot_failed > 0
-      self.set_unboot_failed
-    elsif booting > 0
-      self.set_booting
-    elsif unbooting > 0
-      self.set_unbooting
-    elsif queued_boot > 0
-      self.set_queued_boot
-    elsif queued_unboot > 0
-      self.set_queued_unboot
-    elsif paused > 0
-      self.set_paused
-    elsif pausing > 0
-      self.set_pausing
-    elsif starting > 0
-      self.set_starting
-    elsif booted > 0
-      if booted == cnt
-        self.set_booted
-      else
-        self.set_partially_booted
-      end
-    else
-      self.set_stopped
-    end
-  end
-
-  def get_global_recipes_and_descriptions
-    recipes = { }
-    Dir.foreach("#{Rails.root}/scenarios/recipes") do |file|
-      next if file == '.' or file == '..'
-
-      recipe = file.gsub(".rb.erb", "")
-      description = ''
-      description_file = "#{Rails.root}/scenarios/recipes/descriptions/#{recipe}"
-      if File.exists? description_file
-        description += File.open(description_file).read
-      end
-      recipes[recipe] = description 
-    end
-    recipes
-  end
-
-  def clone(name)
-    ScenarioManagement.new.clone_from_name(self.name, self.location, name, self.user)
-  end
-
-  def obliterate
-    if not self.custom?
-      self.errors.add(:obliterate, "can not obliterate non cusom scenario")
-      return false
-    end
-    name, path_graveyard_scenario = ScenarioManagement.new.obliterate_custom(self.name, self.user)
-    self.destroy
-    return path_graveyard_scenario
-  end
-
-  def make_custom
-    self.name = self.name.strip
-    if self.name == ""
-      errors.add(:name, "Can not be blank")
-      return false
-    elsif /\W/.match(self.name)
-      errors.add(:name, "Name can only contain alphanumeric and underscore")
-      return false
-    elsif /^_*_$/.match(self.name)
-      errors.add(:name, "Name not allowed")
-      return false
-    end
-
-    if File.exists? "#{Rails.root}/scenarios/local/#{self.name.downcase}"
-      errors.add(:name, "A global scenario with that name already exists")
-      return false
-    end
-
-    if File.exists? "#{Rails.root}/scenarios/user/#{self.user.id}/#{self.name.downcase}"
-      errors.add(:name, "A custom scenario with that name already exists")
-      return false
-    end
-
-    FileUtils.mkdir self.path
-    FileUtils.mkdir "#{self.path}/recipes"
-    self.update_attribute(:modified, true)
-    self.update_yml
-
-    return true
-  end
-
   def has_student?(user)
     return false if not user
-    self.groups.each do |group| 
+    self.groups.each do |group|
       return true if group.players.select { |p| p.user == user }.size > 0
     end
     false
@@ -449,17 +343,6 @@ class Scenario < ActiveRecord::Base
     answers
   end
 
-  def find_student(user_id)
-    self.groups.each do |group| 
-      group.players.each do |player|
-        if player.user
-          return player.user if player.user.id == user_id
-        end
-      end
-    end
-    nil
-  end
-
   def students_groups(user)
     groups = []
     self.groups.each do |group|
@@ -470,35 +353,6 @@ class Scenario < ActiveRecord::Base
       end
     end
     groups
-  end
-
-  def update_instructions(instructions)
-    self.update_attribute(:instructions, instructions)
-    self.update_modified
-  end
-
-  def update_instructions_student(instructions)
-    self.update_attribute(:instructions_student, instructions)
-    self.update_modified
-  end
-
-  def status_update
-    self.reload
-    if self.descendents.select { |d| d.boot_scheduled? or d.booting? or d.boot_fail? }.any?
-      self.update_attribute(:status, :booting)
-    elsif self.descendents.select { |d| d.unboot_scheduled? or d.unbooting? or d.unboot_fail? }.any?
-      self.update_attribute(:status, :unbooting)
-    elsif self.descendents.select { |d| d.stopped? }.size == self.descendents.size
-      self.update_attribute(:status, :stopped)
-    elsif self.descendents.select { |d| d.booted? }.size == self.descendents.size
-      self.update_attribute(:status, :booted)
-    else
-      self.update_attribute(:status, :booted_partial)
-    end
-  end
-
-  def nat_instance
-    self.instances.select{|i| i.internet_accessible and i.os == "nat" }.first
   end
 
   def data_path
@@ -549,37 +403,94 @@ class Scenario < ActiveRecord::Base
     Rails.root.join('documentation', 'scenarios')
   end
 
-  def can_boot?
-    bootable?
+  # list all scenarios available to create
+  def self.templates
+    Rails.root.join('scenarios').children.flat_map do |location|
+      if location.directory? then
+        location.children.flat_map do |scenario|
+          if scenario.directory?
+            yml_path = scenario.join("#{scenario.basename}.yml")
+            hash = YAML.load_file(yml_path)
+            Scenario.new(
+              name: hash['Name'],
+              location: location.basename.to_s,
+              description: hash['Description']
+            )
+          end
+        end
+      end
+    end
   end
 
-  def can_unboot?
-    unbootable?
+  def import_bash_histories!
+    s3 = Aws::S3::Resource.new(region: 'us-east-1')
+    bucket = s3.bucket('edurange')
+    objects = bucket.objects(prefix: "scenarios/#{scenario.uuid}/bash_history/")
+    objects.each do |object|
+      object.get.body.read.each_line do |line|
+        record = JSON.parse(line)
+        begin
+          BashHistory.find_or_create_by!(
+            instance:     self.instances.find_by_name(record['hostname'].gsub('-', '_')),
+            player:       self.players.find_by_login(record['user']),
+            exit_status:  record['exit_code'].to_i,
+            performed_at: Time.iso8601(record['time']),
+            command:      record['cmd']
+          )
+        rescue ActiveRecord::RecordInvalid
+          logger.warn("could not save bash history record: #{$!}")
+        end
+      end
+      object.delete
+    end
   end
 
-  def can_save?
-    modified? and modifiable
+  def schedule_import_bash_histories!
+    ImportBashHistories.set(wait: 1.minute).perform_later(self)
   end
 
-  def can_destroy?
-    stopped?
+  def terraform
+    @terraform ||= TerraformScenario.new(self)
   end
 
-  def can_archive?
-    stopped?
+  def start!
+    scenario.starting!
+    terraform.init!
+    terraform.apply!
+    terraform.output!
+    scenario.schedule_import_bash_histories!
+    scenario.started!
+  rescue
+    scenario.error!
+    raise
   end
 
-  def can_unarchive?
-    archived?
+  def stop!
+    scenario.stopping!
+    terraform.destroy!
+    scenario.instances.each do |i|
+      i.update_attributes!(
+        ip_address_public: nil,
+        ip_address_private: nil
+      )
+    end
+    scenario.stopped!
+  rescue
+    scenario.error!
+    raise
   end
 
-  # pausing/resuming does not work so disable in the UI
-  def can_pause?
-    false
+  def restart!
+    stop!
+    start!
   end
 
-  def can_resume?
-    false
+  def archive!
+    archived!
+  end
+
+  def unarchive!
+    stopped!
   end
 
 end

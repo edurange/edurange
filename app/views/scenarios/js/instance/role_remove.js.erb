@@ -1,4 +1,0 @@
-$('#instance-role-<%= @instance_role.id %>').remove();
-$('#save-button-li').attr('class', '');
-$('#save-button').attr('href', '/scenarios/<%= @instance_role.scenario.id %>/save');
-update_flash("Removed role '<%= @instance_role.role.name %>' from instance '<%= @instance_role.instance.name %>'.");

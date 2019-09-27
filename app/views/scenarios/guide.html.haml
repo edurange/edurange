@@ -1,4 +1,5 @@
-- if @scenario.guide_exists?
-  = markdown(@scenario.guide)
-- else
-  Sorry, but this scenario has no guide
+.panel-body
+  - if @scenario.guide_exists?
+    = markdown(@scenario.guide)
+  - else
+    Sorry, but this scenario has no guide

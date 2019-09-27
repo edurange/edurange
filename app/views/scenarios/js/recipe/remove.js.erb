@@ -1,7 +1,0 @@
-<% @role_recipes_ids.each do |role_recipe_id| %>
-  $('#role-recipe-<%= role_recipe_id %>').remove();
-<% end %>
-$('#recipes-<%= @recipe.id %>').remove();
-$('#save-button-li').attr('class', '');
-$('#save-button').attr('href', '/scenarios/<%= @recipe.scenario.id %>/save');
-update_flash("Removed recipe '<%= @recipe.name %>' from scenario.");
