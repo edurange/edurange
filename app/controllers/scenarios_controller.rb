@@ -109,7 +109,7 @@ class ScenariosController < ApplicationController
     if @scenario.destroy
       redirect_back(fallback_location: scenarios_path, notice: "Scenario destroyed.")
     else
-      redirect_back(fallback_location: scenarios_path, error: "Could not destroy scenario.")
+      redirect_back(fallback_location: scenarios_path, alert: "Could not destroy scenario: #{@scenario.errors.full_messages.to_sentence}.")
     end
   end
 
