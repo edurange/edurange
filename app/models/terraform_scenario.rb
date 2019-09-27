@@ -54,7 +54,9 @@ class TerraformScenario
   end
 
   def destroy!
-    run "terraform destroy -input=false -auto-approve -no-color #{source_dir}"
+    if data_dir.exist?
+      run "terraform destroy -input=false -auto-approve -no-color #{source_dir}"
+    end
   end
 
   def output!

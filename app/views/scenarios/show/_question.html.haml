@@ -11,7 +11,7 @@
   %span{ id: "question-#{question.id}-text"}
     = question.text
   %br
-  - if question.essay?
+  - if !question.essay?
     %div{ id: "question-#{question.id}-values-div"}
       %b Values:
       %ul{ id: "question-#{question.id}-values"}

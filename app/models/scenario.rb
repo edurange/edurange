@@ -87,6 +87,15 @@ class Scenario < ActiveRecord::Base
     end
   end
 
+  before_destroy do
+    cannot_delete_unless_stopped_or_archived
+    throw(:abort) if errors.present?
+  end
+
+  def only_destroy_if_stopped_or_archived
+    errors.add(:status, 'must be stopped or archived to destroy') unless can_destroy?
+  end
+
   def self.not_archived
     where.not(status: 'archived')
   end
@@ -120,106 +129,22 @@ class Scenario < ActiveRecord::Base
 
   validate :paths_exist, :owner_is_instructor_or_admin
 
-  def paths_exist
+  validate def paths_exist
     errors.add(:path, "#{path} does not exist") unless File.exists? path
     errors.add(:path, "#{path_yml} does not exist") unless File.exists? path_yml
   end
 
-  def validate_stopped
-    errors.add(:base, 'You can only update a scenario when it is stopped.') unless stopped? or not changed?
-  end
-
   alias owner user
 
-  def owner_is_instructor_or_admin
+  validate def owner_is_instructor_or_admin
     unless owner.admin? or owner.instructor?
       errors.add(:user, 'Only admins and instructors create scenarios.')
     end
   end
 
-  before_destroy :validate_stopped, prepend: true
-
   before_destroy do
     terraform.clean!
   end
-
-  # def update_yml
-  #   if not self.modifiable?
-  #     self.errors.add(:customizable, "Scenario is not modifiable.")
-  #     return false
-  #   end
-  #   if not self.modified?
-  #     self.errors.add(:modified, "Scenario is not modified.")
-  #     return false
-  #   end
-  #
-  #   yml = {
-  #     "Name" => self.name,
-  #     "Description" => self.description,
-  #     "Instructions" => self.instructions,
-  #     "InstructionsStudent" => self.instructions_student
-  #   }
-  #
-  #   if not self.variable_templates.blank?
-  #     yml['Variables'] = self.variable_templates.map{ |v| {
-  #       "Name"  => v.name,
-  #       "Type"  => v.type,
-  #       "Value" => v.value
-  #     }}
-  #   end
-  #
-  #   if !self.groups.empty? then
-  #     yml["Groups"] =  self.groups.map do |group|
-  #       {
-  #         "Name" => group.name,
-  #         "Instructions" => group.instructions,
-  #         "Access" => group.instance_groups.empty? ? nil : group.instance_groups.map do |access|
-  #           {
-  #             "Instance" => access.instance.name,
-  #             "Administrator" => access.administrator,
-  #             "IP_Visible" => access.ip_visible
-  #           }
-  #         end,
-  #         "Users" => group.players.empty? ? nil : group.players.map do |p|
-  #           {
-  #             "Login" => p.login,
-  #             "Password" => p.password
-  #           }
-  #         end,
-  #         "Variables" => group.variable_templates.empty? ? nil : group.variable_templates.map do |v|
-  #           {
-  #             "Name"  => v.name,
-  #             "Type"  => v.type,
-  #             "Value" => v.value
-  #           }
-  #         end
-  #     }
-  #   end
-  # end
-  #
-  #   if !subnet.instances.empty? then
-  #     yml['Instances'] = subnet.instances.map do |instance|
-  #       {
-  #         'Name' => instance.name
-  #       }
-  #     end
-  #   end
-  #
-  #   yml["Scoring"] = self.questions.empty? ? nil : self.questions.map { |question| {
-  #       "Text" => question.text,
-  #       "Type" => question.type_of,
-  #       "Options" => question.options,
-  #       "Values" => question.values == nil ? nil : question.values.map { |vals| { "Value" => vals[:special] == '' || vals[:special] == nil ? vals[:value] : vals[:special], "Points" => vals[:points] } },
-  #       "Order" => question.order,
-  #       "Points" => question.points
-  #     }
-  #   }
-  #
-  #   f = File.open("#{self.path}/#{self.name.downcase}.yml", "w")
-  #   f.write(yml.to_yaml)
-  #   f.close()
-  #   self.update_attribute(:modified, false)
-  # end
 
   def self.path(location, name)
     Rails.root.join('scenarios', location.to_s, name.to_s.downcase)
@@ -236,41 +161,6 @@ class Scenario < ActiveRecord::Base
   def path_yml
     Scenario.path_yml(location, name)
   end
-
-  # def change_name(name)
-  #   if not self.stopped?
-  #     errors.add(:running, "can not modify while scenario is not stopped");
-  #     return false
-  #   end
-  #
-  #   name = name.strip
-  #   if name == ""
-  #     errors.add(:name, "Can not be blank")
-  #   elsif /\W/.match(name)
-  #     errors.add(:name, "Name can only contain alphanumeric and underscore")
-  #   elsif /^_*_$/.match(name)
-  #     errors.add(:name, "Name not allowed")
-  #   elsif not self.modifiable?
-  #     errors.add(:custom, "Scenario must be modifiable to change name")
-  #   elsif not self.stopped?
-  #     errors.add(:running, "Scenario must be stopped before name can be changed")
-  #   elsif File.exists? "#{Rails.root}/scenarios/local/#{name.downcase}/#{name.downcase}.yml"
-  #     errors.add(:name, "Name taken")
-  #   elsif File.exists? "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}/#{name.downcase}.yml"
-  #     errors.add(:name, "Name taken")
-  #   else
-  #     oldpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{self.name.downcase}"
-  #     newpath = "#{Rails.root}/scenarios/user/#{self.user.id}/#{name.downcase}"
-  #     FileUtils.cp_r oldpath, newpath
-  #     FileUtils.mv "#{newpath}/#{self.name.downcase}.yml", "#{newpath}/#{name.downcase}.yml"
-  #     FileUtils.rm_r oldpath
-  #     self.name = name
-  #     self.save
-  #     self.update_yml
-  #     true
-  #   end
-  #   false
-  # end
 
   def owner?(id)
     return self.user_id == id
@@ -479,14 +369,6 @@ class Scenario < ActiveRecord::Base
 
   def unarchive!
     stopped!
-  end
-
-  def destroy
-    if can_destroy?
-      super
-    else
-      raise "Can only destroy if stopped or archived"
-    end
   end
 
 end
