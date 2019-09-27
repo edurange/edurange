@@ -15,17 +15,17 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "answers", id: :serial, force: :cascade do |t|
+  create_table "answers", id: :bigint, default: nil, force: :cascade do |t|
     t.boolean "correct"
-    t.integer "question_id"
+    t.bigint "question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "text"
+    t.text "text"
     t.text "text_essay"
     t.text "comment"
-    t.integer "value_index"
-    t.string "essay_points_earned"
-    t.integer "user_id"
+    t.bigint "value_index"
+    t.text "essay_points_earned"
+    t.bigint "user_id"
     t.index ["question_id"], name: "index_answers_on_question_id"
   end
 
@@ -37,17 +37,17 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
     t.integer "exit_status"
   end
 
-  create_table "groups", id: :serial, force: :cascade do |t|
-    t.string "name"
+  create_table "groups", id: :bigint, default: nil, force: :cascade do |t|
+    t.text "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "scenario_id", null: false
+    t.bigint "scenario_id", null: false
     t.text "instructions", default: ""
   end
 
-  create_table "instance_groups", id: :serial, force: :cascade do |t|
-    t.integer "group_id", null: false
-    t.integer "instance_id", null: false
+  create_table "instance_groups", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "instance_id", null: false
     t.boolean "administrator"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -56,98 +56,98 @@ ActiveRecord::Schema.define(version: 2019_09_10_005423) do
     t.index ["instance_id"], name: "index_instance_groups_on_instance_id"
   end
 
-  create_table "instances", id: :serial, force: :cascade do |t|
-    t.string "name", null: false
-    t.string "ip_address_private"
+  create_table "instances", id: :bigint, default: nil, force: :cascade do |t|
+    t.text "name", null: false
+    t.text "ip_address_private"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status", default: 0, null: false
-    t.string "ip_address_public"
+    t.bigint "status", default: 0, null: false
+    t.text "ip_address_public"
     t.bigint "scenario_id", null: false
     t.index ["scenario_id"], name: "index_instances_on_scenario_id"
   end
 
-  create_table "players", id: :serial, force: :cascade do |t|
-    t.string "login"
-    t.string "password"
-    t.integer "group_id"
+  create_table "players", id: :bigint, default: nil, force: :cascade do |t|
+    t.text "login"
+    t.text "password"
+    t.bigint "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "user_id"
-    t.integer "student_group_id"
+    t.bigint "user_id"
+    t.bigint "student_group_id"
     t.index ["group_id"], name: "index_players_on_group_id"
   end
 
-  create_table "questions", id: :serial, force: :cascade do |t|
-    t.integer "scenario_id", null: false
+  create_table "questions", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "scenario_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "order"
-    t.string "text"
-    t.string "type_of"
-    t.string "options", default: "--- []\n"
-    t.string "values"
-    t.integer "points"
-    t.integer "points_penalty"
+    t.bigint "order"
+    t.text "text"
+    t.text "type_of"
+    t.text "options"
+    t.text "values"
+    t.bigint "points"
+    t.bigint "points_penalty"
     t.index ["scenario_id"], name: "index_questions_on_scenario_id"
   end
 
-  create_table "scenarios", id: :serial, force: :cascade do |t|
-    t.string "name", null: false
-    t.string "description"
+  create_table "scenarios", id: :bigint, default: nil, force: :cascade do |t|
+    t.text "name", null: false
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status", default: 0, null: false
-    t.string "uuid", null: false
-    t.integer "user_id", null: false
+    t.bigint "status", default: 0, null: false
+    t.text "uuid", null: false
+    t.bigint "user_id", null: false
     t.text "instructions", default: ""
     t.text "instructions_student", default: ""
-    t.integer "location", default: 0, null: false
+    t.bigint "location", default: 0, null: false
   end
 
-  create_table "schedules", id: :serial, force: :cascade do |t|
-    t.integer "user_id"
-    t.string "scenario"
-    t.string "scenario_location"
-    t.string "uuid"
+  create_table "schedules", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "user_id"
+    t.text "scenario"
+    t.text "scenario_location"
+    t.text "uuid"
     t.datetime "start_time"
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "student_group_users", id: :serial, force: :cascade do |t|
-    t.integer "student_group_id"
-    t.integer "user_id"
+  create_table "student_group_users", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "student_group_id"
+    t.bigint "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "student_groups", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "name", default: "", null: false
+  create_table "student_groups", id: :bigint, default: nil, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "name", default: "", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "registration_code"
+    t.text "registration_code"
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
+  create_table "users", id: :bigint, default: nil, force: :cascade do |t|
+    t.text "email", default: "", null: false
+    t.text "encrypted_password", default: "", null: false
+    t.text "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
+    t.bigint "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
+    t.text "current_sign_in_ip"
+    t.text "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "name", null: false
-    t.integer "role"
-    t.string "organization"
-    t.string "registration_code"
+    t.text "name", null: false
+    t.bigint "role"
+    t.text "organization"
+    t.text "registration_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
