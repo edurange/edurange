@@ -1,8 +1,0 @@
-<% if @scenario.errors.any? %>
-	alert('error updating student instructions contact administrator.')
-<% else %>
-	$('#save-button-li').attr('class', '');
-	$('#save-button').attr('href', '/scenarios/<%= @scenario.id %>/save');
-	$('#modal-instructions-student-modify').modal('hide');
-	$('#instructor-instructions-student').text('<%= escape_javascript(@scenario.instructions_student.html_safe) %>');
-<% end %>

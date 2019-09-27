@@ -16,20 +16,19 @@ class StudentGroup < ActiveRecord::Base
   # 	true
   # end
 
-  def user_add(users)
-    users = [*users]
-    student_group_all = self.user.student_groups.find_by_name("All")
-    student_group_users = []
+  def registration_code
+    super || user.registration_code
+  end
 
-    users.each do |user|
-      if student_group_all.users.include?(user)
-        student_group_users.push(self.student_group_users.create(user: user))
-      else
-        errors.add(:user, "#{user.name} not found")
-      end
-    end
+  def add_users(to_add)
+    to_add = [*to_add]
+    new_to_add = to_add - self.users
+    self.users << new_to_add
+    return new_to_add
+  end
 
-    return student_group_users
+  def remove_users(users)
+    self.users.destroy(users)
   end
 
   def make_registration_code

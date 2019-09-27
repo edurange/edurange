@@ -4,6 +4,9 @@
     or
     = link_to 'sign in', new_user_session_path
 %hr/
+
+
+
 = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal', :role => 'form'}) do |f|
   %div.form-group
     = f.label :invitee_registration_code, class: 'control-label col-md-3'
@@ -12,6 +15,7 @@
         = f.text_field :invitee_registration_code, :autofocus => true, class: 'form-control'
         - resource.errors.full_messages_for(:invitee_registration_code).each do |message|
           %p.help-block= message
+        - resource.errors.delete(:invitee_registration_code)
       %p.help-block
         <b>A registration code is required</b>, and can be given out by a current
         EDURange instructor or administrator. If you are an instructor wishing to use EDURange, please contact <a href="mailto:weissr@evergreen.edu">Richard Weiss</a>.
@@ -22,6 +26,7 @@
         = f.text_field :name, :autofocus => true, class: 'form-control'
         - resource.errors.full_messages_for(:name).each do |message|
           %p.help-block= message
+        - resource.errors.delete(:name)
       %p.help-block
         Must include only letters, numbers, and underscores.
   %div.form-group
@@ -30,19 +35,30 @@
       = f.email_field :email, class: 'form-control'
       - resource.errors.full_messages_for(:email).each do |message|
         %p.help-block= message
+      - resource.errors.delete(:email)
   %div.form-group
     = f.label :password, class: 'control-label col-md-3'
     %div.col-md-9{class: ('has-error' if resource.errors[:password].any?)}
       = f.password_field :password, class: 'form-control'
       - resource.errors.full_messages_for(:password).each do |message|
         %p.help-block= message
+      - resource.errors.delete(:password)
   %div.form-group
     = f.label :password_confirmation, class: 'control-label col-md-3'
     %div.col-md-9{class: ('has-error' if resource.errors[:password_confirmation].any?)}
       = f.password_field :password_confirmation, class: 'form-control'
       - resource.errors.full_messages_for(:password_confirmation).each do |message|
         %p.help-block= message
+      - resource.errors.delete(:password_confirmation)
   %div.form-group
     %div.col-md-9.col-md-offset-3
       = f.submit 'Sign up', :class => 'btn btn-primary'
+
+-# Unhandled errors
+- if resource.errors.any?
+  .alert.alert-danger
+    %ul
+      - resource.errors.full_messages.each do |msg|
+        %li= msg
+
 = link_to 'back', :back

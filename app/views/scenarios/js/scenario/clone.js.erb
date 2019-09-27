@@ -1,9 +1,0 @@
-<% if @clone.errors.any? %>
-    <% if @clone.errors[:name].any? %>
-      $('#modal-scenario-clone').find('#name-div').addClass('has-error');
-      $('#modal-scenario-clone').find('#name-help').text('<%= @clone.errors[:name][0] %>');
-    <% end %>
-<% else %>
-  $('#modal-scenario-clone').modal('hide');
-  window.location.href = "/scenarios/<%= @clone.id %>/clone_set/?clone_id=<%= @clone.id %>";
-<% end %>

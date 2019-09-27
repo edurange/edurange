@@ -43,12 +43,15 @@ class UserTest < ActiveSupport::TestCase
     scenario.save
     assert scenario.valid?
 
-    scenario.set_booted
+    scenario.starting!
+    scenario.started!
     user.name = "testchange"
     user.save
+    assert_not user.valid?
     assert_equal [:running], user.errors.keys
 
-    scenario.set_stopped
+    scenario.stopping!
+    scenario.stopped!
     user.name = "testchange"
     user.save
     assert_equal [], user.errors.keys
@@ -105,11 +108,12 @@ class UserTest < ActiveSupport::TestCase
 
     # test instructor role
     user.role = 'instructor'
-    user.save
+    user.save!
 
     # make sure the user has student group named All
     assert user.student_groups.size == 1
     allsg = user.student_groups.find_by_name("All")
+    assert_not_nil allsg
     assert allsg.valid?
 
     sgu = allsg.student_group_users.new(user_id: student.id)
@@ -127,7 +131,8 @@ class UserTest < ActiveSupport::TestCase
     assert user.owns? scenario
 
     assert user.valid?
-    scenario.set_booted
+    scenario.starting!
+    scenario.started!
 
     user.reload
 
@@ -138,7 +143,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal [:running], user.errors.keys
     user.errors.clear
 
-    scenario.set_stopped
+    scenario.stopping!
+    scenario.stopped!
     scenario.reload
     user.reload
 
@@ -248,28 +254,5 @@ class UserTest < ActiveSupport::TestCase
     scenario = user.scenarios.new(location: :production, name: 'strace')
     scenario.save
     assert user.owns? scenario
-
-    scenario.clouds.each do |cloud|
-      assert user.owns? cloud
-      
-      cloud.subnets.each do |subnet|
-        assert user.owns? subnet
-
-        subnet.instances.each do |instance|
-          assert user.owns? instance
-          instance.instance_roles.each { |ir| assert user.owns? ir } 
-          instance.instance_groups.each { |ig| assert user.owns? ig }
-
-          instance.roles.each do |role|
-            assert user.owns? role
-            role.role_recipes.each { |rr| assert user.owns? rr }
-
-          end
-        end
-      end 
-    end
-    scenario.recipes.each { |r| assert user.owns? r }
   end
-
-
 end

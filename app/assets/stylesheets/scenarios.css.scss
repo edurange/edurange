@@ -23,40 +23,12 @@
   color: black;
 }
 
-.paused {
-  color: aqua;
-}
-
-.queued_boot {
-  color: grey;
-}
-
-.queued_unboot {
-  color: grey;
-}
-
-.booted {
+.started {
   color: green;
 }
 
-.boot_failed {
+.error {
   color: red;
-}
-
-.unboot_failed {
-  color: red;
-}
-
-.booted_partial {
-  color: green;
-}
-
-.failure {
-  color: red;
-}
-
-table, th, tr, td {
-  //border: 1px solid #d0d0d0; 
 }
 
 .indent {

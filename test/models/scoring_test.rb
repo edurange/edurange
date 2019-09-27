@@ -107,7 +107,7 @@ class ScoringTest < ActiveSupport::TestCase
 		assert_equal [:values], q.errors.keys
 	end
 
-	test 'options' do 
+	test 'options' do
 		s = scenarios(:two)
 
 		# options default to empty list
@@ -468,7 +468,7 @@ class ScoringTest < ActiveSupport::TestCase
 		assert q1.valid?
 
 		# no blank answers
-		a = q1.answer_essay("", st.id) #not getting linked properly 
+		a = q1.answer_essay("", st.id) #not getting linked properly
 		a.question = q1
 		assert_equal [:text_essay], a.errors.keys
 
@@ -482,13 +482,14 @@ class ScoringTest < ActiveSupport::TestCase
 	end
 
 	test 'special' do
+		skip("we have removed the ip_address_dynamic feature for now")
 		scenario = scenarios(:ip_test_scenario)
 		instance = scenario.instances.select { |i| i.name == 'ip_test_instance' }.first
 
 		# test special string
 		q1 = scenario.questions.new(
-			text: "foo", 
-			type_of: "String", 
+			text: "foo",
+			type_of: "String",
 			options: [],
 			values: [{value: "$ip_test_instance$", points: 1}]
 		)
@@ -496,7 +497,7 @@ class ScoringTest < ActiveSupport::TestCase
 		assert q1.valid?, q1.errors.messages
 		assert_equal [], q1.errors.keys
 		assert_equal(
-			q1.values.first[:value], 
+			q1.values.first[:value],
 			instance.ip_address,
 			"#{q1.values.first[:value]} #{instance.ip_address}"
 		)
@@ -505,8 +506,8 @@ class ScoringTest < ActiveSupport::TestCase
 
 		# test special string with added chars
 		q1 = scenario.questions.new(
-			text: "foo2", 
-			type_of: "String", 
+			text: "foo2",
+			type_of: "String",
 			options: [],
 			values: [{value: "before$ip_test_instance$after", points: 1}]
 		)
@@ -514,7 +515,7 @@ class ScoringTest < ActiveSupport::TestCase
 		assert q1.valid?, q1.errors.messages
 		assert_equal [], q1.errors.keys
 		assert_equal(
-			q1.values.first[:value], 
+			q1.values.first[:value],
 			'before' + instance.ip_address + 'after',
 			"#{q1.values.first[:value]} #{instance.ip_address}"
 		)
@@ -523,8 +524,8 @@ class ScoringTest < ActiveSupport::TestCase
 
 		# test failed special string
 		q1 = scenario.questions.new(
-			text: "foo3", 
-			type_of: "String", 
+			text: "foo3",
+			type_of: "String",
 			options: [],
 			values: [{value: "$none$p22", points: 1}]
 		)
@@ -532,7 +533,7 @@ class ScoringTest < ActiveSupport::TestCase
 		assert q1.valid?, q1.errors.messages
 		assert_equal [], q1.errors.keys
 		assert_equal(
-			q1.values.first[:value], 
+			q1.values.first[:value],
 			"$none$p22",
 			"#{q1.values.first[:value]} #{instance.ip_address}"
 		)

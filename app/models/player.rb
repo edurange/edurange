@@ -10,9 +10,7 @@ class Player < ActiveRecord::Base
 
   validates :login, presence: true, uniqueness: { scope: :group, message: "name already taken" }
   validates :password, presence: true
-  validate :instances_stopped
 
-  after_destroy :update_scenario_modified
   after_create :create_variables
 
   before_validation do
@@ -25,26 +23,10 @@ class Player < ActiveRecord::Base
     SecureRandom.hex(4)
   end
 
-  def update_scenario_modified
-    if self.group.scenario.modifiable?
-      if self.group.scenario
-        self.group.scenario.update(modified: true)
-      end
-    end
-  end
-
   def create_variables
     self.group.variable_templates.each do |template|
       self.variables << template.instantiate
     end
-  end
-
-  def instances_stopped
-    if group.instances.select{ |i| not i.stopped? }.size > 0
-      errors.add(:running, 'instances with access must be stopped to add a player')
-      return false
-    end
-    true
   end
 
   def password_hash

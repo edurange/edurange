@@ -1,28 +1,4 @@
 %li{ id: "question-#{question.id}" }
-  / %b Number:
-  / = index + 1
-  /%span{ id: "question-#{question.id}-id"}
-  /  = question.id
-  - if question.scenario.modifiable?
-    %div.inline-block
-      %div.dropdown{id:"question-#{question.id}-dropdown"}
-        %button.btn.btn-default.dropdown-toggle{type:'button', id:'dropdown-button-scoring-#{question.id}', "data-toggle" => 'dropdown', "aria-expanded" => "true"}
-          %span.caret
-        %ul.dropdown-menu{role: 'menu', "aria-labelledby" => 'dropdown-button-scoring-#{question.id}'}
-          %li
-            = link_to 'Delete', scoring_question_delete_scenario_path(question.scenario, question_id: question.id), remote: true, method: :post
-          %li
-            = link_to 'Modify', "#modal-scoring-question-modify", :data => {:toggle=>"modal"}, onclick: "scoring_question_modal_modify_question_setup(#{question.id});"
-          %li.divider
-          %li
-            = link_to 'Move Down', scoring_question_move_down_scenario_path(question.scenario, question_id: question.id), remote: true, method: :post
-          %li
-            = link_to 'Move Up', scoring_question_move_up_scenario_path(question.scenario, question_id: question.id), remote: true, method: :post
-    %br
-  /%b Order:
-  /%span{ id: "question-#{question.id}-order"}
-  /  = question.order
-  /%br
   %b Type:
   %span{ id: "question-#{question.id}-type"}
     = question.type_of
@@ -58,7 +34,7 @@
       %b Values:
       %ul{ id: "question-#{question.id}-values"}
 
-  %b Points: 
+  %b Points:
   %span{ id: "question-#{question.id}-points"}
     = question.points
   %p

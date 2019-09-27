@@ -1,9 +1,4 @@
 ---
 :concurrency: 10
 :queues:
-  - emails
   - scenario
-  - cloud
-  - subnet
-  - instance
-  - default

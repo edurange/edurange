@@ -12,7 +12,6 @@ class Question < ActiveRecord::Base
   validate :validate_values
 
   after_create :set_order
-  after_save :update_scenario_modified
 
   TYPES = ["String", "Number", "Essay"]
   # TYPES = ["String", "Number", "Essay", "Event"]
@@ -186,13 +185,6 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def update_scenario_modified
-    if self.scenario.modifiable?
-      self.scenario.update_attribute(:modified, true)
-    end
-    true
-  end
-
   def move_up
     if above = self.scenario.questions.find_by_order(self.order + 1)
       above.update_attribute(:order, self.order)
@@ -240,6 +232,7 @@ class Question < ActiveRecord::Base
       if self.options.include? "variable-group-player"
         group_name, var_name = value[:value].split(':')
         variable = player.variables.find_by_name(var_name)
+        logger.debug("WATWATWAT #{variable.value}")
         value[:value] = variable.value
       end
 

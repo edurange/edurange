@@ -24,17 +24,17 @@ Rails.application.configure do
     host: 'edurange.org'
   }
   config.action_mailer.smtp_settings = {
-    address:                  'smtp.gmail.com',
-    port:                        587,
-    domain:                   'localhost',
-    user_name:              '',
-    password:                 '',
-    authentication:          'plain',
+    address:              ENV['SMTP_ADDRESS'],
+    port:                 587,
+    domain:               ENV['DOMAIN_NAME'],
+    user_name:            ENV['SMTP_USER_NAME'],
+    password:             ENV['SMTP_PASSWORD'],
+    authentication:       'plain',
     enable_starttls_auto: true
   }
 
   # Rotate log file after 10MB
-#  config.logger = Logger.new("log/#{Rails.env}.log", 50, 10240000)
+  # config.logger = Logger.new("log/#{Rails.env}.log", 50, 10240000)
 
   config.logger = Logger.new(STDOUT)
 

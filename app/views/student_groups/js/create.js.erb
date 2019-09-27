@@ -1,0 +1,13 @@
+<% if @student_group.errors.any? %>
+  <% if @student_group.errors[:name].any? %>
+    $('#modal-student-group-create').find('#name-div').addClass('has-error');
+    $('#modal-student-group-create').find('#name-help').text('<%= @student_group.errors[:name][0] %>');
+  <% end %>
+<% else %>
+  $('#student-groups').append(
+      '<%= escape_javascript(render("student_group", student_group: @student_group, scenario: @scenario)) %>');
+  $('#modal-student-group-create').modal('hide');
+  $('#student-group-select').append(
+      '<option value="<%= @student_group.name %>"><%= @student_group.name %></option>');
+  update_flash("Created Student Group '<%= @student_group.name %>'.");
+<% end %>
