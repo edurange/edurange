@@ -18,10 +18,8 @@ class ScoringTest < ActiveSupport::TestCase
 	end
 
 	test 'value presence' do
-		s = scenarios(:two)
-
 		# values must be present
-		q = Question.new(text: "foo", order: 1, type_of: "String", scenario_id: s.id)
+		q = Question.new(text: "foo", order: 1, type_of: "String", scenario: scenarios(:two))
 		q.save
 		assert_not q.valid?
 		assert_equal [:values], q.errors.keys
@@ -70,7 +68,6 @@ class ScoringTest < ActiveSupport::TestCase
 
 		# no duplicated values in hashes
 		q.values = [{value: " foo", points: 1}, {value: "foo ", points: 1}]
-		q.save
 		assert_not q.valid?
 		assert_equal [:values], q.errors.keys
 
@@ -117,10 +114,12 @@ class ScoringTest < ActiveSupport::TestCase
 		assert_equal q.options, []
 
 		# possible types "String", "Number", "Essay", "Event"
-		q.type_of = "None"
-		q.save
-		assert_not q.valid?
-		assert_equal [:type_of], q.errors.keys
+		assert_raise ArgumentError do
+			q.type_of = "None"
+		end
+		#q.save
+		#assert_not q.valid?
+		#assert_equal [:type_of], q.errors.keys
 
 		q.type_of = "String"
 		q.save
@@ -141,12 +140,12 @@ class ScoringTest < ActiveSupport::TestCase
 		q.options = []
 		q.save
 		assert_not q.valid?
-		assert_equal [:options, :values], q.errors.keys
+		assert_equal [:options, :values].sort, q.errors.keys.sort
 
 		q.options = ["none"]
 		q.save
 		assert_not q.valid?
-		assert_equal [:options, :values], q.errors.keys
+		assert_equal [:options, :values].sort, q.errors.keys.sort
 
 		q.options = ["accept-integer", "foo"]
 		q.save
@@ -286,11 +285,11 @@ class ScoringTest < ActiveSupport::TestCase
 	end
 
 	test 'order' do
-		s = scenarios(:two)
+		skip("we have currently removed the ability to modify question order")
 
-		q1 = Question.new(text: "foo", type_of: "String", values: [{value: "1", points: 1}], scenario_id: s.id)
-		q2 = Question.new(text: "bar", type_of: "String", values: [{value: "1", points: 1}], scenario_id: s.id)
-		q3 = Question.new(text: "baz", type_of: "String", values: [{value: "1", points: 1}], scenario_id: s.id)
+		q1 = Question.new(text: "foo", type_of: "String", values: [{value: "1", points: 1}], scenario: scenarios(:two))
+		q2 = Question.new(text: "bar", type_of: "String", values: [{value: "1", points: 1}], scenario: scenarios(:two))
+		q3 = Question.new(text: "baz", type_of: "String", values: [{value: "1", points: 1}], scenario: scenarios(:two))
 		q1.save
 		q2.save
 		q3.save
@@ -338,29 +337,29 @@ class ScoringTest < ActiveSupport::TestCase
 	test 'answer string' do
 		s = scenarios(:two)
 		st = users(:student1)
-		q1 = Question.new(text: "foo", type_of: "String", values: [{value: "foo", points: 1}], scenario_id: s.id)
+		q1 = Question.new(text: "foo", type_of: "String", values: [{value: "foo", points: 1}], scenario: s, order: 0)
 		q1.save
 		assert q1.valid?
 
-		a = q1.answer_string("", st.id)
+		a = q1.answer_string_or_number("", st)
 		assert_equal [:text], a.errors.keys
 
-		a = q1.answer_string("", st.id)
+		a = q1.answer_string_or_number("", st)
 		assert_equal [:text], a.errors.keys
 
-		a = q1.answer_string("    ", st.id)
+		a = q1.answer_string_or_number("    ", st)
 		assert_equal [:text], a.errors.keys
 
-		a = q1.answer_string("foo", st.id)
+		a = q1.answer_string_or_number("foo", st)
 		assert_equal [], a.errors.keys
 
-		b = q1.answer_string("foo", st.id)
-		assert_equal [:duplicate], b.errors.keys
+		b = q1.answer_string_or_number("foo", st)
+		assert_equal [:text], b.errors.keys
 
-		b = q1.answer_string(" foo ", st.id)
-		assert_equal [:duplicate], b.errors.keys
+		b = q1.answer_string_or_number(" foo ", st)
+		assert_equal [:text], b.errors.keys
 
-		b = q1.answer_string(" Foo ", st.id)
+		b = q1.answer_string_or_number(" Foo ", st)
 		assert_equal [], b.errors.keys
 
 		q1.reload
@@ -368,92 +367,87 @@ class ScoringTest < ActiveSupport::TestCase
 		q1.save
 		assert_equal [], q1.errors.keys, "#{q1.errors.messages}"
 
-		b = q1.answer_string(" Foo ", st.id)
-		assert_equal [:duplicate], b.errors.keys
+		b = q1.answer_string_or_number(" Foo ", st)
+		assert_equal [:text], b.errors.keys
 
-		c = q1.answer_string(" FooBar ", st.id)
+		c = q1.answer_string_or_number(" FooBar ", st)
 		assert_equal [], c.errors.keys
 	end
 
 	test 'answer number' do
 		s = scenarios(:two)
 		st = users(:student1)
-		q1 = Question.new(text: "foo", type_of: "Number", options: ["accept-integer"], values: [{value: "1", points: 1}], scenario_id: s.id)
+		q1 = Question.new(text: "foo", type_of: "Number", options: ["accept-integer"], values: [{value: "1", points: 1}], scenario_id: s.id, order: 0)
 		q1.save
 		assert q1.valid?
 		assert_equal [], q1.errors.keys
 
-		# fail if not number type
-		q1.type_of = "String"
-		q1.save
-		a = q1.answer_number("1", st.id)
-		assert_equal [:type_of], a.errors.keys
-
 		# fail because answer is decimal not integer
 		q1.type_of = "Number"
 		q1.save
-		a = q1.answer_number("1.0", st.id)
-		assert_equal [:options], a.errors.keys
+		a = q1.answer_string_or_number("1.0", st)
+		assert_equal [:text], a.errors.keys
 
 		# fail because answer is hex not integer
-		a = q1.answer_number("0xff", st.id)
-		assert_equal [:options], a.errors.keys
+		a = q1.answer_string_or_number("0xff", st)
+		assert_equal [:text], a.errors.keys
 
 		# fail because answer is not anything
-		a = q1.answer_number("1000000z0000", st.id)
-		assert_equal [:options], a.errors.keys
+		a = q1.answer_string_or_number("1000000z0000", st)
+		assert_equal [:text], a.errors.keys
 
 		# yes integer but not correct
-		a = q1.answer_number("100", st.id)
+		a = q1.answer_string_or_number("100", st)
 		assert_equal [], a.errors.keys
 		assert_not a.correct
 
 		# yes integer but not correct
-		a = q1.answer_number("-1", st.id)
+		a = q1.answer_string_or_number("-1", st)
 		assert_equal [], a.errors.keys
 		assert_not a.correct
 
 		# correct
-		a = q1.answer_number(" 1 ", st.id)
+		a = q1.answer_string_or_number(" 1 ", st)
 		assert_equal [], a.errors.keys
 		assert a.correct
 
 		# correct
-		a = q1.answer_number(" +1 ", st.id)
-		assert_equal [:duplicate], a.errors.keys
-
 		q1.answers.destroy_all
-		q1.options = ["accept-decimal"]
-		q1.values = [{value: "2.0", points: 1}]
-		q1.save
-		assert q1.valid?
+		a = q1.answer_string_or_number(" +1 ", st)
+		assert a.valid?, a.errors.messages
+		assert a.correct
+
+
+		q2 = Question.new(text: "foo bar", type_of: "Number", options: ["accept-decimal"], values: [{value: "2.0", points: 1}], scenario: s, order: 0)
+		q2.save
+		assert q2.valid?, q2.errors.full_messages
 
 		# dont accept integer
-		a = q1.answer_number(" +2 ", st.id)
-		assert_equal [:options], a.errors.keys
+		a = q2.answer_string_or_number(" +2 ", st)
+		assert_equal [:text], a.errors.keys
 
 		# dont accept hex
-		a = q1.answer_number(" 0x02 ", st.id)
-		assert_equal [:options], a.errors.keys
+		a = q2.answer_string_or_number(" 0x02 ", st)
+		assert_equal [:text], a.errors.keys
 
 		# correct
-		a = q1.answer_number(" +2.0 ", st.id)
+		a = q2.answer_string_or_number(" +2.0 ", st)
 		assert_equal [], a.errors.keys
 		assert a.correct
 
 		# no duplicates
-		a = q1.answer_number(" 2.000 ", st.id)
-		assert_equal [:duplicate], a.errors.keys
+		a = q2.answer_string_or_number(" 2.000 ", st)
+		assert_equal [:text], a.errors.keys
 
-		q1.reload
-		assert q1.answers.size == 1
+		q2.reload
+		assert q2.answers.size == 1
 
 	end
 
 	test 'answer essay' do
 		s = scenarios(:two)
 		st = users(:student1)
-		q1 = Question.new(text: "foo", type_of: "Number", options: ["accept-integer"], values: [{value: "1", points: 1}], scenario_id: s.id)
+		q1 = Question.new(text: "foo", type_of: "Number", options: ["accept-integer"], values: [{value: "1", points: 1}], scenario_id: s.id, order: 0)
 		q1.save
 		assert q1.valid?, q1.errors.messages
 		assert_equal [], q1.errors.keys
@@ -470,6 +464,7 @@ class ScoringTest < ActiveSupport::TestCase
 		# no blank answers
 		a = q1.answer_essay("", st.id) #not getting linked properly
 		a.question = q1
+
 		assert_equal [:text_essay], a.errors.keys
 
 		a = q1.answer_essay("      ", st.id)

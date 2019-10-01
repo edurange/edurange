@@ -4,8 +4,10 @@ class BashHistory < ActiveRecord::Base
 
   has_one :scenario, through: :player
 
-  validates :command, presence: true
+  validates :command,      presence: true
   validates :performed_at, presence: true
+  validates :instance,     presence: true
+  validates :player,       presence: true
 
   def self.with_scenario_id scenario_id
     joins(:scenario).where(scenarios: {id: scenario_id})

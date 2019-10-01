@@ -15,26 +15,28 @@
   -if group.instructions
     %p= group.instructions
 %table.table{id: "group-#{group.id}-players-table" }
-  %tr
-    %th Name
-    %th Email
-    %th Student Group
-    %th Login
-    %th Password
-    %th
-  - group.players.each do |player|
-    %tr{id: "player-#{player.id}" }
-      - if player.user
-        %td= player.user.name
-        %td= player.user.email
-        %td= player.student_group ? player.student_group.name : '-'
-      - else
-        %td= "-"
-        %td= "-"
-        %td= "-"
-      %td= player.login
-      %td= player.password
-      - if player.user
-        %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden", data: { confirm: "Are you sure? This will erase any answers to questions that the student has entered." }
-      - else
-        %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden"
+  %thead
+    %tr
+      %th Name
+      %th Email
+      %th Student Group
+      %th Login
+      %th Password
+      %th
+  %tbody
+    - group.players.each do |player|
+      %tr{id: "player-#{player.id}" }
+        - if player.user
+          %td= player.user.name
+          %td= player.user.email
+          %td= player.student_group ? player.student_group.name : '-'
+        - else
+          %td= "-"
+          %td= "-"
+          %td= "-"
+        %td= player.login
+        %td= player.password
+        - if player.user
+          %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden", data: { confirm: "Are you sure? This will erase any answers to questions that the student has entered." }
+        - else
+          %td= link_to 'delete', group_player_delete_scenario_path(@scenario, player_id: player), remote: true, method: :post, class: group.scenario.stopped? ? "" : "hidden"

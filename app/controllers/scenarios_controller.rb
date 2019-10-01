@@ -5,7 +5,7 @@ class ScenariosController < ApplicationController
   before_action :set_scenario, only: [
     :edit, :update, :show, :destroy,
     :start, :stop, :archive, :unarchive, :restart,
-    :players, :player_modify, :player_student_group_add, :player_add, :player_group_add, :player_delete, :player_group_admin_access_add, :player_group_user_access_add,
+    :players, :player_add, :player_group_add, :player_delete,
     :scoring, :scoring_question_add, :scoring_answers_show, :scoring_answer_essay_show, :scoring_answer_comment, :scoring_answer_comment_show,
     :scoring_answer_comment_edit, :scoring_answer_comment_edit_show, :scoring_answer_essay_grade, :scoring_answer_essay_grade_edit,
     :scoring_answer_essay_grade_delete,
@@ -14,15 +14,14 @@ class ScenariosController < ApplicationController
   ]
 
   before_action :set_group, only: [
-    :group_delete, :group_modify, :group_admin_access_add, :group_user_access_add, :group_player_add,
-    :group_student_group_add, :group_student_group_remove, :group_instructions_get, :group_instructions_modify
+    :group_player_add,
+    :group_student_group_add,
+    :group_student_group_remove
   ]
   before_action :set_player, only: [
     :group_player_delete
   ]
-  before_action :set_question, only: [
-    :scoring_question_delete, :scoring_question_modify, :scoring_question_move_up, :scoring_question_move_down
-  ]
+
   before_action :set_student, only: [
     :scoring_answers_show
   ]
@@ -110,7 +109,7 @@ class ScenariosController < ApplicationController
     if @scenario.destroy
       redirect_back(fallback_location: scenarios_path, notice: "Scenario destroyed.")
     else
-      redirect_back(fallback_location: scenarios_path, error: "Could not destroy scenario.")
+      redirect_back(fallback_location: scenarios_path, alert: "Could not destroy scenario: #{@scenario.errors.full_messages.to_sentence}.")
     end
   end
 
@@ -188,71 +187,6 @@ class ScenariosController < ApplicationController
 
   ###############################################################
   #  Scoring
-
-  # Questions
-  def scoring_question_add
-    values = nil
-    if params[:values]
-      values = []
-      params[:values].each_with_index do |val, i| values << { value: val, special: params[:special][i], points: params[:value_points][i] } end
-    end
-
-    @question = @scenario.questions.new(
-      type_of: params[:type],
-      options: params["#{params[:type].downcase}_options"] ? params["#{params[:type].downcase}_options"] : [],
-      text: params[:text],
-      values: params[:type] == "Essay" ? [] : values,
-      # because rails typecasts strings to integer '0' put in '-1' instead if not an integer to get proper validation
-      points: params[:points].is_integer? ? params[:points] : '-1'
-    )
-    @question.save
-
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/scoring/question/add.js.erb', layout: false }
-    end
-  end
-
-  def scoring_question_delete
-    @question.destroy
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/scoring/question/delete.js.erb', layout: false }
-    end
-  end
-
-  def scoring_question_modify
-    values = nil
-    if params[:values]
-      values = []
-      params[:values].each_with_index do |val, i| values << { value: val, special: params[:special][i], points: params[:value_points][i] } end
-    end
-
-    @question.update(
-      type_of: params[:type],
-      options: params["#{params[:type].downcase}_options"] ? params["#{params[:type].downcase}_options"] : [],
-      text: params[:text],
-      values: params[:type] == "Essay" ? [] : values,
-      points: params[:points].is_integer? ? params[:points] : '-1'
-    )
-    @question.save
-
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/scoring/question/modify.js.erb', layout: false }
-    end
-  end
-
-  def scoring_question_move_up
-    @question2 = @question.move_up
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/scoring/question/move_up.js.erb', layout: false }
-    end
-  end
-
-  def scoring_question_move_down
-    @question2 = @question.move_down
-    respond_to do |format|
-      format.js { render template: 'scenarios/js/scoring/question/move_down.js.erb', layout: false }
-    end
-  end
 
   # Answers
   def scoring_answers_show
@@ -336,65 +270,9 @@ class ScenariosController < ApplicationController
       end
     end
 
-    def set_cloud
-      @cloud = Cloud.find(params[:cloud_id])
-      if not current_user.owns? @cloud
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_subnet
-      @subnet = Subnet.find(params[:subnet_id])
-      if not current_user.owns? @subnet
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_instance
-      @instance = Instance.find(params[:instance_id])
-      if not current_user.owns? @instance
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
     def set_group
       @group = Group.find(params[:group_id])
       if not current_user.owns? @group
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_instance_role
-      @instance_role = InstanceRole.find(params[:instance_role_id])
-      if not current_user.owns? @instance_role
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_role
-      @role = Role.find(params[:role_id])
-      if not current_user.owns? @role
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_role_recipe
-      @role_recipe = RoleRecipe.find(params[:role_recipe_id])
-      if not current_user.owns? @role_recipe
-        head :ok, content_type: "text/html"
-        return
-      end
-    end
-
-    def set_recipe
-      @recipe = Recipe.find(params[:recipe_id])
-      if not current_user.owns? @recipe
         head :ok, content_type: "text/html"
         return
       end

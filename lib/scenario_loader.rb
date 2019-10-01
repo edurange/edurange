@@ -94,18 +94,10 @@ class ScenarioLoader
 
     player_hashes.each do |hash|
       raise InvalidYAMLError unless hash.respond_to? :[]
-      if hash["UserId"]
-        if user = User.find(hash["UserId"])
-          group.players.create!(
-            login: hash["Login"],
-            password: hash["Password"],
-            student_group_id: hash["StudentGroupId"],
-            user: user
-          )
-        end
-      else
-        group.players.create!(login: hash["Login"], password: hash["Password"])
-      end
+      group.players.create!(
+        login: hash["Login"],
+        password: hash["Password"]
+      )
     end
   end
 
@@ -127,13 +119,13 @@ class ScenarioLoader
     return if yaml["Scoring"].nil?
     raise InvalidYAMLError unless yaml["Scoring"].respond_to? :each
 
-    yaml["Scoring"].each do |hash|
+    yaml["Scoring"].each_with_index do |hash, index|
       raise InvalidYAMLError unless hash.respond_to? :[]
       @scenario.questions.create!(
         type_of: hash["Type"],
         text: hash["Text"],
         points: hash["Points"],
-        order: hash["Order"],
+        order: index + 1,
         options: hash["Options"],
         values: format_values(hash["Values"])
       )

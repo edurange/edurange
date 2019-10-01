@@ -1,63 +1,80 @@
 class Question < ActiveRecord::Base
   belongs_to :scenario
   has_many :answers, dependent: :destroy
+
+  # serializing is probably bad
   serialize :options
   serialize :values
 
   validates :text, presence: true, uniqueness: { scope: :scenario, message: "must be unique." }
   validates :type_of, presence: true
+  validates :order, presence: true
+
+  enum type_of: {
+    string: 'String',
+    number: 'Number',
+    essay:  'Essay'
+  }
 
   # validate :validate_text
-  validate :validate_options
   validate :validate_values
 
-  after_create :set_order
+  def accept_integer?
+    number? & (options.include? 'accept-integer')
+  end
+
+  def accept_decimal?
+    number? & (options.include? 'accept-decimal')
+  end
+
+  def accept_hex?
+    number? & (options.include? 'accept-hex')
+  end
 
   TYPES = ["String", "Number", "Essay"]
   # TYPES = ["String", "Number", "Essay", "Event"]
-  OPTIONS_STRING = ["ignore-case", "variable-group-player"]
+  OPTIONS_STRING = ["ignore-case"]
   OPTIONS_NUMBER = ["accept-integer", "accept-decimal", "accept-hex"]
   OPTIONS_ESSAY = ["larger-text-field"]
 
-  def validate_options
-    # check for valid type
-    if not Question::TYPES.include? self.type_of
-      errors.add(:type_of, 'not a valid type')
-      return false
+  def ignore_case?
+    self.options.include? "ignore-case"
+  end
+
+  def validate_correct_options valid_options
+    invalid = options - valid_options
+    unless invalid.empty?
+      message = 'must be ' + invalid.to_sentence(
+        two_words_connector: ' or ',
+        last_word_connector: ', or '
+      )
+      errors.add(:options, message)
     end
+  end
 
-    # check string type
-    if self.type_of == "String" && self.options != nil
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_STRING.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
-    elsif self.type_of == "Number"
-      # number type must have at least one option
-      if self.options.size == 0
-        errors.add(:options, 'must have at least one option')
-        return false
-      end
+  validate def validate_string_options
+    if string?
+      validate_correct_options OPTIONS_STRING
+    end
+  end
 
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_NUMBER.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
-    elsif self.type_of == "Essay"
-      # check for valid options
-      if self.options.select{ |opt| OPTIONS_ESSAY.include? opt }.size != self.options.size
-        errors.add(:options, 'invalid option')
-        return
-      end
+  validate def validate_number_options
+    if number?
+      errors.add(:options, 'must have at least one option') if options.empty?
+      validate_correct_options OPTIONS_NUMBER
+    end
+  end
+
+  validate def validate_essay_options
+    if essay?
+      validate_correct_options OPTIONS_ESSAY
     end
   end
 
   def validate_values
 
     # check Essay type
-    if self.type_of == "Essay"
+    if self.essay?
       if not self.points
         errors.add(:points, 'must not be blank')
         return false
@@ -132,12 +149,12 @@ class Question < ActiveRecord::Base
       points_total += value[:points].to_i
 
       # check for duplicate values keep track of values in valuearr
-      if self.type_of == "String"
+      if self.string?
         if valuearr.include? value[:value]
           errors.add(:values, "duplicate values not allowed")
           return false
         end
-      elsif self.type_of == "Number"
+      elsif self.number?
         valuearr.each do |v|
           if Float(v) == Float(value[:value])
             errors.add(:values, "duplicate values not allowed")
@@ -152,7 +169,7 @@ class Question < ActiveRecord::Base
     self.points = points_total
 
     # if type is NUmber check that each value is accepted by options
-    if not self.type_of == "Number"
+    if not self.number?
       return true
     end
     self.values.each do |value|
@@ -171,172 +188,20 @@ class Question < ActiveRecord::Base
         return false
       end
     end
-
     true
   end
 
-  def set_order #what do we do for 0 questions?
-    if not self.order
-      if self.scenario.questions.size == 1
-        self.update_attribute(:order, 1)
-      else
-        self.update_attribute(:order, self.scenario.questions.maximum("order") + 1)
-      end
-    end
+  after_initialize def set_defaults
+    self.options ||= []
   end
 
-  def move_up
-    if above = self.scenario.questions.find_by_order(self.order + 1)
-      above.update_attribute(:order, self.order)
-      self.update_attribute(:order, self.order + 1)
-    else
-      return self
-    end
-    above.save
-    return above
-  end
-
-  def move_down
-    if below = self.scenario.questions.find_by_order(self.order - 1)
-      below_order = below.order
-      below.update_attribute(:order, self.order)
-      self.update_attribute(:order, below_order)
-    else
-      return self
-    end
-    below.save
-    return below
-  end
-
-  def answer_string(text, user_id)
-
-    player = scenario.players.find_by(user_id: user_id)
-
-    text = text.strip
-
-    correct = false
-    index = nil
-
-    answer = self.answers.new(user_id: user_id, text: text)
-
-    if self.type_of != "String"
-      answer.errors.add(:type_of, 'must be type String')
-      return answer
-    elsif text == ""
-      answer.errors.add(:text, 'can not be blank')
-      return answer
-    end
-
-    self.values.each_with_index do |value, i|
-
-      if self.options.include? "variable-group-player"
-        group_name, var_name = value[:value].split(':')
-        variable = player.variables.find_by_name(var_name)
-        logger.debug("WATWATWAT #{variable.value}")
-        value[:value] = variable.value
-      end
-
-      if self.options.include? "ignore-case"
-        self.answers.where("user_id = ?", user_id).each do |answer|
-          if answer.text.casecmp(text) == 0
-            answer.errors.add(:duplicate, "duplicate answer")
-            return answer
-          end
-        end
-
-        correct = true if value[:value].casecmp(text) == 0
-      else
-        self.answers.where("user_id = ?", user_id).each do |answer|
-          if answer.text == text
-            answer.errors.add(:duplicate, "duplicate answer")
-            return answer
-          end
-        end
-
-        correct = true if value[:value] == text
-      end
-
-      if correct
-        index = i
-        break
-      end
-
-    end
-
-    answer.correct = correct
-    answer.value_index = index
-    answer.save
-    answer
-  end
-
-  def answer_number(text, user_id)
-    text = text.strip
-
-    answer = Answer.new(user_id: user_id, text: text)
-
-    if not self.type_of == "Number"
-      answer.errors.add(:type_of, "must be type Number")
-      return answer
-    end
-
-    if text == ""
-      answer.errors.add(:text, 'can not be blank')
-      return answer
-    end
-
-    # check that answer is in an accepted format
-    accepted = false
-    self.options.each do |option|
-      if option == "accept-integer"
-        accepted = true if text.is_integer?
-      elsif option == "accept-decimal"
-        accepted = true if text.is_decimal?
-      elsif option == "accept-hex"
-        accepted = true if text.is_hex?
-      end
-    end
-
-    if not accepted
-      errmsg = 'must be '
-      self.options.each_with_index do |option, i|
-        errmsg += 'integer' if option == 'accept-integer'
-        errmsg += 'decimal' if option == 'accept-decimal'
-        errmsg += 'hex' if option == 'accept-hex'
-        if i < self.options.size - 1
-          errmsg += ' or '
-        end
-      end
-      answer.errors.add(:options, errmsg)
-      return answer
-    end
-
-    # go through each value looking for answer
-    correct = false
-    index = nil
-    self.values.each_with_index do |value, i|
-
-      # check for duplicate values
-      if self.answers.where("user_id = ?", user_id).select { |a| Float(text) == Float(a.text) }.size > 0
-        answer.errors.add(:duplicate, "duplicate answer")
-        return answer
-      end
-
-      # check answer
-      if Float(text) == Float(value[:value])
-        correct = true
-      end
-
-      # break if answer is correct and set index
-      if correct
-        index = i
-        break
-      end
-
-    end
-
-    answer.question_id = self.id
-    answer.correct = correct
-    answer.value_index = index
+  def answer_string_or_number(text, user)
+    answer = Answer.new(
+      question: self,
+      user: user,
+      text: text
+    )
+    answer.grade
     answer.save
     answer
   end
@@ -344,19 +209,18 @@ class Question < ActiveRecord::Base
   def answer_essay(text, user_id)
     text = text.strip
 
-    answer = Answer.new(user_id: user_id, text_essay: text)
+    answer = Answer.new(question: self, user: User.find(user_id), text_essay: text)
 
-    if not self.type_of == "Essay"
+    if not self.essay?
       answer.errors.add(:type_of, "must be type Number")
       return answer
     end
-    answer.question_id = self.id
     answer.save
     answer
   end
 
-  def student_answers(user_id)
-    self.answers.where("user_id = ?", user_id)
+  def answers_from(user)
+    self.answers.where(user: user)
   end
 
 end
