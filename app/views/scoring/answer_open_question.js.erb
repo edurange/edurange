@@ -1,8 +1,0 @@
-$("<%= "#question-#{@question.id}-answer" %>").removeClass("hidden");
-<% if @answer %>
-  $("<%= "#question-#{@question.id}-answer" %>").html("<%= @answer.answer_text.gsub("\n", "<br>").gsub("\r","").html_safe %>");
-<% else %>
-  $("<%= "#question-#{@question.id}-answer" %>").html('');
-<% end %>
-$("<%= "#question-#{@question.id}-edit-form" %>").addClass("hidden");
-$("<%= "#question-#{@question.id}-edit-button" %>").removeClass("hidden");

@@ -37,47 +37,49 @@ class TerraformScenario
         logger.warn(line.chop)
       end
       if !p.value.success? then
-        raise TerraformError.new("exit status was #{@status.exitstatus}")
+        raise TerraformError.new("exit status was #{p.value.exitstatus}")
       end
     end
   end
 
   def init!
     data_dir.mkdir unless data_dir.exist?
-    run "terraform init -no-color #{source_dir}"
+    run "terraform init -input=false -no-color #{source_dir}"
   end
 
   def apply!
     data_dir.mkpath unless data_dir.exist?
     variables_file.write(JSON.pretty_generate(TerraformScenario.serialize_scenario(scenario)))
-    run "terraform apply -auto-approve -no-color #{source_dir}"
+    run "terraform apply -input=false -auto-approve -no-color #{source_dir}"
   end
 
   def destroy!
-    run "terraform destroy -auto-approve -no-color #{source_dir}"
+    if data_dir.exist?
+      run "terraform destroy -input=false -auto-approve -no-color #{source_dir}"
+    end
   end
 
   def output!
-    stdout, success = Open3.capture2('terraform output -json -no-color', chdir: data_dir)
-    if success then
+    stdout, status = Open3.capture2('terraform output -json -no-color', chdir: data_dir)
+    if status.success? then
       output = JSON.parse(stdout)
-      logger.debug(output)
-      if output['instances'] then
-        instances = output["instances"]["value"]
-        instances.each do |hash|
-          i = scenario.instances.find_by_name(hash['name'])
-          if i then
-            i.update_attributes!(hash)
-          else
-            raise TerraformError.new("no instance with name #{h['name']}")
-          end
-        end
-      end
+      self.update_scenario!(output)
+    else
+      raise TerraformError.new("terraform output failed: exit status was #{status.exitstatus}")
     end
   end
 
   def clean!
     data_dir.rmtree if data_dir.exist?
+  end
+
+  def update_scenario! output
+    if output['instances'] then
+      output["instances"]["value"].each do |hash|
+        instance = scenario.instances.find_by_name!(hash['name'])
+        instance.update_attributes!(hash)
+      end
+    end
   end
 
   # Inputs are passed to terraform via a json file.
@@ -123,9 +125,8 @@ class TerraformScenario
   def self.serialize_scenario(scenario)
     h = {
       scenario_id:           scenario.uuid,
-      aws_access_key_id:     ENV['AWS_ACCESS_KEY_ID'], # TODO, bad
-      aws_secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
-      aws_region:            ENV['AWS_REGION'],
+      owner:                 scenario.owner.email,
+      environment:           Rails.env,
       variables:             TerraformScenario.serialize_variables(scenario.variables)
     }
     scenario.groups.each do |g|

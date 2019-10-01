@@ -1,20 +1,12 @@
 class Variable < ActiveRecord::Base
   validates  :value, presence: true
   belongs_to :variable_template, required: true
+
+  # NOTE: a variable can belong EITHER a player or a scenario but NOT BOTH.
   belongs_to :player
   belongs_to :scenario
 
-  def name
-    variable_template.name
-  end
-
-  def type
-    variable_template.type
-  end
-
-  def password?
-    variable_template.password?
-  end
+  delegate :name, :type, :password?, :random?, :string?, :openssl_pkey_rsa?, to: :variable_template
 
   def self.find_by_name name
     joins(:variable_template).find_by(variable_templates: { name: name })

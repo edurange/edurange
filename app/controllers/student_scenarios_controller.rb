@@ -1,25 +1,18 @@
 class StudentScenariosController < ApplicationController
   before_action :authenticate_student!
 
-  before_action :set_scenario, only: [:show, :answer_string, :answer_number, :answer_essay]
-  before_action :set_question, only: [:answer_string, :answer_number, :answer_essay]
+  before_action :set_scenario, only: [:show, :answer_string_or_number, :answer_essay]
+  before_action :set_question, only: [:answer_string_or_number, :answer_essay]
   before_action :set_answer, only: [:answer_essay_delete, :answer_essay_show, :answer_comment_show]
 
   def show
     @player = @scenario.players.find_by(user: current_user)
   end
 
-  def answer_string
-    @answer = @question.answer_string(params[:text], current_user.id)
+  def answer_string_or_number
+    @answer = @question.answer_string_or_number(params[:text], current_user)
     respond_to do |format|
-      format.js { render "student_scenarios/js/answer_string.js.erb", layout: false }
-    end
-  end
-
-  def answer_number
-    @answer = @question.answer_number(params[:text], current_user.id)
-    respond_to do |format|
-      format.js { render "student_scenarios/js/answer_number.js.erb", layout: false }
+      format.js { render "student_scenarios/js/answer_string_or_number.js.erb", layout: false }
     end
   end
 

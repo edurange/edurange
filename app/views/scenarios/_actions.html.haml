@@ -21,6 +21,6 @@
       = render 'icon', name: 'eye-open'
       Unarchive
   - if scenario.can_destroy?
-    = link_to scenario_path(scenario), method: :delete, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
+    = link_to scenario_path(scenario), method: :delete, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
       = render 'icon', name: 'trash'
       Destroy

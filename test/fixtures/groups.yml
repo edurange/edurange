@@ -1,0 +1,9 @@
+ip_test_group:
+  id: 333
+  name: 'wat'
+  scenario_id: 3
+
+two:
+  id: 2
+  name: 'foo'
+  scenario_id: 2
