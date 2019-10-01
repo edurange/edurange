@@ -43,7 +43,7 @@ class TerraformScenario
   end
 
   def init!
-    data_dir.mkdir unless data_dir.exist?
+    data_dir.mkpath unless data_dir.exist?
     run "terraform init -input=false -no-color #{source_dir}"
   end
 
