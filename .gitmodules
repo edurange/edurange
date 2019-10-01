@@ -3,20 +3,20 @@
 	url = https://github.com/edurange/edurange-documentation
 [submodule "scenarios/production/ssh_inception"]
 	path = scenarios/production/ssh_inception
-	url = git@github.com:edurange/terraform_ssh_inception.git
+	url = https://github.com/edurange/terraform_ssh_inception
 [submodule "scenarios/production/getting_started"]
 	path = scenarios/production/getting_started
-	url = git@github.com:edurange/scenario-getting-started.git
+	url = https://github.com/edurange/scenario-getting-started
 	branch = terraformize
 [submodule "scenarios/production/file_wrangler"]
 	path = scenarios/production/file_wrangler
-	url = git@github.com:edurange/scenario-file-wrangler.git
+	url = https://github.com/edurange/scenario-file-wrangler
 	branch = terraformize
 [submodule "scenarios/production/strace"]
 	path = scenarios/production/strace
-	url = git@github.com:edurange/strace-lyn.git
+	url = https://github.com/edurange/strace-lyn
 	branch = terraformize
 [submodule "scenarios/production/total_recon"]
 	path = scenarios/production/total_recon
-	url = git@github.com:edurange/scenario-total-recon.git
+	url = https://github.com/edurange/scenario-total-recon
 	branch = terraformize
