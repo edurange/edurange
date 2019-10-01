@@ -18,5 +18,5 @@
 	branch = terraformize
 [submodule "scenarios/production/total_recon"]
 	path = scenarios/production/total_recon
-	url = https://github.com/edurange/total_recon
+	url = https://github.com/edurange/scenario-total-recon
 	branch = terraformize
