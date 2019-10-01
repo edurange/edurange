@@ -40,9 +40,11 @@ class DropInternalScenarioTables < ActiveRecord::Migration[5.2]
 
     change_column_null :scenarios, :user_id, false
 
-    enable_extension 'uuid-ossp'
-    execute "update scenarios set uuid = uuid_generate_v4() where uuid is null"
-    disable_extension 'uuid-ossp'
+    scenarios = select_all("select id from scenarios where uuid is null")
+    scenarios.each do |scenario|
+      update("update scenarios set uuid = #{ActiveRecord::Base.connection.quote(SecureRandom.uuid)} where id = #{ActiveRecord::Base.connection.quote(scenario['id'])}")
+    end
+
     change_column_null :scenarios, :uuid, false
     change_column_null :scenarios, :location, false
     change_column_null :scenarios, :status, false
