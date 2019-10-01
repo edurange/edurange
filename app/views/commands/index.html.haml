@@ -6,14 +6,16 @@
       = select_tag 'player_login', options_from_collection_for_select(@query.player_options, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
   - if @query.instance_options
     %div.form-group
-      = label_tag 'instance_id', 'Instance', class: 'control-label'
-      = select_tag 'instance_id', options_from_collection_for_select(@query.instance_options, :id, :name, selected: params[:instance_id]), include_blank: 'All', class: 'form-control'
+      = label_tag 'instance_id', 'Instance', class: 'control-label mr-1'
+      = select_tag 'instance_id', options_from_collection_for_select(@query.instance_options, :id, :name, selected: params[:instance_id]), include_blank: 'All', class: 'form-control mr-1'
   %div.pull-right
-    %button{name: 'commit', type: 'submit', class: 'btn btn-primary'}
-      = render 'icon', name: 'filter'
+    %button{name: 'commit', type: 'submit', class: 'btn btn-outline-secondary btn-sm'}
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-filter
       Filter
-    = link_to(commands_path(filter_params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-primary') do
-      = render 'icon', name: 'save-file'
+    = link_to(commands_path(filter_params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-outline-secondary btn-sm') do
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-save
       Export
 %table.table
   %thead

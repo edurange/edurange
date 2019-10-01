@@ -14,15 +14,7 @@
 
 
 @import "bootstrap";
-
-@font-face{
-  font-family:'Glyphicons Halflings';
-  src: image-url("bootstrap/glyphicons-halflings-regular.eot");
-  src: image-url("bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"),
-       image-url("bootstrap/glyphicons-halflings-regular.woff") format("woff"),
-       image-url("bootstrap/glyphicons-halflings-regular.ttf") format("truetype"),
-       image-url("bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg")
-}
+@import "font-awesome";
 
 //th,td { padding: 6px; }
 
@@ -119,20 +111,20 @@ ul.pagination, nav.pagination {
   padding: 8px;
 }
 
-.panel-title {
+.card-title {
   display: inline-block;
   padding: 12px 15px 11px 0px;
   color: #777;
 }
 
-.panel-heading.panel-heading-with-tabs {
+.card-heard.card-header-tabs {
   padding-bottom: 0;
 }
 
-.panel-heading-with-tabs .nav-tabs {
+.card-header-tabs .nav-tabs {
   border-bottom: 0;
 }
 
-.panel-heading-with-tabs .panel-title {
+.card-header-tabs .card-title {
   float: left;
 }

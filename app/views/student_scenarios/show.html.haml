@@ -96,7 +96,7 @@
               = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
               %span.help-block#help-span
             %br
-            = submit_tag "Submit", :class => 'btn btn-default'
+            = submit_tag "Submit", :class => 'btn btn-primary'
 
         - elsif question.type_of == "Number"
           = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
@@ -104,7 +104,7 @@
               = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
               %span.help-block#help-span
             %br
-            = submit_tag "Submit", :class => 'btn btn-default'
+            = submit_tag "Submit", :class => 'btn btn-primary'
 
         - elsif question.type_of == "Essay"
           = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
@@ -112,6 +112,6 @@
               = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
               %span.help-block#help-span
             %br
-            = submit_tag "Submit", :class => 'btn btn-default'
+            = submit_tag "Submit", :class => 'btn btn-primary'
 
 = link_to 'Back', '/student', class: 'btn btn-secondary'

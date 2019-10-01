@@ -32,7 +32,7 @@
   - hidden = instance.com.error? ? '' : 'hidden'
   %span{id: "instance-#{instance.id}-initialized-error", class: hidden }
     Chef Error
-    = link_to 'view', instance_chef_error_scenario_path(id: instance.scenario, instance_id: instance), remote: true, method: :post
+    = link_to 'view', instance_chef_error_scenario_path(id: instance.scenario, instance_id: instance), remote: true, method: :post #,"data-toggle" => "modal", 'data-target' => '#modal-instance-chef-error', 
     %br
   Driver:
   %span{id: "instance-#{instance.id}-driver" }

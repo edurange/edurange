@@ -54,7 +54,7 @@
                       = f.button :submit, 'Create', class: 'btn btn-primary'
                       = f.hidden_field :name, :value => template[:name]
                       = f.hidden_field :location, :value => template[:location]
-                      = link_to 'Clone', "#modal-scenario-clone", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#newname').val(''); $('#modal-scenario-clone').find('#name-help').html(''); $('#modal-scenario-clone').find('#name').val('#{template[:name]}'); $('#modal-scenario-clone').find('#location').val('#{template[:location]}')", class: 'btn btn-primary'
+                      = link_to 'Clone', "#modal-scenario-clone", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#newname').val(''); $('#modal-scenario-clone').find('#name-help').html(''); $('#modal-scenario-clone').find('#name').val('#{template[:name]}'); $('#modal-scenario-clone').find('#location').val('#{template[:location]}')", class: 'btn btn-secondary'
 
                       - if template_kind[:title] == 'Custom'
                         = link_to 'Obliterate', scenarios_obliterate_custom_path(filename: template[:filename]), remote: true, method: :post, :data => { confirm: "This will completely erase the scenario. Are you sure?" }, class: 'btn btn-danger'

@@ -1,24 +1,32 @@
 - content_for :main do
   = render '/scenarios/show/modals'
   %br
-  %div.card.card-default
-    %div.card-heading.card-heading-with-tabs
-      %h3.card-title.text-center#scenario-name=@scenario.name
-      %ul.nav.navbar.navbar-expand-lg.justify-content-center.navbar-light{:style => "background-color: #DBF3FA;"}
-        %li.nav-link{class: (request.path == scenario_path(@scenario)           ? 'active' : '')}= link_to('Scenario',  scenario_path(@scenario))
-        %li.nav-link{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Players',     users_scenario_path(@scenario))
-        %li.nav-link{class: (request.path == scoring_scenario_path(@scenario)   ? 'active' : '')}= link_to('Scoring',   scoring_scenario_path(@scenario))
-        %li.nav-link{class: (request.path == instances_scenario_path(@scenario) ? 'active' : '')}= link_to('Instances', instances_scenario_path(@scenario))
-        %li.nav-link{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))
-        %li.nav-link{class: (request.path == recipes_scenario_path(@scenario)   ? 'active' : '')}= link_to('Recipes',   recipes_scenario_path(@scenario))
-        %li.nav-link{class: (request.path == scenario_variables_path(@scenario) ? 'active' : '')}= link_to('Variables', scenario_variables_path(@scenario))
-        %li.nav-link{class: ('active' if request.path == scenario_commands_path(@scenario))}= link_to('Command History', scenario_commands_path(@scenario))
+  %div.card.card-text-center
+    %h3.card-title.text-center#scenario-name=@scenario.name
+    %div.card.card-text.center
+    %br
+    %ul.nav.nav-tabs.card-header-tabs.justify-content-center
+      %li.nav-item
+        .nav-link.active{class: (request.path == scenario_path(@scenario)           ? 'active' : '')}= link_to('Scenario',  scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == users_scenario_path(@scenario)     ? 'active' : '')}= link_to('Players',     users_scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == scoring_scenario_path(@scenario)   ? 'active' : '')}= link_to('Scoring',   scoring_scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == instances_scenario_path(@scenario) ? 'active' : '')}= link_to('Instances', instances_scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == roles_scenario_path(@scenario)     ? 'active' : '')}= link_to('Roles',     roles_scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == recipes_scenario_path(@scenario)   ? 'active' : '')}= link_to('Recipes',   recipes_scenario_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: (request.path == scenario_variables_path(@scenario) ? 'active' : '')}= link_to('Variables', scenario_variables_path(@scenario))
+      %li.nav-item
+        .nav-link.active{class: ('active' if request.path == scenario_commands_path(@scenario))}= link_to('Command History', scenario_commands_path(@scenario))
     %div.indent.card-body
       %br
       %div
         = yield
-  %br
-  = link_to 'Back', scenarios_path, class: 'btn btn-primary'
+  = link_to 'Back', scenarios_path, class: 'btn btn-default'
   %script
     - if @clone
       update_flash("Scenario successfully cloned");

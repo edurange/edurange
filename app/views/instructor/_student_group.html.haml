@@ -21,9 +21,9 @@
       %table.table{ id: "student-group-#{student_group.id}-table"}
         %tr
           %td
-            = link_to 'all', "javascript:void(0)", class: "btn btn-primary mr-1",
+            = link_to 'all', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
               onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
-            = link_to 'none', "javascript:void(0)", class: "btn btn-primary mr-1",
+            = link_to 'none', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
               onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
           %th Name
           %th Email
@@ -33,17 +33,17 @@
           = render 'student', student: student, student_group: student_group
         %tr#foot
           %td{ colspan: '5' }
-            = link_to 'all', "javascript:void(0)", class: "btn btn-primary mr-1",
+            = link_to 'all', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
               onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',true);"
-            = link_to 'none', "javascript:void(0)", class: "btn btn-primary mr-1",
+            = link_to 'none', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
               onclick: "$('#student-group-#{student_group.id} input:checkbox').prop('checked',false);"
             %b with selected:
             - if student_group.name == "All"
-              = link_to 'add to ', "javascript:void(0)", class: "btn btn-primary mr-1",
+              = link_to 'add to ', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
                 onclick: "$('#student-group-#{student_group.id} form').attr('action','#{instructor_student_group_user_add_path}');$('#student-group-#{student_group.id} form').submit();"
               = (select_tag 'student_group_name',
                 options_for_select(StudentGroup.all.select{ |s| s.name != "All" and s.user.id == current_user.id }.collect{ |s| s.name }),
                 class: 'form-control input-sm', id: 'student-group-select') + ','
             - else
-              = link_to 'remove', "javascript:void(0)", class: "btn btn-primary mr-1",
+              = link_to 'remove', "javascript:void(0)", class: "btn btn-outline-secondary btn-sm mr-1",
                 onclick: "$('#student-group-#{student_group.id} form').attr('action','#{instructor_student_group_user_remove_path}');$('#student-group-#{student_group.id} form').submit();"

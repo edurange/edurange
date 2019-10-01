@@ -1,43 +1,52 @@
 %div.btn-group.btn-group-xs
-  = link_to 'Show', scenario, class: 'btn btn-primary'
+  = link_to 'Show', scenario, class: 'button#btnFA btn btn-info'
   %br
   - if scenario.can_boot?
-    = link_to(boot_scenario_path(scenario), method: :post, remote:true, id: 'boot-button', class: 'btn btn-primary') do
-      = render 'icon', name: 'play'
+    = link_to(boot_scenario_path(scenario), method: :post, remote:true, id: 'boot-button', class: 'button#btnFA btn btn-primary') do
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-play
       Boot
   - if scenario.can_pause?
     = link_to(pause_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-primary') do
-      = render 'icon', name: 'pause'
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-pause
       Pause
   - if scenario.can_resume?
     = link_to(start_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-primary') do
-      = render 'icon', name: 'resume'
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-redo
       Resume
   - if scenario.can_unboot?
     = link_to(unboot_scenario_path(scenario), method: :post, remote:true, id: 'unboot-button', class: 'btn btn-primary') do
-      = render 'icon', name: 'stop'
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-stop
       Unboot
   - if scenario.can_save?
     = link_to(save_scenario_path(scenario), method: :post, remote: true, class: 'btn btn-success') do
-      = render 'icon', name: 'floppy-disk'
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-save
       Save
   - if scenario.can_archive?
     = form_for scenario, action: :update, html: {class: 'btn-group btn-group-xs'} do |form|
       = form.hidden_field :archived, value: !scenario.archived?
       = button_tag(type: 'submit', class: 'btn btn-secondary') do
         - if scenario.archived?
-          = render 'icon', name: 'eye-open'
+          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+          %i.fas.fa-eye
           Unarchive
         - else
-          = render 'icon', name: 'eye-close'
+          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+          %i.fas.fa-eye-slash
           Archive
   - if request.path == scenario_path(scenario) # hack: these buttons only work on scenario_path because of modals
     = link_to "#modal-scenario-clone", :data => {:toggle=>"modal"}, :onclick => "$('#modal-scenario-clone').find('#name-div').removeClass('has-error'); $('#modal-scenario-clone').find('#name').val(''); $('#modal-scenario-clone').find('#name-help').html('');", class: 'btn btn-primary' do
-      = render 'icon', name: 'duplicate'
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-clone
       Clone
     = link_to('Show Boot Log', log_get_scenario_path(scenario, kind: 'scenario'), method: :post, remote: true, class: 'btn btn-secondary')
 
   - if scenario.can_destroy?
-    = link_to destroyme_scenario_path(scenario), method: :post, remote: true, "data-toggle" => "modal", 'data-target' => '#modal-scenario-destroy', class: 'btn btn-danger' do
-      = render 'icon', name: 'trash'
+    = link_to destroyme_scenario_path(scenario), method: :post, remote: true, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger' do
+      %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+      %i.fas.fa-trash
       Destroy

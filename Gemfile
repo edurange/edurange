@@ -17,7 +17,7 @@ gem 'underscore-rails'
 gem 'thin'
 gem 'jquery-turbolinks'
 gem 'mini_racer'
-gem 'sprockets-rails', :require => 'sprockets/railtie' 
+gem 'sprockets-rails', :require => 'sprockets/railtie'
 # Both versions of the aws-sdk can be used simultaneously.
 # We should migrate to the latest version.
 # Version 1 of aws-sdk
@@ -42,6 +42,7 @@ gem 'symbol_serializer', git: 'https://github.com/Bizongo/symbol-serializer'
 gem 'sidekiq'
 gem 'pagy'
 gem 'redcarpet'
+gem 'font-awesome-rails'
 
 group :development do
   gem 'better_errors'

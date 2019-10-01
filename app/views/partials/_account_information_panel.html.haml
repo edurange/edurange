@@ -1,12 +1,12 @@
 %br
 %div.card.card-default
   %div.card-header
-    %button.btn.btn-primary.float-right
-      = link_to(edit_user_registration_path, class: 'btn btn-default') do
-        = render('icon', name: 'edit')
+    %button#btnFA.btn.float-right
+      = link_to(edit_user_registration_path, class: 'btn btn-outline-secondary btn-sm') do
+        %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+        %i.fas.fa-edit
         Edit
     %h4.card-title
       Accout Information
   %div.card-body
     = render 'partials/account_information_dl.html.haml'
-  

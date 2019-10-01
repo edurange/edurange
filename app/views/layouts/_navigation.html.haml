@@ -18,5 +18,6 @@
       - if current_user
         %li{role: 'presentation'}
           = link_to destroy_user_session_path, :method => :delete do
-            = render('icon', name: 'log-out')
+            %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+            %i.fas.fa-sign-out-alt
             Log Out

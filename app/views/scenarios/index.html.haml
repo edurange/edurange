@@ -45,8 +45,9 @@
         = label_tag 'archived' , 'Archived', class: 'control-label'
         = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
       %div.pull-right
-        = button_tag(class: 'btn btn-primary')  do
-          = render('icon', name: 'filter')
+        = button_tag(class: 'btn btn-outline-secondary')  do
+          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+          %i.fas.fa-filter
           Filter
     %table.table
       %thead

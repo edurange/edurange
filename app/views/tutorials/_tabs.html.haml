@@ -1,15 +1,21 @@
-%ul.nav.nav-tabs
-  %li{class: ('active' if request.path == tutorials_introduction_path)}
-    = link_to 'Introduction', tutorials_path
-  %li{class: ('active' if request.path == tutorials_using_edurange_path)}
-    = link_to('Using Edurange', tutorials_using_edurange_path)
+%ul.nav.nav-tabs.card-header-tabs.justify-content-center
+  %li.nav-item
+    .nav-link.active{class: ('active' if request.path == tutorials_introduction_path)}
+      = link_to 'Introduction', tutorials_path
+  %li.nav-item
+    .nav-link.active{class: ('active' if request.path == tutorials_using_edurange_path)}
+      = link_to('Using Edurange', tutorials_using_edurange_path)
   - if current_user.is_admin? or current_user.is_instructor?
-    %li.pull-right
-      = link_to tutorials_instructor_manual_path(format: 'pdf') do
-        = render('icon', name: 'book')
-        Instructor Manual
+    %li.nav-item
+      .nav-link.active
+        = link_to tutorials_instructor_manual_path(format: 'pdf') do
+          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+          %i.fas.fa-book
+          Instructor Manual
   - else
-    %li.pull-right
-      = link_to tutorials_student_manual_path(format: 'pdf') do
-        = render('icon', name: 'book')
-        Student Manual
+    %li.nav-item
+      .nav-link.active
+        = link_to tutorials_student_manual_path(format: 'pdf') do
+          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+          %i.fas.fa-book
+          Student Manual

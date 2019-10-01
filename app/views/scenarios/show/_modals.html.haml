@@ -258,15 +258,13 @@
   %div.modal-dialog
     %div.modal-content
       %div.modal-header
-        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
-          &times;
         %h3.modal-title.inline#title
           %span#instance-name
           \: Chef Error
 
       %div.modal-body#modalbody
       %div.modal-footer
-        %button.btn.btn-default{"data-dismiss" => "modal"}
+        %button.btn.btn-secondary{"data-dismiss" => "modal"}
           Close
 
 #modal-instance-modify.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
