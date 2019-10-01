@@ -16,3 +16,7 @@
 	path = scenarios/production/strace
 	url = https://github.com/edurange/strace-lyn
 	branch = terraformize
+[submodule "scenarios/production/total_recon"]
+	path = scenarios/production/total_recon
+	url = https://github.com/edurange/total_recon
+	branch = terraformize
