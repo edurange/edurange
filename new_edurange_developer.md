@@ -14,4 +14,4 @@ http://guides.rubyonrails.org/getting_started.html
 - Rails routing
 http://guides.rubyonrails.org/routing.html
 
-- Redo
+
