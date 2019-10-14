@@ -86,14 +86,14 @@ class Scenario < ActiveRecord::Base
       true
     end
   end
-
-  before_destroy do
-    cannot_delete_unless_stopped_or_archived
-    throw(:abort) if errors.present?
+  
+  def only_delete_if_stopped_or_archived
+    errors.add(:status, 'must be stopped or archived to destroy') unless can_destroy?
   end
 
-  def only_destroy_if_stopped_or_archived
-    errors.add(:status, 'must be stopped or archived to destroy') unless can_destroy?
+  before_destroy do
+    only_delete_if_stopped_or_archived
+    throw(:abort) if errors.present?
   end
 
   def self.not_archived
