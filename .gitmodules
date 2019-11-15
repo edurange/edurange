@@ -22,4 +22,5 @@
 	branch = terraformize
 [submodule "scenarios/production/treasure_hunt"]
 	path = scenarios/production/treasure_hunt
-	url = https://github.com/edurange/scenario-treasure-hunt/tree/terraform
+	url = https://github.com/edurange/scenario-treasure-hunt
+	branch = terraform
