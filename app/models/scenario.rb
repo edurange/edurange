@@ -309,11 +309,12 @@ class Scenario < ActiveRecord::Base
         record = JSON.parse(line)
         begin
           BashHistory.find_or_create_by!(
-            instance:     self.instances.find_by_name(record['hostname'].gsub('-', '_')),
-            player:       self.players.find_by_login(record['user']),
-            exit_status:  record['exit_code'].to_i,
-            performed_at: Time.iso8601(record['time']),
-            command:      record['cmd']
+            instance:     self.instances.find_by_name(record['host'].gsub('-', '_')),
+	    cwd:          record['cwd'],
+	    command:      record['cmd'],
+	    output:       record['output'],
+	    player:       self.players.find_by_login(record['prompt'].gsub(/@.*$/, '')),
+	    performed_at: Time.at(record['time'].to_i)
           )
         rescue ActiveRecord::RecordInvalid
           logger.warn("could not save bash history record: #{$!}")
