@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_12_223432) do
+ActiveRecord::Schema.define(version: 2019_12_06_211736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,9 @@ ActiveRecord::Schema.define(version: 2019_11_12_223432) do
     t.integer "exit_status"
     t.string "cwd"
     t.string "output"
+    t.string "begin"
+    t.string "prompt"
+    t.integer "time"
   end
 
   create_table "clouds", id: :serial, force: :cascade do |t|
