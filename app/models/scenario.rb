@@ -310,11 +310,14 @@ class Scenario < ActiveRecord::Base
         begin
           BashHistory.find_or_create_by!(
             instance:     self.instances.find_by_name(record['host'].gsub('-', '_')),
+	    begin:        record['begin'],
 	    cwd:          record['cwd'],
 	    command:      record['cmd'],
-	    output:       record['output'],
+	    output:       record['output'].gsub(/#%#/, "\n"),
 	    player:       self.players.find_by_login(record['prompt'].gsub(/@.*$/, '')),
-	    performed_at: Time.at(record['time'].to_i)
+	    prompt:       record['prompt'],
+	    performed_at: Time.at(record['time'].to_i),
+	    time:         record['time'].to_i
           )
         rescue ActiveRecord::RecordInvalid
           logger.warn("could not save bash history record: #{$!}")
