@@ -1,117 +1,85 @@
-%label Instructor:
-= @scenario.user.name
-- if @scenario.user.organization
-  %br
-  %label Organization:
-  = @scenario.user.organization
-- if @scenario.instructions_student
-  %br
-  %label Scenario Instructions:
-  = @scenario.instructions_student
-%br
-%label Groups:
-%ul
-  - @scenario.students_groups(current_user).each do |group|
-    %li
-      %label= group.name
-      - if group.instructions
-        %br
-        %label Instructions:
-        = group.instructions
-      %br
-      %label Credentials:
-      %ul
-        - if player = group.find_player_by_student_id(current_user.id)
-          login:
-          = player.login
-          %br
-          password:
-          = player.password
+.panel-body
+  %h4 Information
+  %dl.dl-horizontal
+    %dt Instructor
+    %dd= @player.scenario.user.name
+    - if @player.scenario.user.organization
+      %dt Organization
+      %dd= @player.scenario.user.organization
+    %dt Status
+    %dd= render('scenarios/scenario_status', scenario: @player.scenario)
+    %dt Instructions
+    %dd= @player.group.instructions || @scenario.instructions_student
+    %dt Login
+    %dd= @player.login
+    %dt Password
+    %dd= @player.password
 
-      %label Instances:
-      %ul
-        - group.instance_groups.each do |instance_group|
-          %li
-            %label Name:
-            = instance_group.instance.name
-            - if instance_group.instance.internet_accessible
-              %br
-              %label Public IP Address:
-              - if instance_group.instance.ip_address_public
-                = instance_group.instance.ip_address_public
-              - else
-                %em.text-muted not set
+  %h4 Instances
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Public IP Address
+  %tbody
+    - @player.group.instance_groups.each do |instance_group|
+      %tr
+        %td= instance_group.instance.name
+        %td
+          - if instance_group.instance.ip_address_public
+            = instance_group.instance.ip_address_public
+- if !@scenario.questions.empty?
+  .panel-body
+    %h4 Questions
+    - @scenario.questions.order(:order).each_with_index do |question, question_index|
+      %dl{ id: "question.#{question.id}" }
+        %b= question.order.to_s + '.'
+        = question.text
+        %p
+        %dl
+          %div{ id: "question-#{question.id}-answers" }
+            %label Answer Type:
+            = question.type_of
             %br
-            %label IP Address:
-            - if instance_group.ip_visible
-              = instance_group.instance.ip_address
-            - else
-              %em.text-muted hidden
-          %br
+            - if question.string? or question.number?
+              - answers = question.answers.where("user_id = ?", current_user.id)
+              - if answers
+                %label My Answers:
+                %table.table{ id: "question-#{question.id}-answers-table" }
+                  %tr
+                    %th Answer
+                    %th Correct
+                    %th Points
+                    %th Comments
+                    %th Date
+                  - answers.each_with_index do |answer, answer_index|
+                    = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
 
-%label Questions:
-%p
-
-- @scenario.questions.order(:order).each_with_index do |question, question_index|
-  %dl{ id: "question.#{question.id}" }
-    %b= question.order.to_s + '.'
-    = question.text
-    %p
-    %dl
-      %div{ id: "question-#{question.id}-answers" }
-        %label Answer Type:
-        = question.type_of
-        %br
-        - if question.type_of == "String" or question.type_of == "Number"
-          - answers = question.answers.where("user_id = ?", current_user.id)
-          - if answers
-            %label My Answers:
-            %table.table{ id: "question-#{question.id}-answers-table" }
-              %tr
-                %th Answer
-                %th Correct
-                %th Points
-                %th Comments
-                %th Date
-              - answers.each_with_index do |answer, answer_index|
-                = render 'answer_string_number', answer: answer, question_index: question_index, answer_index: answer_index
-
-        - elsif question.type_of == "Essay"
-          %label My Answers:
-          %table.table{ id: "question-#{question.id}-answers-table" }
-            %tr
-              %th Answer
-              %th Graded
-              %th Points Awarded
-              %th Points Possible
-              %th Comments
-              %th Date
-              %th
-              - if answers = question.answers.where("user_id = ?", current_user.id)
-                - answers.each do |answer|
-                  = render 'answer_essay', answer: answer
-        - if question.type_of == "String"
-          = form_tag answer_string_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-            %div#help-div
-              = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-              %span.help-block#help-span
-            %br
-            = submit_tag "Submit", :class => 'btn btn-primary'
-
-        - elsif question.type_of == "Number"
-          = form_tag answer_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-            %div#help-div
-              = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
-              %span.help-block#help-span
-            %br
-            = submit_tag "Submit", :class => 'btn btn-primary'
-
-        - elsif question.type_of == "Essay"
-          = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
-            %div#help-div
-              = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
-              %span.help-block#help-span
-            %br
-            = submit_tag "Submit", :class => 'btn btn-primary'
-
-= link_to 'Back', '/student', class: 'btn btn-secondary'
+            - elsif question.essay?
+              %label My Answers:
+              %table.table{ id: "question-#{question.id}-answers-table" }
+                %tr
+                  %th Answer
+                  %th Graded
+                  %th Points Awarded
+                  %th Points Possible
+                  %th Comments
+                  %th Date
+                  %th
+                  - if answers = question.answers.where("user_id = ?", current_user.id)
+                    - answers.each do |answer|
+                      = render 'answer_essay', answer: answer
+            - if question.string? | question.number?
+              = form_tag answer_string_or_number_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+                %div#help-div
+                  = text_field_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field"
+                  %span.help-block#help-span
+                %br
+                = submit_tag "Submit", :class => 'btn btn-default'
+            - elsif question.essay?
+              = form_tag answer_essay_student_path(@scenario, question_id: question.id), remote: true, method: :post do
+                %div#help-div
+                  = text_area_tag "text", nil, class: 'form-control', id: "question-#{question.id}-answers-text-field", style: "height: 120px"
+                  %span.help-block#help-span
+                %br
+                = submit_tag "Submit", :class => 'btn btn-default'

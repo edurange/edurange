@@ -1,0 +1,23 @@
+#modal-student-group-user-add.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+  %div.modal-dialog
+    %div.modal-content
+      %div.modal-header
+        %button.close{ :type => "button", "data-dismiss" => "modal", "aria-hidden" => "true"}
+          &times;
+        %h3.modal-title.inline#title
+          Add User to Student Group
+      %div.modal-body#modalbody
+        = form_tag '', remote: true, method: :post do
+          = label_tag nil, "User:"
+          %span#user-name
+          = hidden_field_tag 'user_id'
+          %div#name-div
+            = label_tag nil, "Add to group"
+            = select_tag 'student_group_name', options_for_select(current_user.student_groups.all.select{ |s| s.name != "All" }.collect{ |s| s.name }),
+                class: 'form-control input-sm', id: 'student-group-select'
+            %span.help-block.inline#name-help
+          %br
+          = submit_tag "Submit", :class => 'btn btn-default'
+      %div.modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal"}
+          Close

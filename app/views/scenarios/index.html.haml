@@ -10,69 +10,51 @@
         = submit_tag "Destroy", :class => 'btn btn-danger'
         %button.btn.btn-primary{"data-dismiss" => "modal"}
           Cancel
-
-#modal-scenario-custom-new.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
-  %div.modal-dialog
-    %div.modal-content
-      %div.modal-header
-        %h3.modal-title.inline#title
-          Create Custom Scenario
-      %div.modal-body#modalbody
-        = form_tag scenarios_create_custom_path, remote:true, method: :post do
-          %div#name-div
-            = label_tag "Name:", nil, class: 'control-label'
-            = text_field_tag "name", nil, class: 'form-control'
-            %span.help-block#name-help
-          %p
-          %div#help-div
-            %span.help-block#help-help
-            = submit_tag "Submit", :class => 'btn btn-primary'
-
-            %button.btn.btn-primary{"data-dismiss" => "modal"}
-              Close
-
+%br
 %div.card
-  %h3.card-header.text-center
+  %h3.card-header.card-title.text-center
     Scenarios
-  %br
-  %div.text-center
-    = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-primary'
-    = link_to 'Create Custom Scenario', "#modal-scenario-custom-new", :data => {:toggle=>"modal"}, onclick: "$('#modal-scenario-custom-new').find('#name').val(''); $('#modal-scenario-custom-new').find('#name-div').removeClass('has-error'); $('#modal-scenario-custom-new').find('#name-help').html('');", class: 'btn btn-primary'
-
   %div.card-body
-    = form_tag '', method: :get, class: 'form-inline filter-controls' do
-      %div.form-group
-        = label_tag 'archived' , 'Archived', class: 'control-label'
-        = select_tag 'archived', options_for_select(['No', 'Yes', 'Either'], params[:archived] || 'No' ), class: 'form-control'
-      %div.pull-right
-        = button_tag(class: 'btn btn-outline-secondary')  do
-          %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
-          %i.fas.fa-filter
-          Filter
-    %table.table
-      %thead
-        %tr
-          %th Name
-          %th Date Created
-          %th Status
-          - if current_user.is_admin?
-            %th Instructor
-          %th Actions
-      %tbody
-        - if @scenarios.size > 0
-          - @scenarios.each do |scenario|
-            %tr
-              %td= scenario.name
-              %td= scenario.created_at
-              %td= scenario.status
-              - if current_user.is_admin?
-                - if scenario.user
-                  %td= scenario.user.name
-                - else
-                  %td.text-muted None
-              %td
-                = render('actions', scenario: scenario)
-        - else
+    = form_with(method: 'get', class: 'checkbox-inline') do |f|
+      %div.container-fluid
+        %fieldset.form-group
+          - Scenario.statuses.each do |status, value|
+            = f.label nil, class: 'checkbox-inline'
+            = f.check_box :status, {multiple: true, checked: @selected_statuses.include?(status)}, status, false
+            = status
+        .d-inline.mx-auto
+        .form-group.float-left
+          = button_tag(type: 'submit', class: 'btn btn-secondary') do
+            %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+            %i.fas.fa-filter
+            Filter
+        .form-group.text-center
+          = link_to 'Load New Scenario', new_scenario_path, class: 'btn btn-primary'
+  %br
+  %table.table
+    %thead
+      %tr
+        %th Name
+        %th Date Created
+        %th Status
+        - if current_user.is_admin?
+          %th Instructor
+        %th Actions
+    %tbody
+      - if @scenarios.size > 0
+        - @scenarios.each do |scenario|
           %tr
-            %td{colspan: (current_user.is_admin? ? 5 : 4)}
-              There are no scenarios
+            %td= scenario.name
+            %td= scenario.created_at
+            %td= render('scenario_status', scenario: scenario)
+            - if current_user.is_admin?
+              - if scenario.user
+                %td= scenario.user.name
+              - else
+                %td.text-muted None
+            %td
+              = render('actions', scenario: scenario)
+      - else
+        %tr
+          %td{colspan: (current_user.is_admin? ? 5 : 4)}
+            There are no scenarios

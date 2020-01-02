@@ -16,8 +16,6 @@
 @import "bootstrap";
 @import "font-awesome";
 
-//th,td { padding: 6px; }
-
 .correct {
   color: green;
 }
@@ -34,11 +32,6 @@
   display: inline;
 }
 
-.center {
-  width: 50%;
-  margin: 0 auto;
-}
-
 header {
   margin-left: auto;
   margin-right: auto;
@@ -50,11 +43,6 @@ main {
   margin-left: auto;
   margin-right: auto;
   width: 90%;
-}
-
-.foo {
-  width:100px;
-  height:13px;
 }
 
 .spin {
@@ -127,4 +115,10 @@ ul.pagination, nav.pagination {
 
 .card-header-tabs .card-title {
   float: left;
+}
+
+.student-group-heading {
+  color: #333333;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
 }

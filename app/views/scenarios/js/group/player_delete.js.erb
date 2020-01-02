@@ -3,7 +3,7 @@ $('#player-<%= @player.id.to_s %>').remove();
 	$('#student-<%= @player.user.id %>-answers').remove();
 	$('#student-<%= @player.user.id %>-answers-tr').remove();
 <% end %>
-<% if @player.group.scenario.modifiable? %>
+<% if !@player.group.scenario.stopped? %>
   $('#save-button-li').removeClass('disabled');
   $('#save-button').attr('href', '/scenarios/<%= @player.group.scenario.id %>/save');
 <% end %>

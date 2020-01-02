@@ -1,0 +1,17 @@
+#modal-student-group-create.modal.fade{ :tabindex => "-1", :role => "dialog", "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+  %div.modal-dialog
+    %div.modal-content
+      %div.modal-header
+        %h3.modal-title.inline#title
+          Create Student Group
+      %div.modal-body#modalbody
+        = form_tag student_groups_path, remote: true, method: :post do
+          %div#name-div
+            = label_tag nil, "Name:"
+            = text_field_tag "name", nil, class: 'form-control'
+            %span.help-block.inline#name-help
+          %br
+          %div.modal-footer
+          = submit_tag "Submit", :class => 'btn btn-primary'
+          %button.btn.btn-secondary{"data-dismiss" => "modal"}
+            Close

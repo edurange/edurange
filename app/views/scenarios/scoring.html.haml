@@ -1,1 +1,18 @@
-= render 'scenarios/tabs/scoring'
+.panel-body
+  %label Scoring:
+  %div
+    %label Questions:
+    %ol#questions
+      - @scenario.questions.order(:order).each_with_index do |question, index|
+        = render '/scenarios/show/question', question: question, index: index
+    %br
+    %label Student Answers:
+    %table.table#student-answers-table
+      %tr
+        %th
+        %th Name
+        %th Email
+        %th Answered
+        %th Correct
+      - @scenario.students.each do |user|
+        = render '/scenarios/show/student_answers_header', scenario: @scenario, user: user

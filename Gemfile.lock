@@ -1,10 +1,4 @@
 GIT
-  remote: https://github.com/Bizongo/symbol-serializer
-  revision: 20bb58a50f42e1775ab6c2e4a94993ddc24c0b68
-  specs:
-    symbol_serializer (0.1.0)
-
-GIT
   remote: https://github.com/laserlemon/figaro
   revision: 8dd678f5075272138acf4b56682b8b1cbcd6ce10
   specs:
@@ -86,10 +80,6 @@ GEM
     aws-sigv4 (1.1.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
     bcrypt (3.1.13)
-    better_errors (2.5.1)
-      coderay (>= 1.0.0)
-      erubi (>= 1.0.0)
-      rack (>= 0.9.0)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     bootstrap (4.3.1)
@@ -408,7 +398,6 @@ DEPENDENCIES
   aws-sdk-ec2 (~> 1)
   aws-sdk-s3 (~> 1)
   aws-sdk-v1 (~> 1.67)
-  better_errors
   binding_of_caller
   bootstrap (~> 4.3.1)
   capybara
@@ -437,7 +426,7 @@ DEPENDENCIES
   momentjs-rails
   netaddr (~> 1.5.1)
   pagy
-  pg (~> 0.18)
+  pg
   pry-byebug
   pry-rails
   rails (~> 5.2.3)
@@ -460,7 +449,6 @@ DEPENDENCIES
   spring
   sprockets-rails
   sqlite3
-  symbol_serializer!
   thin
   turbolinks
   uglifier (>= 1.3.0)

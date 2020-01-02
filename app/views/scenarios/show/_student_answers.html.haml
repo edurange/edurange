@@ -6,7 +6,9 @@
       %p
       %dl
         %div{ id: "" }
-          %label Answer Type:
+          %h6 Answer Type:
           = question.type_of
+          %br
+          %br
           %div{ id: "student-#{user.id}-question-#{question.id}-answers-table-div" }
             = render '/scenarios/show/student_question_answer_table', question: question, question_index: question_index, user: user

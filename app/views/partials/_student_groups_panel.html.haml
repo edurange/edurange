@@ -1,0 +1,15 @@
+%br
+%div.card
+  %div.card-header
+    %h4.card-title
+      Student Groups
+    %div.btn.btn-group.float-right
+      = link_to '+ create student group', '#modal-student-group-create', data: {toggle: "modal"}, |
+        onclick: "$('#modal-student-group-create').find('#name-div').removeClass('has-error');" + |
+                 "$('#modal-student-group-create').find('#name').val('');" +                      |
+                 "$('#modal-student-group-create').find('#name-help').html('');"                  |
+  %div.card-body
+    - current_user.student_groups.each do |student_group|
+      //%li.list-group-item
+      = render 'student_groups/student_group', student_group: student_group, scenario: @scenario
+      %hr/

@@ -14,14 +14,14 @@
     %main{:role => "main"}
       %div.col-md-8.col-md-offset-2
         = render 'layouts/messages'
-        %div.card
-          %div.card-header
-            %h1
-              EDURange
-              %small
-                the cybersecurity training ground
-            %hr
-            %h4
-              Visit our website for more information - <a href="http://edurange.org">edurange.org</a>
-          %div.card-body
-            = yield
+      %div.card
+        %div.card-header
+          %h1
+            = link_to image_tag("https://edurange.org/img/logo_menu.png")
+          %h4.font-weight-light
+            the cybersecurity training ground
+          %hr
+          %h4.font-weight-normal
+            Visit our website for more information - <a href="http://edurange.org">edurange.org</a>
+        %div.card-body
+          = yield

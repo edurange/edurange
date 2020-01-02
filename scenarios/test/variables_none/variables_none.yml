@@ -12,15 +12,8 @@ Groups:
   Users:
   - Login: student
     Password: sWfwkNGblfv
-Clouds:
-- Name: Cloud0
-  CIDR_Block: 10.0.0.0/16
-  Subnets:
-  - Name: Subnet0
-    CIDR_Block: 10.0.129.0/24
-    Internet_Accessible: true
-    Instances:
-    - Name: Instance0
-      OS: ubuntu
-      IP_Address: 10.0.129.5
-      Internet_Accessible: true
+Instances:
+- Name: Instance0
+  OS: ubuntu
+  IP_Address: 10.0.129.5
+  Internet_Accessible: true

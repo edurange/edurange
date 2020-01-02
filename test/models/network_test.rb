@@ -3,7 +3,7 @@ require 'test_helper'
 class NetworkTest < ActiveSupport::TestCase
 
   test 'cidr within cloud' do
-
+    skip("removed all cloud/subnet stuff.")
     instructor = users(:instructor1)
     scenario = instructor.scenarios.new(location: :test, name: 'network_test')
     scenario.save
@@ -79,7 +79,7 @@ class NetworkTest < ActiveSupport::TestCase
     instance1.save
     assert instance1.valid?, instance1.errors.messages
 
-    # .0-.3 are reserved 
+    # .0-.3 are reserved
     instance1.update ip_address: "10.0.1.0"
     assert_not instance1.valid?, instance1.errors.messages
     assert_equal instance1.errors.keys, [:ip_address]
@@ -119,5 +119,5 @@ class NetworkTest < ActiveSupport::TestCase
     instance1.errors.clear
 
   end
-  
+
 end

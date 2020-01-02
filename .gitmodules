@@ -1,3 +1,7 @@
 [submodule "documentation"]
 	path = documentation
 	url = https://github.com/edurange/edurange-documentation
+[submodule "scenarios/production/file_wrangler"]
+	path = scenarios/production/file_wrangler
+	url = https://github.com/edurange/scenario-file-wrangler
+	branch = terraformize

@@ -6,6 +6,7 @@ class StudentScenariosController < ApplicationController
   before_action :set_answer, only: [:answer_essay_delete, :answer_essay_show, :answer_comment_show]
 
   def show
+    @player = @scenario.players.find_by(user: current_user)
   end
 
   def answer_string

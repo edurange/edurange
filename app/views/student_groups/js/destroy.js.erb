@@ -1,0 +1,6 @@
+<% if @student_group.errors.any? %>
+    alert('Error destroying student group.');
+<% else %>
+    $('#student-group-<%= @student_group.id %>').remove();
+    $('#student-group-select option[value = "<%= escape_javascript @student_group.name %>"]').remove();
+<% end %>

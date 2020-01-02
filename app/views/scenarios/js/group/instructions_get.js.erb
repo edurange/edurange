@@ -1,5 +1,0 @@
-$('#dropdown-group-<%= @group.id %>-instructions').removeClass('open');
-$('#modal-group-instructions-modify').modal('show');
-$('#modal-group-instructions-modify').find('#group-name').text('<%= @group.name %>');
-$('#modal-group-instructions-modify').find('#group_id').val('<%= @group.id %>');
-$('#modal-group-instructions-modify').find('#text').val('<%= escape_javascript(@group.instructions.html_safe) %>');

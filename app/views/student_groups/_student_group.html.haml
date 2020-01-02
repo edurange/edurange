@@ -1,0 +1,59 @@
+%div{ id: "student-group-#{student_group.id}"}
+  %li.list-group.student-group-heading
+  %br
+  %h5
+    %list-group-item.list-group-flush.float-left
+      = link_to student_group.name, "#student-group-#{student_group.id}",
+        data: { toggle: 'collapse', target: "#student-group-#{student_group.id}-collapse" }
+    %div
+      - if student_group.name != "All"
+        %div.float-right
+          = link_to student_group_path(student_group),
+            remote: true, method: :delete, role: "button",
+            class: 'btn btn-outline-danger btn-sm',
+            data: { confirm: "Are you sure you want to delete Student Group #{student_group.name}?" } do
+            %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/c87346ab54.js"}
+            %i.fas.fa-trash-alt
+            Delete
+      %br
+
+%div.collapse{ id: "student-group-#{student_group.id}-collapse", class: (student_group.name == "All" ? "in" : "") }
+  %div.card-body
+    %dl
+      %dt Registration Code
+      %dd= student_group.registration_code
+
+  = form_tag users_student_groups_path, remote: true, method: :post, class: 'form-inline', id: "student-group-#{student_group.id}-form" do
+
+    %table.table{ id: "student-group-#{student_group.id}-table"}
+      %thead
+        %tr
+          %th
+            = link_to 'select all', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',true);"
+            = link_to 'none', "javascript:void(0)",
+              onclick: "$('#student-group-#{student_group.id}-form input:checkbox').prop('checked',false);"
+          %th Name
+          %th Email
+          %th Organization
+      %tbody
+        - if student_group.users.empty?
+          %tr
+            %td{colspan: 4} No Users
+        - else
+          - student_group.users.each do |user|
+            = render 'student_groups/student', student_group: student_group, user: user
+      %tfoot
+        %td{ colspan: 4 }
+          - if student_group.name == "All"
+            .form-inline.row
+              .form-group
+                = submit_tag("Add Selected To", name: 'add', class: 'btn btn-secondary mx-2')
+              .form-group
+                = (select_tag 'add_to_id',
+                options_for_select(StudentGroup.all.select{ |s| s.name != "All" and s.user.id == current_user.id }.collect{ |s| [s.name, s.id] }),
+                class: 'form-control input-sm', id: 'student-group-select')
+            %br
+            .form-group
+              = hidden_field_tag('remove_from_id', student_group.id)
+              = submit_tag("Remove Selected", name: 'remove', class: 'btn btn-secondary')
