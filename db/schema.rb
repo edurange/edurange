@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_06_211736) do
+ActiveRecord::Schema.define(version: 2020_01_07_204344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,19 +42,6 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.integer "time"
   end
 
-  create_table "clouds", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "cidr_block"
-    t.string "driver_id"
-    t.integer "scenario_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "log", default: ""
-    t.string "boot_code", default: ""
-    t.index ["scenario_id"], name: "index_clouds_on_scenario_id"
-  end
-
   create_table "groups", id: :serial, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
@@ -72,15 +59,6 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.boolean "ip_visible", default: true
     t.index ["group_id"], name: "index_instance_groups_on_group_id"
     t.index ["instance_id"], name: "index_instance_groups_on_instance_id"
-  end
-
-  create_table "instance_roles", id: :serial, force: :cascade do |t|
-    t.integer "instance_id", null: false
-    t.integer "role_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["instance_id"], name: "index_instance_roles_on_instance_id"
-    t.index ["role_id"], name: "index_instance_roles_on_role_id"
   end
 
   create_table "instances", id: :serial, force: :cascade do |t|
@@ -119,31 +97,6 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.index ["scenario_id"], name: "index_questions_on_scenario_id"
   end
 
-  create_table "recipes", id: :serial, force: :cascade do |t|
-    t.integer "scenario_id", null: false
-    t.string "name"
-    t.boolean "custom"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "role_recipes", id: :serial, force: :cascade do |t|
-    t.integer "role_id"
-    t.integer "recipe_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["recipe_id"], name: "index_role_recipes_on_recipe_id"
-    t.index ["role_id"], name: "index_role_recipes_on_role_id"
-  end
-
-  create_table "roles", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "packages"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer "scenario_id"
-  end
-
   create_table "scenarios", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -155,6 +108,7 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.text "instructions", default: ""
     t.text "instructions_student", default: ""
     t.integer "location", default: 0, null: false
+    t.string "codelab"
   end
 
   create_table "schedules", id: :serial, force: :cascade do |t|
@@ -166,20 +120,6 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "statistics", id: :serial, force: :cascade do |t|
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "bash_histories", default: ""
-    t.text "bash_analytics", default: "--- []\n"
-    t.string "scenario_name"
-    t.datetime "scenario_created_at"
-    t.string "script_log", default: ""
-    t.string "exit_status", default: ""
-    t.integer "scenario_id"
-    t.string "resource_info"
   end
 
   create_table "student_group_users", id: :serial, force: :cascade do |t|
@@ -195,27 +135,6 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "registration_code"
-  end
-
-  create_table "subnets", id: :serial, force: :cascade do |t|
-    t.string "name"
-    t.string "cidr_block"
-    t.string "driver_id"
-    t.boolean "internet_accessible", default: false
-    t.integer "cloud_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer "status", default: 0
-    t.string "log", default: ""
-    t.string "boot_code", default: ""
-    t.index ["cloud_id"], name: "index_subnets_on_cloud_id"
-  end
-
-  create_table "tutorials", id: :serial, force: :cascade do |t|
-    t.string "title"
-    t.text "text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
@@ -263,15 +182,12 @@ ActiveRecord::Schema.define(version: 2019_12_06_211736) do
   add_foreign_key "groups", "scenarios", name: "fk_groups_scenarios", on_delete: :cascade
   add_foreign_key "instance_groups", "groups", name: "fk_instance_groups_groups", on_delete: :cascade
   add_foreign_key "instance_groups", "instances", name: "fk_instance_groups_instances", on_delete: :cascade
-  add_foreign_key "instance_roles", "roles", name: "fk_instance_roles_roles", on_delete: :cascade
   add_foreign_key "instances", "scenarios", name: "fk_instances_scenarios"
   add_foreign_key "players", "groups", name: "fk_players_groups", on_delete: :cascade
   add_foreign_key "players", "student_groups", name: "fk_players_student_groups", on_delete: :nullify
   add_foreign_key "players", "users", name: "fk_players_users", on_delete: :nullify
   add_foreign_key "questions", "scenarios", name: "fk_questions_scenarios", on_delete: :cascade
-  add_foreign_key "role_recipes", "recipes", name: "fk_role_recipes_recipes", on_delete: :cascade
   add_foreign_key "scenarios", "users", name: "fk_scenarios_users"
-  add_foreign_key "subnets", "clouds", name: "fk_subnets_clouds", on_delete: :cascade
   add_foreign_key "variable_templates", "groups", on_delete: :cascade
   add_foreign_key "variable_templates", "scenarios", on_delete: :cascade
   add_foreign_key "variables", "players", on_delete: :cascade

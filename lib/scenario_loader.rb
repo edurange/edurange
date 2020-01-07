@@ -25,6 +25,7 @@ class ScenarioLoader
       description: yaml["Description"],
       instructions: yaml["Instructions"],
       instructions_student: yaml["InstructionsStudent"],
+      codelab: yaml["Codelab"],
     )
     create_scenario! if @scenario.save
   end
