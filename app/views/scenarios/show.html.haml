@@ -3,6 +3,9 @@
     %dt Description
     %dd=  @scenario.description || 'N/A'
 
+    %dt Codelab
+    %dd= @scenario.codelab || 'No codelab available'
+
     %dt Status
     %dd
       = render('scenario_status', scenario: @scenario)
