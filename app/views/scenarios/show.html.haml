@@ -3,9 +3,15 @@
     %dt Description
     %dd=  @scenario.description || 'N/A'
 
+    %dt Codelab
+    %dd= link_to @scenario.codelab, 'codelab here'
+
+
+
     %dt Status
     %dd
       = render('scenario_status', scenario: @scenario)
+
     %dt Actions
     %dd= render('actions', scenario: @scenario)
 
