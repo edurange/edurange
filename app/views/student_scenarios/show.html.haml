@@ -10,6 +10,8 @@
     %dd= render('scenarios/scenario_status', scenario: @player.scenario)
     %dt Instructions
     %dd= @player.group.instructions || @scenario.instructions_student
+    %dt CodeLab
+    %dd= link_to 'Click Here for the Guided Instructions', @scenario.codelab
     %dt Login
     %dd= @player.login
     %dt Password
