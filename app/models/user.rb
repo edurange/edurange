@@ -41,6 +41,15 @@ class User < ActiveRecord::Base
   validates :name, format: {
     with: /\A[a-zA-Z0-9_]+\z/,
   }
+  validate :validate_username_not_reserved, on: :create, if: :is_student?
+
+  validate def validate_username_not_reserved
+    if self.name.present?
+      if self.name == "admin" || self.name == "student" || self.name == "ubuntu" || self.name == "root"
+        self.errors.add :name, :invalid
+      end
+    end
+  end
 
   validate def has_all_student_group
     if self.admin? or self.instructor?
