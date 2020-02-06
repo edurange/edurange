@@ -24,9 +24,6 @@
 	path = scenarios/production/treasure_hunt
 	url = https://github.com/edurange/scenario-treasure-hunt
 	branch = terraform
-[submodule "scenarios/production/elf_infection"]
-	path = scenarios/production/elf_infection
-	url = https://github.com/edurange/terraform-elf.git
 [submodule "scenarios/production/metasploitable"]
 	path = scenarios/production/metasploitable
 	url = https://github.com/edurange/scenario-metasploitable
