@@ -27,3 +27,6 @@
 [submodule "scenarios/production/metasploitable"]
 	path = scenarios/production/metasploitable
 	url = https://github.com/edurange/scenario-metasploitable
+[submodule "scenarios/production/elf_infection"]
+	path = scenarios/production/elf_infection
+	url = https://github.com/edurange/terraform-elf.git
