@@ -16,6 +16,21 @@
       = link_to(commands_path(filter_params.slice(:scenario_id, :player_login, :instance_name).merge(format: :csv)), type: 'text/csv', download: 'commands.csv', class: 'btn btn-primary') do
         = render 'icon', name: 'save-file'
         Export
+.panel-body
+  = form_tag '', method: :get, class: 'form-inline filter-controls' do
+    %div.form-group
+      = label_tag 'player_login', 'Show Repeated Attempts', class: 'control-label'
+      -# FILTER COMMANDS HERE. This line is currently querying database for each player attached to this scenario instance.
+      -# It needs to show a drop down of Milestones specific to this scenario.
+      -# When a milestone is selected, command table will be filtered to show commands associated with that milestone that were attempted but not completed.
+      = select_tag 'player_login', options_from_collection_for_select(@query.player_options, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
+    %div.form-group
+      = label_tag 'player_login', 'Show Uncompleted Milestones', class: 'control-label'
+      -# FILTER COMMANDS HERE. This line is currently querying database for each player attached to this scenario instance.
+      -# It needs to show a drop down of Milestones specific to this scenario.
+      -# When a milestone is selected, command table will be filtered to show commands associated with that milestone that were never completed.
+      = select_tag 'player_login', options_from_collection_for_select(@query.player_options, :login, :login, selected: params[:player_login]), include_blank: 'All', class: 'form-control'
+
 %table.table
   %thead
     %tr
