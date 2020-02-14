@@ -39,7 +39,6 @@
       %th Instance
       %th CWD
       %th Player
-      %th Status
       %th Command
       %th Output
   %tbody
@@ -54,7 +53,6 @@
           %td= record.instance.name
           %td= record.cwd
           %td= record.player.login
-          %td{class: record.exit_status == 0 || record.exit_status.nil? ? 'text-muted' : 'danger'}= record.exit_status
           %td= record.command
           %td= record.output
 .panel-footer
