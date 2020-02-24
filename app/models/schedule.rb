@@ -14,8 +14,10 @@ class Schedule < ActiveRecord::Base
     templates = []
     scenario_list = []
     if Rails.env == 'production'
+      templates << YmlRecord.yml_headers('development', @user)
       templates << YmlRecord.yml_headers('production', @user)
       templates << YmlRecord.yml_headers('local', @user)
+      templates << YmlRecord.yml_headers('test', @user)
     elsif Rails.env == 'development'
       templates << YmlRecord.yml_headers('development', @user)
       templates << YmlRecord.yml_headers('production', @user)
