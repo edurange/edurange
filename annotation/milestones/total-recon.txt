@@ -1,0 +1,12 @@
+home,nmap .* 10\.0\.0\.4 .*,*
+home,ssh -p 444 10\.0\.0\.4 | ssh 10\.0\.0\.4 -p 444,*
+rekall,nmap 10\.0\.0\.0/24,*
+subway,nmap -Pn .* | nmap .* -Pn,*
+earth_spaceport,nmap .* 10\.0\.\*\.33 .* | nmap .* 10\.0\.192-255\.33 .*,*
+earth_spaceport,nmap 10\.0\.0\.0/18,*
+mars_spaceport,nmap .* 10\.0\.\*\.64 .*|nmap .* 10\.0\.192-255\.33 .*,.* 123/tcp .*
+mars_spaceport,nmap 10\.0\.0\.0/18,*
+venusville,nmap .* 10\.0\.\*\.144 .*|nmap .* 10\.0\.192-255\.144 .*,.* 2345/tcp .*
+last_resort,nc .* 10\.0\.234\.8 .*,.* 632 port .* succeeded! .*
+resistance_base,nmap .* -sX .* 10\.0\.233\.34-38 .*| nmap 10\.0\.233\.34-38 .* -sX .*,*
+
