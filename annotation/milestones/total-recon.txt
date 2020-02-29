@@ -8,5 +8,10 @@ mars_spaceport,nmap .* 10\.0\.\*\.64 .*|nmap .* 10\.0\.192-255\.33 .*,.* 123/tcp
 mars_spaceport,nmap 10\.0\.0\.0/18,*
 venusville,nmap .* 10\.0\.\*\.144 .*|nmap .* 10\.0\.192-255\.144 .*,.* 2345/tcp .*
 last_resort,nc .* 10\.0\.234\.8 .*,.* 632 port .* succeeded! .*
-resistance_base,nmap .* -sX .* 10\.0\.233\.34-38 .*| nmap 10\.0\.233\.34-38 .* -sX .*,*
-
+resistance_base,nmap .* -sX .* 10\.0\.233\.34-38 .*|nmap 10\.0\.233\.34-38 .* -sX .*,*
+resistance_base,nmap .* -sN .* 10\.0\.233\.34-38 .*|nmap 10\.0\.233\.34-38 .* -sN .*,*
+resistance_base,nmap .* -sF .* 10\.0\.233\.34-38 .*|nmap 10\.0\.233\.34-38 .* -sF .*,*
+resistance_base,nmap .* 10\.0\.\*\.5 .*|nmap .* 10\.0\.192-255\.5 .*,*
+control_room,chmod .*,*
+control_room,find / .*,.* look-in-here .*
+control_room,*,.* you win.
