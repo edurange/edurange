@@ -115,6 +115,7 @@ class ScenariosController < ApplicationController
 
   def start
     StartScenarioJob.perform_later(@scenario)
+    CheckIfScenarioStillRunningJob.set(wait: 3.hours).perform_later(@scenario)
     redirect_back(
       fallback_location: scenario_path(@scenario),
       notice: "Starting scenario."
