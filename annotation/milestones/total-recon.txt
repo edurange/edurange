@@ -1,5 +1,4 @@
 home,nmap .* 10\.0\.0\.4 .*,*
-home,ssh -p 444 10\.0\.0\.4 | ssh 10\.0\.0\.4 -p 444,*
 rekall,nmap 10\.0\.0\.0/24,*
 subway,nmap -Pn .* | nmap .* -Pn,*
 earth_spaceport,nmap .* 10\.0\.\*\.33 .* | nmap .* 10\.0\.192-255\.33 .*,*

@@ -44,6 +44,9 @@ scenarios/custom/*
 keys/*
 data/*
 
+annotation/analyze
+
+*.iml
 .ruby-version
 ._.DS_Store
 .DS_Store
